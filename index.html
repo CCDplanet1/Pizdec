@@ -3647,8 +3647,8 @@ const CARS=[
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
 const UPGRADE_F40={name:'Ferrari F40',image:'images/f40.png',price:1500000000,currency:'₽',rub:1500000000,icon:'🚘',forcedRarity:'mythic'};
-const UPGRADE_COUNTACH={name:'Lamborghini Countach',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
-const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
+const UPGRADE_COUNTACH={name:'Lamborghini Countach',image:'images/count.png',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
+const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',image:'images/count800.png',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
 const MYTHIC_F50={name:'Ferrari F50',image:'images/f50.png',price:1200000000,currency:'₽',rub:1200000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'f50'};
 const score={normal:1,uncommon:2,rare:3,epic:4,legendary:5,mythic:6},$=x=>document.getElementById(x),rnd=n=>Math.floor(Math.random()*n),money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
 
@@ -4275,7 +4275,10 @@ function carVisual(m,cls='carImage'){
   'Mercedes-Benz 300E Hammer AMG':'images/124.png',
   'Ferrari F40':'images/f40.png',
   'Ferrari F50':'images/f50.png',
-  'Porsche 911 GT3 RS':'images/gt3rs.png'
+  'Porsche 911 GT3 RS':'images/gt3rs.png',
+ 'Pagani Zonda Cinque':'images/zonda.png',
+ 'Lamborghini Countach 800-4':'images/count800.png',
+ 'Lamborghini Countach':'images/count.png'
  };
  const image=imageByName[carName]||m.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
