@@ -1168,6 +1168,181 @@ button,.tab,.buy,.sell,.caseOpen{touch-action:manipulation}
  }
 }
 
+
+/* ===== v0.0.53 Profile showcase = Garage card ===== */
+.profileShowcase.profileGarageShowcase{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:12px!important;
+ max-width:none!important;
+ margin:0!important;
+}
+.profileExactGarageCard{
+ width:auto!important;
+ min-width:0!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+}
+.profileExactGarageCard .carVisual{pointer-events:none}
+.profileExactGarageCard .profileExactGaragePlate{margin-top:8px!important}
+.profileGaragePrice{
+ margin-top:9px;
+ color:var(--muted);
+ font-size:11px;
+ font-weight:800;
+}
+.profileExactGarageCard.normal{box-shadow:0 0 12px rgba(174,182,197,.16)!important}
+.profileExactGarageCard.uncommon{box-shadow:0 0 17px rgba(83,201,131,.35)!important}
+.profileExactGarageCard.rare{box-shadow:0 0 21px rgba(75,143,255,.46)!important}
+.profileExactGarageCard.epic{box-shadow:0 0 24px rgba(166,108,255,.52)!important}
+.profileExactGarageCard.legendary{box-shadow:0 0 28px rgba(240,173,53,.58)!important}
+.profileExactGarageCard.mythic{box-shadow:0 0 31px rgba(255,91,114,.64)!important}
+@media(max-width:620px){
+ .profileShowcase.profileGarageShowcase{grid-template-columns:1fr!important;gap:10px!important}
+ .profileExactGarageCard{padding:12px!important}
+}
+
+
+/* ===== v0.0.54 Mobile UX + safe profile plate typography ===== */
+html,body{max-width:100%;overflow-x:hidden}
+button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatarBtn{
+ touch-action:manipulation;
+ -webkit-tap-highlight-color:transparent;
+}
+.plateButton{
+ user-select:none;
+ -webkit-user-select:none;
+ -webkit-touch-callout:none;
+}
+
+/* The garage's plateHtml is reused in profiles, but scale it to the smaller profile card. */
+.profileExactGarageCard .profileExactGaragePlate .plate,
+.profileExactGarageCard .profileExactGaragePlate>.plate{
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .plateMain{
+ font-size:clamp(20px,3.7vw,34px)!important;
+ letter-spacing:-1.4px!important;
+ padding-left:3px!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .regionNum{
+ font-size:clamp(14px,2.8vw,25px)!important;
+ letter-spacing:-1px!important;
+ white-space:nowrap!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .rus{
+ gap:2px!important;
+ margin-top:3px!important;
+ font-size:clamp(5px,.8vw,8px)!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .flag{
+ width:clamp(12px,2vw,19px)!important;
+ height:auto!important;
+ aspect-ratio:16/9!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .bolt{
+ width:clamp(5px,.9vw,8px)!important;
+ height:clamp(5px,.9vw,8px)!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .bolt.l{left:4px!important}
+.profileExactGarageCard .profileExactGaragePlate .bolt.r{right:4px!important}
+
+@media(max-width:620px){
+ body{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:env(safe-area-inset-bottom)}
+ .wrap,.container,main{max-width:100%!important}
+ .head{gap:8px!important}
+ .brand span{display:none}
+ .wallet strong{font-size:16px!important}
+ .tabs{overflow-x:auto!important;overscroll-behavior-x:contain;scrollbar-width:none;justify-content:flex-start!important}
+ .tabs::-webkit-scrollbar{display:none}
+ .tab{flex:0 0 auto!important;min-width:72px!important;padding:10px 9px!important}
+ .roll{padding:18px 8px!important;border-radius:20px!important}
+ .plateButton{width:100%!important;margin:18px auto 16px!important;padding:8px 0!important}
+ .plate{width:100%!important;max-width:100%!important;border-width:3px!important;border-radius:9px!important}
+ .plateMain{font-size:clamp(35px,13.5vw,62px)!important;letter-spacing:-2px!important}
+ .regionNum{font-size:clamp(24px,8.5vw,39px)!important}
+ .rus{font-size:clamp(7px,2.7vw,11px)!important;margin-top:5px!important;gap:3px!important}
+ .flag{width:clamp(18px,6vw,27px)!important;height:auto!important;aspect-ratio:16/9!important}
+ select,input,button{font-size:16px}
+ .garageGrid{grid-template-columns:1fr!important}
+ .carCard{min-width:0!important}
+ .profileCard{width:100%!important;max-width:100%!important;max-height:94dvh!important}
+ .profileShowcase.profileGarageShowcase{grid-template-columns:1fr!important}
+ .profileExactGarageCard .profileExactGaragePlate .plateMain{
+   font-size:clamp(28px,10.5vw,42px)!important;
+   letter-spacing:-1.8px!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .regionNum{
+   font-size:clamp(20px,7vw,29px)!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .rus{
+   font-size:clamp(6px,2.2vw,9px)!important;
+   margin-top:3px!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .flag{
+   width:clamp(14px,5vw,21px)!important;
+ }
+}
+
+/* Very narrow phones: guarantee profile number never crosses its frame. */
+@media(max-width:380px){
+ .profileExactGarageCard .profileExactGaragePlate .plateMain{
+   font-size:clamp(24px,9.5vw,34px)!important;
+   letter-spacing:-2px!important;
+   transform:scaleX(.94);
+ }
+ .profileExactGarageCard .profileExactGaragePlate .regionNum{
+   font-size:clamp(17px,6.3vw,24px)!important;
+ }
+}
+
+
+/* ===== v0.0.55 Profile plate font x0.5 ===== */
+.profileExactGarageCard .profileExactGaragePlate .plateMain{
+ font-size:clamp(10px,1.85vw,17px)!important;
+ letter-spacing:-.7px!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .regionNum{
+ font-size:clamp(7px,1.4vw,12.5px)!important;
+ letter-spacing:-.5px!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .rus{
+ font-size:clamp(3px,.4vw,4px)!important;
+ gap:1px!important;
+ margin-top:2px!important;
+}
+.profileExactGarageCard .profileExactGaragePlate .flag{
+ width:clamp(6px,1vw,9.5px)!important;
+}
+@media(max-width:620px){
+ .profileExactGarageCard .profileExactGaragePlate .plateMain{
+   font-size:clamp(14px,5.25vw,21px)!important;
+   letter-spacing:-.9px!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .regionNum{
+   font-size:clamp(10px,3.5vw,14.5px)!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .rus{
+   font-size:clamp(3px,1.1vw,4.5px)!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .flag{
+   width:clamp(7px,2.5vw,10.5px)!important;
+ }
+}
+@media(max-width:380px){
+ .profileExactGarageCard .profileExactGaragePlate .plateMain{
+   font-size:clamp(12px,4.75vw,17px)!important;
+   letter-spacing:-1px!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .regionNum{
+   font-size:clamp(8.5px,3.15vw,12px)!important;
+ }
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -1648,8 +1823,12 @@ async function majesticRollAnimation(){
 }
 
 function plateInStorage(p,r){return inv.some(x=>x.p===p&&x.r===r)}
+let mobileRollQueue=0;
 async function roll(){
- if(isRolling)return;
+ if(isRolling){
+   if(mobileRollQueue<100)mobileRollQueue++;
+   return;
+ }
 
  if(inv.length>=storageCap){
    $('msg').textContent='Хранилище заполнено — продай номера или улучши вместимость';
@@ -1765,7 +1944,7 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
    burst(x.rank);
  }
  $('msg').textContent=x.v>=COST?'Номер окупил прокрут · сохранён':'Номер дешевле прокрута · сохранён';
- isRolling=false;
+ isRolling=false;if(mobileRollQueue>0){mobileRollQueue--;setTimeout(()=>roll(),0);}
  refreshRollButton();
  update();render();renderUpgrader()}
 function togglePlateLock(id){
@@ -1873,7 +2052,45 @@ function renderGarage(){
  });box.appendChild(g)
 
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);}
-$('plateButton').onclick=roll;$('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
+let holdRollTimer=null,holdRollStarted=false,holdRollStartTimer=null;
+const holdRollBtn=$('plateButton');
+
+function stopHoldRoll(){
+ if(holdRollStartTimer){clearTimeout(holdRollStartTimer);holdRollStartTimer=null}
+ if(holdRollTimer){clearInterval(holdRollTimer);holdRollTimer=null}
+ holdRollStarted=false;
+}
+
+holdRollBtn.onclick=(e)=>{
+ // A completed hold already generated rolls; suppress the synthetic click.
+ if(holdRollBtn.dataset.holdConsumed==='1'){
+  holdRollBtn.dataset.holdConsumed='0';
+  return;
+ }
+ roll();
+};
+
+holdRollBtn.addEventListener('pointerdown',e=>{
+ if(e.button!==undefined&&e.button!==0)return;
+ stopHoldRoll();
+ holdRollBtn.dataset.holdConsumed='0';
+ // Short delay distinguishes a normal tap from an intentional hold.
+ holdRollStartTimer=setTimeout(()=>{
+  holdRollStarted=true;
+  holdRollBtn.dataset.holdConsumed='1';
+  roll();
+  holdRollTimer=setInterval(()=>roll(),100);
+ },250);
+});
+
+['pointerup','pointercancel','pointerleave'].forEach(ev=>{
+ holdRollBtn.addEventListener(ev,()=>{
+  if(holdRollStarted)holdRollBtn.dataset.holdConsumed='1';
+  stopHoldRoll();
+ });
+});
+window.addEventListener('blur',stopHoldRoll);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopHoldRoll()});$('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();update()});
 
@@ -2499,13 +2716,20 @@ function profileInstalledPlate(c){
 }
 function profileCarPublic(c){
  const plate=profileInstalledPlate(c);
+ const cr=carRarity(c);
  return {
   name:profileCarLabel(c),
+  model:profileCarLabel(c),
+  icon:String(c?.icon||'🚘'),
   value:Number(carRubValue(c)||0),
   baseValue:Number(carBaseValue(c)||0),
-  rarity:(carRarity(c)?.name||''),
-  rarityRank:(carRarity(c)?.rank||'normal'),
-  plate
+  rarity:(cr?.name||''),
+  rarityRank:(cr?.rank||'normal'),
+  custom:!!c?.custom,
+  plate:plate,
+  plateText:String(c?.plate||plate?.name||''),
+  region:String(c?.region||plate?.region||''),
+  plateRank:String(c?.custom?(c?.oldRank||'normal'):'normal')
  };
 }
 function profilePlatePublic(p){return {name:String(p?.n||p?.num||'Номер'),region:String(p?.r||p?.reg||''),value:Number(p?.v||0),rarity:String(p?.rarity?.name||p?.rarity||'')}}
@@ -2516,16 +2740,22 @@ function profileShowItems(target,items,type){
   el.classList.add('profileGarageShowcase');
   el.innerHTML=items.map(x=>{
    const rank=chatEsc(x.rarityRank||'normal');
-   const pp=x.plate&&x.plate.name?profilePlateParts({n:x.plate.name,r:x.plate.region}):null;
-   const plate=pp?(pp.digits
-    ?`<div class="profileGaragePlate profileRusPlate ${rank}"><div class="profilePlateMain"><strong>${chatEsc(pp.left+pp.digits+pp.right)}</strong></div><div class="profilePlateRegion"><b>${chatEsc(pp.region||'')}</b><div class="profileRusLine"><span>RUS</span><i></i></div></div></div>`
-    :`<div class="profileGaragePlate profileRusPlate"><div class="profilePlateMain"><strong>${chatEsc(pp.raw)}</strong></div><div class="profilePlateRegion"><b>${chatEsc(pp.region||'')}</b><div class="profileRusLine"><span>RUS</span><i></i></div></div></div>`)
-    :'<div class="profileGarageNoPlate">Без номера</div>';
-   return `<div class="profileGarageCar ${rank}">
-    <div class="profileGarageCarTop"><span class="profileGarageIcon">🚘</span><span class="profileGarageRarity">${chatEsc(x.rarity||'Обычная')}</span></div>
-    <b class="profileGarageName">${chatEsc(x.name)}</b>
+   const plateName=String(x.plateText||x.plate?.name||'');
+   const region=String(x.region||x.plate?.region||'');
+   let plate='';
+   if(plateName){
+    try{plate=`<div class="garagePlate profileExactGaragePlate">${plateHtml(plateName,region,x.plateRank||'normal')}</div>`}
+    catch(e){plate=`<div class="garagePlate profileExactGaragePlate">${chatEsc(plateName)} ${chatEsc(region)}</div>`}
+   }else{
+    plate='<div class="garagePlate profileExactGaragePlate">Без номера</div>';
+   }
+   return `<div class="carCard ${rank} profileExactGarageCard">
+    <div class="carVisual">${chatEsc(x.icon||'🚘')}</div>
+    <h3>${chatEsc(x.model||x.name||'Автомобиль')}</h3>
+    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>
+    <div class="carMeta">${x.custom?'Установлен номер из хранилища':'Номер автомобиля'}</div>
     ${plate}
-    <div class="profileGarageValue"><small>СТОИМОСТЬ</small><strong>${money(Number(x.value||0))}</strong></div>
+    <div class="profileGaragePrice">Стоимость · ${money(Number(x.value||0))}</div>
    </div>`;
   }).join('');
  }else{
@@ -2603,12 +2833,7 @@ initChat();
 </script>
 <script>
 (function(){
- let lastTouchEnd=0;
- document.addEventListener('touchend',function(e){
-   const now=Date.now();
-   if(now-lastTouchEnd<=300)e.preventDefault();
-   lastTouchEnd=now;
- },{passive:false});
+ // Prevent pinch zoom without cancelling rapid taps on game controls.
  document.addEventListener('gesturestart',function(e){e.preventDefault()},{passive:false});
 })();
 </script>
