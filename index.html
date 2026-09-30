@@ -1343,6 +1343,18 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  }
 }
 
+
+/* ===== v0.0.56 Promo codes + Limited rarity ===== */
+.pill.limited{color:#ff4fb3!important;background:rgba(255,79,179,.13)!important;border:1px solid rgba(255,79,179,.42)!important;box-shadow:0 0 13px rgba(255,79,179,.22)}
+.carGlowLimited{box-shadow:0 0 24px rgba(255,61,166,.78),0 0 48px rgba(255,61,166,.20)!important;border-color:rgba(255,79,179,.82)!important}
+.profileExactGarageCard.limited{box-shadow:0 0 24px rgba(255,61,166,.78),0 0 48px rgba(255,61,166,.20)!important;border-color:rgba(255,79,179,.82)!important}
+.promoRow{display:flex;gap:8px;margin-top:12px}
+.promoRow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:var(--card);color:inherit;font:inherit;text-transform:uppercase}
+.promoRow button{border:0;border-radius:11px;padding:0 16px;background:#4c7cff;color:#fff;font-weight:800;cursor:pointer}
+.promoResult{min-height:18px;margin-top:9px;font-size:12px;font-weight:700;color:var(--muted)}
+.promoResult.ok{color:#2fb968}.promoResult.bad{color:#e45b64}
+@media(max-width:520px){.promoRow{flex-direction:column}.promoRow button{min-height:42px}}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -1427,6 +1439,12 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
+<div class="settingsCard promoCard">
+<h3 style="margin-top:0">Промокод</h3>
+<p style="color:var(--muted);font-size:13px">Введи промокод и получи награду.</p>
+<div class="promoRow"><input id="promoCodeInput" type="text" maxlength="32" autocomplete="off" placeholder="Введите промокод"><button type="button" onclick="redeemPromoCode()">Активировать</button></div>
+<div id="promoCodeResult" class="promoResult"></div>
+</div>
 <div class="settingsCard"><h3 style="margin-top:0">Шансы выпадения</h3>
 <p style="color:var(--muted);font-size:13px;margin-top:-4px">Это точные шансы, которые используются при каждом прокруте.</p>
 <div style="display:grid;gap:9px;margin-top:15px">
@@ -1623,7 +1641,7 @@ const CARS=[
 {name:'Porsche 718 Cayman',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
 {name:'Porsche 911 Carrera 4S',price:11600000,currency:'₽',rub:11600000,icon:'🚘'},
 {name:'Porsche 911 Dakar',price:280000,currency:'$',rub:25760000,icon:'🚘'},
-{name:'Porsche 911 GT3 RS',price:350000,currency:'$',rub:32200000,icon:'🚘'},
+{name:'Porsche 911 GT3 RS',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true},
 {name:'Porsche 918 Spyder',price:991000,currency:'€',rub:100091000,icon:'🚘'},
 {name:'Porsche 930',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
 {name:'Porsche Carrera GT',price:2000000,currency:'$',rub:184000000,icon:'🚘'},
@@ -1987,7 +2005,7 @@ function renderDealerButtons(){
 function carPriceText(m){return m.price.toLocaleString('ru-RU')+' '+m.currency}
 function renderDealer(){
  let box=$('dealer'),q=($('carSearch')?.value||'').toLowerCase(),sort=$('carSort')?.value||'default';box.innerHTML='';
- let list=CARS.map((m,i)=>({m,i}));
+ let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly);
  if(sort==='cheap')list.sort((a,b)=>carBaseValue(a.m)-carBaseValue(b.m));
  else if(sort==='expensive')list.sort((a,b)=>carBaseValue(b.m)-carBaseValue(a.m));
  list.forEach(({m,i})=>{
@@ -2103,7 +2121,7 @@ function upgradeSources(){
  return owned;
 }
 function upgradeTargets(){
- return [...CARS,UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_HAMMER].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ return [...CARS.filter(x=>!x.promoOnly),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_HAMMER].sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
@@ -2218,6 +2236,7 @@ function carRubValue(m){
 function carBaseValue(m){return Number(m.rub||m.price||0)}
 function carRarity(m){
  const v=carBaseValue(m);
+ if(m.forcedRarity==='limited')return {rank:'limited',name:'Limited'};
  if(m.forcedRarity==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
  if(v>=20000000)return {rank:'legendary',name:'Легендарная'};
  if(v>=5000000)return {rank:'epic',name:'Эпическая'};
@@ -2227,6 +2246,7 @@ function carRarity(m){
 }
 function carGlowClass(m){
  const v=carBaseValue(m);
+ if(m.forcedRarity==='limited')return 'carGlowLimited';
  if(m.forcedRarity==='mythic'||v>=3000000000)return 'carGlowMythic';
  if(v>=20000000)return 'carGlowLegendary';
  if(v>=5000000)return 'carGlowEpic';
@@ -2235,7 +2255,7 @@ function carGlowClass(m){
  return 'carGlowNormal';
 }
 function casePool(c){
- const sorted=[...CARS].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ const sorted=CARS.filter(x=>!x.promoOnly).sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
  if(c.id==='legendary'){
@@ -2451,6 +2471,34 @@ update();render();renderDealer();renderGarage();
    CloudStorage values are chunked because Telegram limits one value to 4096 chars.
    localStorage is a backup/fallback for browser testing.
 */
+let redeemedPromoCodes=new Set();
+
+function promoMessage(text,ok=false){
+ const el=$('promoCodeResult');if(!el)return;
+ el.textContent=text;el.className='promoResult '+(ok?'ok':'bad');
+}
+function redeemPromoCode(){
+ const input=$('promoCodeInput');if(!input)return;
+ const code=String(input.value||'').trim().toUpperCase();
+ if(!code){promoMessage('Введите промокод.');return}
+ if(code!=='911'){promoMessage('Промокод не найден.');return}
+ if(redeemedPromoCodes.has(code)){promoMessage('Этот промокод уже был активирован.');return}
+ if(cars.length>=garageCap){promoMessage('В гараже нет свободного места. Освободи или купи слот и попробуй снова.');return}
+ const reward=CARS.find(x=>x.name==='Porsche 911 GT3 RS'&&x.promoOnly);
+ if(!reward){promoMessage('Награда временно недоступна.');return}
+ const rp=randomPlateForCar();
+ cars.push({
+  id:++carSeq,model:reward.name,icon:reward.icon||'🚘',
+  price:450000000,currency:'₽',rub:450000000,
+  plate:rp.p,region:rp.r,custom:false,forcedRarity:'limited',limited:true,promoCode:'911'
+ });
+ redeemedPromoCodes.add(code);
+ input.value='';
+ promoMessage('Промокод активирован! Porsche 911 GT3 RS добавлен в гараж.',true);
+ update();renderDealer();renderGarage();renderUpgrader();renderContainers();
+ if(typeof scheduleGameSave==='function')scheduleGameSave();
+}
+
 const SAVE_SCHEMA=1;
 const SAVE_PREFIX='nr_save_v1';
 const SAVE_MANIFEST=SAVE_PREFIX+'_manifest';
@@ -2465,7 +2513,8 @@ function buildSaveData(){
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
    pendingCasePrize:pendingCasePrize||null,
    pendingCasePrizes:pendingCasePrizes||[],
-   fastCaseRoll:!!fastCaseRoll
+   fastCaseRoll:!!fastCaseRoll,
+   redeemedPromoCodes:[...redeemedPromoCodes]
  };
 }
 function saveFingerprint(data){
@@ -2487,6 +2536,7 @@ function applySaveData(d){
  pendingCasePrize=d.pendingCasePrize||null;
  pendingCasePrizes=Array.isArray(d.pendingCasePrizes)?d.pendingCasePrizes:[];
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
+ if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String));
  isRolling=false;caseRolling=false;upgradeRolling=false;
  const fast=$('fastCaseRoll');if(fast)fast.checked=fastCaseRoll;
  update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();renderUpgrades();
