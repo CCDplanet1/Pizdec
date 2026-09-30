@@ -534,11 +534,664 @@ button,.tab,.buy,.sell,.caseOpen{touch-action:manipulation}
  .dealerGrid,.garageGrid,.storageGrid,#containerGrid{gap:8px!important}
 }
 
+
+/* v0.0.40 — global chat */
+.chatStatus{font-size:12px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.chatMessages{height:min(58vh,560px);overflow-y:auto;border:1px solid var(--line);border-radius:16px;padding:10px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+.chatMsg{padding:9px 11px;border:1px solid var(--line);border-radius:13px;background:var(--bg)}
+.chatMsgHead{display:flex;gap:7px;align-items:center;justify-content:space-between;margin-bottom:4px}
+.chatName{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chatTime{font-size:11px;color:var(--muted);flex:0 0 auto}
+.chatText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.35}
+.chatComposer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:9px}
+.chatComposer input{width:100%;min-width:0}
+.chatComposer button{width:auto;min-width:110px}
+.chatEmpty{text-align:center;color:var(--muted);padding:24px 8px}
+.chatHint{font-size:11px;margin-top:6px}
+@media(max-width:520px){
+ .chatMessages{height:55vh;padding:7px;border-radius:14px}
+ .chatMsg{padding:8px 9px}
+ .chatComposer{grid-template-columns:1fr}
+ .chatComposer button{width:100%}
+}
+
+
+/* v0.0.41 — messenger-style chat */
+#chatPage{padding-bottom:0!important}
+.chatShell{width:min(100%,860px);height:min(72vh,720px);min-height:500px;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card)}
+.chatTop{display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--line);background:var(--card);min-width:0}
+.chatTopIcon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:21px;background:var(--bg);border:1px solid var(--line);flex:0 0 auto}
+.chatTopText{min-width:0;flex:1}
+.chatTopText h2{font-size:17px!important;line-height:1.1;margin:0 0 3px!important}
+.chatSubtitle{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatStatus{display:flex;align-items:center;gap:6px;flex:0 0 auto;font-size:11px;padding:6px 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--bg)}
+.chatStatusDot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.chatMessages{height:auto!important;min-height:0!important;overflow-y:auto!important;border:0!important;border-radius:0!important;padding:14px!important;background:var(--bg)!important;display:flex!important;flex-direction:column!important;gap:10px!important;scroll-behavior:smooth}
+.chatMsg{display:grid!important;grid-template-columns:34px minmax(0,1fr)!important;gap:8px!important;align-items:end!important;max-width:min(78%,620px)!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;align-self:flex-start}
+.chatAvatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;border:1px solid var(--line);background:var(--card);user-select:none}
+.chatBubble{min-width:0;padding:8px 11px 7px;border:1px solid var(--line);border-radius:15px 15px 15px 4px;background:var(--card)}
+.chatMsgHead{display:flex!important;gap:8px!important;align-items:baseline!important;justify-content:flex-start!important;margin:0 0 3px!important}
+.chatName{font-size:11px;font-weight:900!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chatTime{font-size:9px!important;color:var(--muted)!important;flex:0 0 auto!important}
+.chatText{font-size:14px;white-space:pre-wrap!important;overflow-wrap:anywhere!important;line-height:1.35!important}
+.chatMsg.mine{grid-template-columns:minmax(0,1fr)!important;align-self:flex-end!important}
+.chatMsg.mine .chatAvatar{display:none}
+.chatMsg.mine .chatBubble{border-radius:15px 15px 4px 15px;background:var(--accent);color:#fff;border-color:transparent}
+.chatMsg.mine .chatName,.chatMsg.mine .chatTime{color:rgba(255,255,255,.72)}
+.chatEmpty{margin:auto;text-align:center;color:var(--muted);padding:28px 10px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.chatEmptyIcon{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);font-size:25px;margin-bottom:4px}
+.chatEmpty b{color:var(--text);font-size:14px}.chatEmpty span{font-size:11px}
+.chatBottom{padding:9px 11px 8px;border-top:1px solid var(--line);background:var(--card)}
+.chatComposer{display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;gap:7px!important;margin:0!important;align-items:center}
+.chatComposer input{height:44px!important;min-height:44px!important;width:100%!important;border-radius:14px!important;padding:0 13px!important;font-size:16px!important;margin:0!important}
+.chatComposer button{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;border-radius:14px!important;padding:0!important;font-size:18px!important;display:grid!important;place-items:center!important}
+.chatHint{display:flex;justify-content:space-between;align-items:center;font-size:9px!important;color:var(--muted);margin:5px 3px 0!important}
+@media(max-width:900px){
+ #chatPage{margin-left:-2px!important;margin-right:-2px!important;width:calc(100% + 4px)!important}
+ .chatShell{height:calc(100dvh - 155px);min-height:420px;border-radius:16px}
+}
+@media(max-width:520px){
+ .chatShell{height:calc(100dvh - 142px);min-height:390px;border-radius:14px}
+ .chatTop{padding:9px 10px;gap:8px}
+ .chatTopIcon{width:36px;height:36px;border-radius:12px;font-size:18px}
+ .chatTopText h2{font-size:15px!important}
+ .chatSubtitle{font-size:10px}
+ .chatStatus{font-size:9px;padding:5px 7px}
+ .chatMessages{padding:10px 8px!important;gap:8px!important}
+ .chatMsg{max-width:88%!important;grid-template-columns:30px minmax(0,1fr)!important;gap:6px!important}
+ .chatAvatar{width:30px;height:30px;font-size:11px}
+ .chatBubble{padding:7px 9px 6px}
+ .chatText{font-size:13px}
+ .chatBottom{padding:7px 8px max(7px,env(safe-area-inset-bottom))}
+ .chatComposer{grid-template-columns:minmax(0,1fr) 42px!important}
+ .chatComposer input,.chatComposer button{height:42px!important;min-height:42px!important}
+ .chatComposer button{width:42px!important;min-width:42px!important}
+}
+
+
+/* ===== v0.0.42 Player Profiles ===== */
+.profileHead{display:flex;align-items:center;gap:10px}
+.profileAvatarBtn,.profileAvatarBig{border:0;display:grid;place-items:center;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#7c5cff,#36c878);color:#fff;box-shadow:0 6px 18px rgba(65,70,120,.18)}
+.profileAvatarBtn{width:42px;height:42px;border-radius:50%;font-size:16px;flex:0 0 auto}
+.walletProfile{display:flex;align-items:center;gap:9px}
+.profileModal{position:fixed;inset:0;z-index:10000;background:rgba(10,14,24,.62);display:none;align-items:center;justify-content:center;padding:16px}
+.profileModal.on{display:flex}
+.profileCard{width:min(620px,100%);max-height:min(820px,92dvh);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+.profileTop{display:flex;gap:13px;align-items:center;position:relative}
+.profileAvatarBig{width:68px;height:68px;border-radius:50%;font-size:25px;flex:0 0 auto}
+.profileTopText{min-width:0}.profileTopText h2{margin:0;font-size:21px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileTopText p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.profileClose{position:absolute;right:0;top:0;width:36px;height:36px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);cursor:pointer;font-size:18px}
+.profileEdit{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:16px}
+.profileEdit input{min-width:0;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--panel);color:var(--text);font-size:16px}
+.profileEdit button,.profileAction{border:0;border-radius:12px;padding:10px 14px;background:#7657ff;color:#fff;font-weight:800;cursor:pointer}
+.profileSection{margin-top:18px}.profileSection h3{margin:0 0 9px;font-size:14px}.profileEmpty{padding:16px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:12px;text-align:center}
+.profileShowcase{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.profileShowItem{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:10px;min-width:0}
+.profileShowItem b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileShowItem span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.profilePicker{display:grid;gap:7px;max-height:210px;overflow:auto;padding-right:2px}
+.profilePick{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--panel);font-size:11px}
+.profilePick label{display:flex;align-items:center;gap:8px;min-width:0}.profilePick input{width:18px;height:18px}
+.profileNote{font-size:10px;color:var(--muted);margin-top:8px}
+.chatAvatar{border:0;cursor:pointer;color:inherit}
+.chatAvatar:hover{transform:scale(1.05)}
+@media(max-width:520px){
+ .profileCard{padding:14px;border-radius:19px}
+ .profileAvatarBtn{width:38px;height:38px}
+ .profileShowcase{grid-template-columns:1fr}
+ .walletProfile{gap:6px}.wallet{padding-left:0!important}
+}
+
+
+/* ===== v0.0.43 Profile garage showcase ===== */
+.profileShowcase.profileGarageShowcase{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.profileGarageCar{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:12px;min-width:0}
+.profileGarageCar:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:currentColor;opacity:.8}
+.profileGarageCar.normal{color:#aeb6c5}.profileGarageCar.uncommon{color:#53c983}.profileGarageCar.rare{color:#4b8fff}.profileGarageCar.epic{color:#a66cff}.profileGarageCar.legendary{color:#f0ad35}.profileGarageCar.mythic{color:#ff5b72}
+.profileGarageCarTop{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.profileGarageIcon{font-size:25px}.profileGarageRarity{font-size:9px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profileGarageName{display:block;color:var(--text);font-size:12px;line-height:1.25;margin-top:9px;min-height:30px}
+.profileGaragePlate{margin-top:9px;background:#fff;color:#111;border:2px solid #171717;border-radius:5px;padding:5px 7px;text-align:center;font-weight:900;font-size:12px;letter-spacing:.5px}
+.profileGaragePlate small{font-size:9px;margin-left:3px}.profileGarageNoPlate{margin-top:9px;padding:7px;border:1px dashed var(--line);border-radius:7px;color:var(--muted);font-size:9px;text-align:center}
+.profileGarageValue{display:flex;flex-direction:column;margin-top:10px;color:var(--text)}.profileGarageValue small{font-size:8px;color:var(--muted);font-weight:800}.profileGarageValue strong{font-size:12px;margin-top:2px}
+@media(max-width:620px){.profileShowcase.profileGarageShowcase{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.profileGarageCar{padding:8px;border-radius:12px}.profileGarageIcon{font-size:19px}.profileGarageRarity{font-size:7px}.profileGarageName{font-size:9px;min-height:25px}.profileGaragePlate{font-size:9px;padding:4px 2px}.profileGarageValue strong{font-size:9px}}
+
+
+/* ===== v0.0.44 Profile car plate ===== */
+.profileGaragePlate{display:flex!important;align-items:stretch!important;justify-content:center!important;padding:0!important;background:#f7f7f4!important;color:#0b0b0b!important;border:2px solid #111!important;border-radius:5px!important;overflow:hidden;min-height:28px;letter-spacing:0!important}
+.profilePlateMain{display:flex;align-items:center;justify-content:center;gap:1px;min-width:0;flex:1;padding:3px 4px;font-family:Arial,sans-serif;white-space:nowrap}
+.profilePlateMain span{font-size:10px;font-weight:800}.profilePlateMain strong{font-size:15px;line-height:1;font-weight:900}
+.profilePlateRegion{width:31px;flex:0 0 31px;border-left:1px solid #222;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.profilePlateRegion b{font-size:9px}.profilePlateRegion small{font-size:5px!important;margin:2px 0 0!important;font-weight:900}
+@media(max-width:620px){
+ .profileGaragePlate{min-height:24px}.profilePlateMain{padding:2px;gap:0}.profilePlateMain span{font-size:7px}.profilePlateMain strong{font-size:11px}
+ .profilePlateRegion{width:25px;flex-basis:25px}.profilePlateRegion b{font-size:7px}.profilePlateRegion small{font-size:4px!important}
+}
+
+
+/* ===== v0.0.46 Garage-style plates in profile ===== */
+.profileGaragePlate{
+ display:flex!important;align-items:stretch!important;width:100%!important;box-sizing:border-box!important;
+ min-height:46px!important;margin-top:10px!important;padding:0!important;overflow:hidden!important;
+ background:#fff!important;color:#08090b!important;border:2px solid #222!important;border-radius:7px!important;
+ box-shadow:0 0 0 2px rgba(255,255,255,.12),0 2px 6px rgba(0,0,0,.35)!important;
+ font-family:Arial,"Noto Sans",sans-serif!important;
+}
+.profileGaragePlate .profilePlateMain{
+ flex:1 1 auto!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ padding:4px 5px!important;white-space:nowrap!important;overflow:hidden!important;
+}
+.profileGaragePlate .profilePlateMain strong{
+ color:#08090b!important;font-size:20px!important;line-height:1!important;font-weight:900!important;
+ letter-spacing:.4px!important;white-space:nowrap!important;
+}
+.profileGaragePlate .profilePlateRegion{
+ flex:0 0 50px!important;width:50px!important;border-left:1.5px solid #222!important;
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ padding:2px!important;box-sizing:border-box!important;background:#fff!important;color:#08090b!important;
+}
+.profileGaragePlate .profilePlateRegion b{font-size:16px!important;line-height:1!important;font-weight:900!important;color:#08090b!important}
+.profileGaragePlate .profilePlateRegion small{display:flex!important;align-items:center!important;gap:2px!important;margin-top:3px!important;font-size:6px!important;line-height:1!important;font-weight:900!important;color:#08090b!important}
+.profileGaragePlate .profileFlag{font-size:8px!important;line-height:1!important}
+@media(max-width:620px){
+ .profileShowcase.profileGarageShowcase{grid-template-columns:1fr!important;gap:10px!important}
+ .profileGarageCar{padding:12px!important}
+ .profileGarageName{font-size:13px!important;min-height:auto!important}
+ .profileGaragePlate{min-height:52px!important}
+ .profileGaragePlate .profilePlateMain strong{font-size:25px!important;letter-spacing:.6px!important}
+ .profileGaragePlate .profilePlateRegion{flex-basis:58px!important;width:58px!important}
+ .profileGaragePlate .profilePlateRegion b{font-size:19px!important}
+ .profileGaragePlate .profilePlateRegion small{font-size:7px!important}
+ .profileGaragePlate .profileFlag{font-size:9px!important}
+}
+
+
+/* ===== v0.0.47 FINAL profile license plate layout ===== */
+.profileGarageCar .profileRusPlate{
+ all:unset;
+ box-sizing:border-box!important;
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) 64px!important;
+ width:100%!important;
+ height:58px!important;
+ margin:12px 0 0!important;
+ overflow:hidden!important;
+ background:#fdfdfc!important;
+ color:#050505!important;
+ border:2px solid #202020!important;
+ border-radius:7px!important;
+ box-shadow:0 0 0 2px #d8d8d8,0 3px 8px rgba(0,0,0,.35)!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain{
+ all:unset;
+ box-sizing:border-box!important;
+ min-width:0!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ padding:0 5px!important;
+ background:#fdfdfc!important;
+ color:#050505!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain strong{
+ all:unset;
+ display:block!important;
+ color:#050505!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:25px!important;
+ line-height:1!important;
+ font-weight:900!important;
+ letter-spacing:-.6px!important;
+ white-space:nowrap!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion{
+ all:unset;
+ box-sizing:border-box!important;
+ min-width:0!important;
+ border-left:1.5px solid #202020!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ background:#fdfdfc!important;
+ color:#050505!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion b{
+ all:unset;
+ display:block!important;
+ color:#050505!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:21px!important;
+ line-height:.95!important;
+ font-weight:900!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:3px!important;
+ margin-top:5px!important;
+ color:#050505!important;
+ font:900 7px/1 Arial,Helvetica,sans-serif!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine i{
+ display:block!important;
+ width:13px!important;
+ height:7px!important;
+ border:1px solid #aaa!important;
+ box-sizing:border-box!important;
+ background:linear-gradient(to bottom,#fff 0 33.33%,#2455d6 33.33% 66.66%,#d52b1e 66.66% 100%)!important;
+}
+@media(max-width:620px){
+ .profileShowcase.profileGarageShowcase{
+   grid-template-columns:1fr!important;
+ }
+ .profileGarageCar .profileRusPlate{
+   grid-template-columns:minmax(0,1fr) 70px!important;
+   height:62px!important;
+ }
+ .profileGarageCar .profileRusPlate .profilePlateMain strong{
+   font-size:30px!important;
+   letter-spacing:-.8px!important;
+ }
+ .profileGarageCar .profileRusPlate .profilePlateRegion b{
+   font-size:24px!important;
+ }
+ .profileGarageCar .profileRusPlate .profileRusLine{
+   font-size:7px!important;
+ }
+}
+
+
+/* ===== v0.0.48 Russian plate proportions from reference ===== */
+.profileGarageCar .profileRusPlate{
+ all:unset;
+ box-sizing:border-box!important;
+ position:relative!important;
+ display:grid!important;
+ grid-template-columns:76% 24%!important;
+ width:100%!important;
+ aspect-ratio:4.7 / 1!important;
+ height:auto!important;
+ min-height:0!important;
+ margin:12px 0 0!important;
+ overflow:hidden!important;
+ background:#f7f7f5!important;
+ color:#050505!important;
+ border:2px solid #1b1b1b!important;
+ border-radius:7px!important;
+ box-shadow:0 0 0 3px #9da0a0,0 2px 6px rgba(0,0,0,.35)!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+}
+.profileGarageCar .profileRusPlate:before,
+.profileGarageCar .profileRusPlate:after{
+ content:""!important;
+ position:absolute!important;
+ top:50%!important;
+ width:7px!important;
+ height:7px!important;
+ margin-top:-3.5px!important;
+ border-radius:50%!important;
+ background:radial-gradient(circle at 35% 30%,#eee 0 15%,#9b9b9b 35%,#5d5d5d 70%,#c9c9c9 100%)!important;
+ z-index:3!important;
+}
+.profileGarageCar .profileRusPlate:before{left:7px!important}
+.profileGarageCar .profileRusPlate:after{right:7px!important}
+.profileGarageCar .profileRusPlate .profilePlateMain{
+ all:unset;
+ box-sizing:border-box!important;
+ min-width:0!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ padding:0 5%!important;
+ background:#f7f7f5!important;
+ color:#050505!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain strong{
+ all:unset;
+ display:block!important;
+ color:#050505!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:clamp(20px,4.2vw,38px)!important;
+ line-height:.9!important;
+ font-weight:900!important;
+ letter-spacing:-1.2px!important;
+ white-space:nowrap!important;
+ transform:scaleX(.93)!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion{
+ all:unset;
+ box-sizing:border-box!important;
+ min-width:0!important;
+ border-left:2px solid #1b1b1b!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ padding-top:1%!important;
+ background:#f7f7f5!important;
+ color:#050505!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion b{
+ all:unset;
+ display:block!important;
+ color:#050505!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:clamp(15px,3.1vw,28px)!important;
+ line-height:.9!important;
+ font-weight:900!important;
+ letter-spacing:-.8px!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine{
+ all:unset;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:4px!important;
+ margin-top:6%!important;
+ color:#050505!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:clamp(6px,1vw,10px)!important;
+ line-height:1!important;
+ font-weight:900!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine i{
+ all:unset;
+ display:block!important;
+ box-sizing:border-box!important;
+ width:clamp(15px,3vw,28px)!important;
+ aspect-ratio:1.65/1!important;
+ border:1px solid #777!important;
+ background:linear-gradient(to bottom,#fff 0 33.333%,#2353b8 33.333% 66.666%,#d52b1e 66.666% 100%)!important;
+}
+.profileShowcase.profileGarageShowcase{
+ grid-template-columns:1fr!important;
+ max-width:680px!important;
+ margin:0 auto!important;
+ gap:12px!important;
+}
+.profileGarageCar{width:100%!important;box-sizing:border-box!important}
+@media(max-width:620px){
+ .profileShowcase.profileGarageShowcase{grid-template-columns:1fr!important;max-width:none!important}
+ .profileGarageCar .profileRusPlate{grid-template-columns:76% 24%!important;aspect-ratio:4.7/1!important}
+ .profileGarageCar .profileRusPlate .profilePlateMain strong{font-size:clamp(21px,9.5vw,34px)!important}
+ .profileGarageCar .profileRusPlate .profilePlateRegion b{font-size:clamp(15px,7vw,25px)!important}
+ .profileGarageCar .profileRusPlate .profileRusLine{font-size:clamp(6px,2.7vw,9px)!important}
+ .profileGarageCar .profileRusPlate .profileRusLine i{width:clamp(15px,7vw,25px)!important}
+}
+
+
+/* ===== v0.0.49 Refined GOST-like plate typography/alignment ===== */
+.profileGarageCar .profileRusPlate .profilePlateMain{
+ gap:1.5%!important;
+ padding:0 6%!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain strong,
+.profileGarageCar .profileRusPlate .profilePlateMain .profilePlateLetters{
+ all:unset;
+ display:block!important;
+ color:#050505!important;
+ font-family:"Arial Narrow",Arial,Helvetica,sans-serif!important;
+ line-height:.82!important;
+ font-weight:900!important;
+ white-space:nowrap!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain strong{
+ font-size:clamp(21px,4.45vw,40px)!important;
+ letter-spacing:-1.5px!important;
+ transform:scaleX(.88)!important;
+ transform-origin:center!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain .profilePlateLetters{
+ font-size:clamp(20px,4.15vw,37px)!important;
+ letter-spacing:-1.8px!important;
+ transform:scaleX(.78)!important;
+ transform-origin:center!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion{
+ position:relative!important;
+ padding:0 7% 0!important;
+ justify-content:flex-start!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion b{
+ margin-top:16%!important;
+ font-family:"Arial Narrow",Arial,Helvetica,sans-serif!important;
+ font-size:clamp(15px,3.15vw,28px)!important;
+ line-height:.82!important;
+ letter-spacing:-1.2px!important;
+ transform:scaleX(.86)!important;
+ transform-origin:center!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine{
+ position:absolute!important;
+ left:0!important;right:0!important;bottom:13%!important;
+ margin:0!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:4%!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:clamp(6px,.9vw,9px)!important;
+ line-height:1!important;
+ font-weight:800!important;
+ letter-spacing:0!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine i{
+ width:29%!important;
+ max-width:27px!important;
+ min-width:15px!important;
+ aspect-ratio:1.5/1!important;
+ border:1px solid #777!important;
+ background:linear-gradient(to bottom,#fff 0 33.333%,#0039a6 33.333% 66.666%,#d52b1e 66.666% 100%)!important;
+}
+@media(max-width:620px){
+ .profileGarageCar .profileRusPlate .profilePlateMain{gap:1%!important;padding:0 5%!important}
+ .profileGarageCar .profileRusPlate .profilePlateMain strong{font-size:clamp(22px,10vw,36px)!important;letter-spacing:-1.2px!important}
+ .profileGarageCar .profileRusPlate .profilePlateMain .profilePlateLetters{font-size:clamp(21px,9.2vw,33px)!important;letter-spacing:-1.4px!important}
+ .profileGarageCar .profileRusPlate .profilePlateRegion b{font-size:clamp(16px,7.2vw,26px)!important;margin-top:15%!important}
+ .profileGarageCar .profileRusPlate .profileRusLine{bottom:12%!important;font-size:clamp(6px,2.5vw,8px)!important}
+}
+
+
+/* ===== v0.0.50 Match reference plate glyph sizing ===== */
+.profileGarageCar .profileRusPlate .profilePlateMain{
+ gap:0!important;
+ padding:0 5.5%!important;
+ overflow:hidden!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateMain strong{
+ all:unset;
+ display:block!important;
+ color:#000!important;
+ font-family:"Arial Narrow","Roboto Condensed","Liberation Sans Narrow",Arial,sans-serif!important;
+ font-size:clamp(36px,7.5vw,68px)!important;
+ line-height:.82!important;
+ font-weight:900!important;
+ letter-spacing:-3px!important;
+ white-space:nowrap!important;
+ transform:scaleX(.86)!important;
+ transform-origin:center!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion b{
+ all:unset;
+ display:block!important;
+ margin-top:12%!important;
+ color:#000!important;
+ font-family:"Arial Narrow","Roboto Condensed","Liberation Sans Narrow",Arial,sans-serif!important;
+ font-size:clamp(25px,5.4vw,49px)!important;
+ line-height:.82!important;
+ font-weight:900!important;
+ letter-spacing:-2px!important;
+ white-space:nowrap!important;
+ transform:scaleX(.88)!important;
+ transform-origin:center!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine{
+ bottom:16%!important;
+ gap:4%!important;
+ font-size:clamp(7px,1.25vw,12px)!important;
+ font-weight:900!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine i{
+ width:31%!important;
+ max-width:31px!important;
+ min-width:17px!important;
+}
+@media(max-width:620px){
+ .profileGarageCar .profileRusPlate .profilePlateMain{padding:0 4%!important}
+ .profileGarageCar .profileRusPlate .profilePlateMain strong{
+   font-size:clamp(38px,16vw,62px)!important;
+   letter-spacing:-2.5px!important;
+   transform:scaleX(.86)!important;
+ }
+ .profileGarageCar .profileRusPlate .profilePlateRegion b{
+   font-size:clamp(26px,11.5vw,44px)!important;
+   letter-spacing:-1.8px!important;
+   margin-top:12%!important;
+ }
+ .profileGarageCar .profileRusPlate .profileRusLine{
+   bottom:15%!important;
+   font-size:clamp(7px,3.2vw,11px)!important;
+ }
+}
+
+
+/* ===== v0.0.51 Profile rarity glow + centered region ===== */
+
+/* Right plate block: region and RUS/flag are one centered group */
+.profileGarageCar .profileRusPlate .profilePlateRegion{
+ all:unset;
+ box-sizing:border-box!important;
+ min-width:0!important;
+ border-left:2px solid #1b1b1b!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:5px!important;
+ padding:0 7px!important;
+ background:#f7f7f5!important;
+ color:#050505!important;
+}
+.profileGarageCar .profileRusPlate .profilePlateRegion b{
+ all:unset;
+ display:block!important;
+ margin:0!important;
+ color:#000!important;
+ font-family:"Arial Narrow","Roboto Condensed","Liberation Sans Narrow",Arial,sans-serif!important;
+ font-size:clamp(25px,5.4vw,49px)!important;
+ line-height:.78!important;
+ font-weight:900!important;
+ letter-spacing:-2px!important;
+ white-space:nowrap!important;
+ transform:scaleX(.88)!important;
+ transform-origin:center!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine{
+ all:unset;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:4px!important;
+ margin:0!important;
+ color:#000!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:clamp(7px,1.25vw,12px)!important;
+ line-height:1!important;
+ font-weight:900!important;
+ white-space:nowrap!important;
+}
+.profileGarageCar .profileRusPlate .profileRusLine i{
+ all:unset;
+ display:block!important;
+ box-sizing:border-box!important;
+ width:clamp(17px,3.2vw,31px)!important;
+ aspect-ratio:1.5/1!important;
+ border:1px solid #777!important;
+ background:linear-gradient(to bottom,#fff 0 33.333%,#0039a6 33.333% 66.666%,#d52b1e 66.666% 100%)!important;
+}
+
+/* Rarity glow: card + plate */
+.profileGarageCar.normal{
+ box-shadow:0 0 12px rgba(174,182,197,.16),inset 0 0 14px rgba(174,182,197,.035)!important;
+}
+.profileGarageCar.uncommon{
+ box-shadow:0 0 16px rgba(83,201,131,.32),inset 0 0 18px rgba(83,201,131,.07)!important;
+ border-color:rgba(83,201,131,.62)!important;
+}
+.profileGarageCar.rare{
+ box-shadow:0 0 20px rgba(75,143,255,.42),inset 0 0 22px rgba(75,143,255,.09)!important;
+ border-color:rgba(75,143,255,.78)!important;
+}
+.profileGarageCar.epic{
+ box-shadow:0 0 23px rgba(166,108,255,.48),inset 0 0 24px rgba(166,108,255,.11)!important;
+ border-color:rgba(166,108,255,.82)!important;
+}
+.profileGarageCar.legendary{
+ box-shadow:0 0 27px rgba(240,173,53,.52),inset 0 0 28px rgba(240,173,53,.12)!important;
+ border-color:rgba(240,173,53,.88)!important;
+}
+.profileGarageCar.mythic{
+ box-shadow:0 0 30px rgba(255,91,114,.58),inset 0 0 30px rgba(255,91,114,.14)!important;
+ border-color:rgba(255,91,114,.92)!important;
+}
+
+.profileGarageCar .profileRusPlate.normal{
+ box-shadow:0 0 0 3px #9da0a0,0 0 12px rgba(174,182,197,.24)!important;
+}
+.profileGarageCar .profileRusPlate.uncommon{
+ box-shadow:0 0 0 3px #9da0a0,0 0 16px rgba(83,201,131,.58)!important;
+}
+.profileGarageCar .profileRusPlate.rare{
+ box-shadow:0 0 0 3px #9da0a0,0 0 19px rgba(75,143,255,.72)!important;
+}
+.profileGarageCar .profileRusPlate.epic{
+ box-shadow:0 0 0 3px #9da0a0,0 0 21px rgba(166,108,255,.78)!important;
+}
+.profileGarageCar .profileRusPlate.legendary{
+ box-shadow:0 0 0 3px #9da0a0,0 0 23px rgba(240,173,53,.82)!important;
+}
+.profileGarageCar .profileRusPlate.mythic{
+ box-shadow:0 0 0 3px #9da0a0,0 0 25px rgba(255,91,114,.88)!important;
+}
+
+@media(max-width:620px){
+ .profileGarageCar .profileRusPlate .profilePlateRegion{gap:4px!important;padding:0 5px!important}
+ .profileGarageCar .profileRusPlate .profilePlateRegion b{
+   font-size:clamp(26px,11.5vw,44px)!important;
+   letter-spacing:-1.8px!important;
+ }
+ .profileGarageCar .profileRusPlate .profileRusLine{
+   font-size:clamp(7px,3.2vw,11px)!important;
+   gap:3px!important;
+ }
+}
+
 </style>
+
+<div class="profileModal" id="profileModal">
+ <div class="profileCard">
+  <div class="profileTop">
+   <div class="profileAvatarBig" id="profileAvatarBig">И</div>
+   <div class="profileTopText"><h2 id="profileName">Игрок</h2><p id="profileMeta">Профиль игрока</p></div>
+   <button class="profileClose" id="profileClose">×</button>
+  </div>
+  <div id="profileOwnControls" style="display:none">
+   <div class="profileEdit"><input id="profileNameInput" maxlength="32" placeholder="Имя игрока"><button id="profileSaveName">Сохранить</button></div>
+   <div class="profileSection"><h3>🚘 Машины на показ <span id="profileCarsCount"></span></h3><div class="profilePicker" id="profileCarsPicker"></div></div>
+   <button class="profileAction" id="profileSaveShowcase" style="width:100%;margin-top:12px">Сохранить витрину</button>
+   <div class="profileNote">Можно выставить до 3 машин. В общий профиль сохраняются только выбранные автомобили.</div>
+  </div>
+  <div class="profileSection"><h3>🚘 Машины игрока</h3><div class="profileShowcase" id="profileCarsShowcase"></div></div>
+ </div>
+</div>
+
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head><body><div class="app">
-<div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div>
-<nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button></nav>
+<div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
+<nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -611,6 +1264,31 @@ button,.tab,.buy,.sell,.caseOpen{touch-action:manipulation}
 </div></div>
 <div class="settingsCard"><h3 style="margin-top:0">Экономика прокрута</h3><p style="color:var(--muted);font-size:13px;line-height:1.55">Прокрут стоит <b>3 000 ₽</b>. Обычный номер начинается от <b>100 ₽</b>, необычный — от <b>1 155 ₽</b>, редкий — от <b>66 120 ₽</b>, эпический — от <b>995 500 ₽</b>, легендарный — от <b>24 255 000 ₽</b>. Цена внутри редкости зависит от красоты комбинации букв, цифр и региона.</p></div></section>
 </div>
+
+<section class="page" id="chatPage">
+  <div class="chatShell">
+    <div class="chatTop">
+      <div class="chatTopIcon">💬</div>
+      <div class="chatTopText">
+        <h2>Общий чат</h2>
+        <div class="chatSubtitle">Общение игроков «Номера РФ»</div>
+      </div>
+      <div id="chatStatus" class="chatStatus"><span class="chatStatusDot"></span><span>Подключение</span></div>
+    </div>
+
+    <div id="chatMessages" class="chatMessages">
+      <div class="chatEmpty"><div class="chatEmptyIcon">💬</div><b>Загружаем сообщения</b><span>Подключаемся к общему чату…</span></div>
+    </div>
+
+    <div class="chatBottom">
+      <div class="chatComposer">
+        <input id="chatInput" maxlength="200" autocomplete="off" enterkeyhint="send" placeholder="Сообщение…">
+        <button id="chatSendBtn" type="button" aria-label="Отправить">➤</button>
+      </div>
+      <div class="chatHint"><span>Общий чат</span><span id="chatCounter">0/200</span></div>
+    </div>
+  </div>
+</section>
 <script>
 const L='АВЕКМНОРСТУХ',REG=['01','101','02','102','702','03','103','04','05','105','06','07','08','09','10','11','12','13','113','14','15','16','116','716','17','18','19','95','21','121','22','122','222','23','93','123','193','323','24','124','224','25','125','725','26','126','27','28','29','30','130','31','131','32','33','34','134','35','36','136','37','38','138','39','91','40','41','42','142','43','44','45','46','47','147','48','49','50','90','150','190','250','550','750','790','52','152','252','53','54','154','754','55','155','56','156','57','58','158','59','159','60','61','161','761','62','63','163','763','64','164','65','66','96','196','67','68','69','169','70','71','72','172','73','173','74','174','774','75','76','176','77','97','99','177','197','199','277','299','777','797','799','977','997','78','98','178','198','778','79','80','180','81','181','82','83','84','184','85','185','86','186','87','89','92','192','94','188'],COST=3000,REGION_FEE=25000,SPECIAL_REGION_FEE=50000;
 let bal=100000,inv=[],seq=0,rolls=0,spent=0,earned=0,filter='all',cars=[],carSeq=0,storageCap=50,garageCap=1,isRolling=false;
@@ -1685,6 +2363,243 @@ loadGame();
 setInterval(()=>saveGame(false),1200);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave()});
 window.addEventListener('pagehide',flushSave);
+
+
+/* ===== v0.0.40 Global Chat (Supabase) =====
+   Paste ONLY Project URL and publishable/anon key. NEVER paste service_role.
+*/
+const CHAT_SUPABASE_URL='https://fshzywzxnynzjgleduyq.supabase.co';
+const CHAT_SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaHp5d3p4bnluempnbGVkdXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDM5NDEsImV4cCI6MjEwNjMxOTk0MX0.Tpg8E8T3te17AS-A2hxm1Cq4XkUDHS_GEvmuKyVYddY';
+let chatDb=null,chatChannel=null,chatLastSend=0,chatLoaded=false;
+function chatConfigured(){return CHAT_SUPABASE_URL.startsWith('https://')&&!CHAT_SUPABASE_URL.includes('PASTE_')&&CHAT_SUPABASE_KEY&&!CHAT_SUPABASE_KEY.includes('PASTE_')}
+function chatEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function chatUser(){
+ const u=window.Telegram?.WebApp?.initDataUnsafe?.user;
+ let guestId='';
+ if(!u?.id){
+  try{
+   guestId=localStorage.getItem('nr-guest-id')||'';
+   if(!guestId){guestId='guest_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem('nr-guest-id',guestId)}
+  }catch(e){guestId='guest_local'}
+ }
+ const fallback=u?(u.first_name||u.username||'Игрок'):('Игрок '+guestId.slice(-5));
+ let savedName='';
+ try{
+  const p=JSON.parse(localStorage.getItem('nr-player-profile-v1')||'{}');
+  savedName=String(p.display_name||'').trim();
+ }catch(e){}
+ return {
+  telegram_id:String(u?.id||guestId),
+  username:String(u?.username||'').slice(0,32),
+  display_name:(savedName||fallback).slice(0,32)
+ };
+}
+function chatSetStatus(t){const e=$('chatStatus');if(e){const clean=String(t).replace(/[🟢🔴]/g,'').trim();e.innerHTML='<span class="chatStatusDot"></span><span>'+chatEsc(clean)+'</span>';e.style.color=String(t).includes('🟢')?'#36c878':String(t).includes('🔴')?'#ef6464':''}}
+function chatMessageHtml(m){
+ const me=chatUser(),mine=!!(me.telegram_id&&m.telegram_id&&String(me.telegram_id)===String(m.telegram_id));
+ const d=new Date(m.created_at),tm=isNaN(d)?'':d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ const name=String(m.display_name||'Игрок'),initial=(name.trim()[0]||'И').toUpperCase(),uname=m.username?' @'+chatEsc(m.username):'';
+ return `<div class="chatMsg${mine?' mine':''}" data-chat-id="${chatEsc(m.id)}"><button class="chatAvatar" type="button" data-profile-id="${chatEsc(m.telegram_id||('legacy_'+m.id))}" data-profile-name="${chatEsc(name)}" data-profile-username="${chatEsc(m.username||'')}">${chatEsc(initial)}</button><div class="chatBubble"><div class="chatMsgHead"><span class="chatName">${chatEsc(name)}${uname}</span><span class="chatTime">${chatEsc(tm)}</span></div><div class="chatText">${chatEsc(m.message)}</div></div></div>`;
+}
+function chatRender(rows){
+ const box=$('chatMessages');if(!box)return;
+ if(!rows||!rows.length){box.innerHTML='<div class="chatEmpty"><div class="chatEmptyIcon">👋</div><b>Здесь пока тихо</b><span>Отправь первое сообщение в общий чат</span></div>';return}
+ box.innerHTML=rows.map(chatMessageHtml).join('');
+ box.scrollTop=box.scrollHeight;
+}
+function chatAppend(m){
+ const box=$('chatMessages');if(!box||!m)return;
+ if(box.querySelector(`[data-chat-id="${CSS.escape(String(m.id))}"]`))return;
+ if(box.querySelector('.chatEmpty'))box.innerHTML='';
+ const wrap=document.createElement('div');wrap.innerHTML=chatMessageHtml(m);
+ box.appendChild(wrap.firstElementChild);
+ while(box.children.length>100)box.firstElementChild.remove();
+ box.scrollTop=box.scrollHeight;
+}
+async function initChat(){
+ if(chatLoaded)return;chatLoaded=true;
+ if(!chatConfigured()){chatSetStatus('Нужна настройка Supabase');const b=$('chatMessages');if(b)b.innerHTML='<div class="chatEmpty">Чат ещё не подключён. Вставь URL и Publishable Key Supabase в HTML.</div>';return}
+ if(!window.supabase){chatSetStatus('Ошибка библиотеки');return}
+ try{
+   chatDb=window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+   const {data,error}=await chatDb.from('chat_messages').select('id,telegram_id,username,display_name,message,created_at').order('created_at',{ascending:false}).limit(100);
+   if(error)throw error;
+   chatRender((data||[]).reverse());chatSetStatus('🟢 Онлайн');
+   chatChannel=chatDb.channel('numbers-rf-global-chat').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>chatAppend(p.new)).subscribe(status=>{
+     if(status==='SUBSCRIBED')chatSetStatus('🟢 Онлайн');
+     else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')chatSetStatus('🔴 Ошибка соединения');
+   });
+ }catch(e){console.warn('Chat init error',e);chatSetStatus('🔴 Ошибка');const b=$('chatMessages');if(b)b.innerHTML='<div class="chatEmpty">Не удалось подключиться к чату. Проверь URL, ключ, RLS и Realtime.</div>'}
+}
+async function sendChatMessage(){
+ const input=$('chatInput'),btn=$('chatSendBtn');if(!input||!chatDb)return;
+ const msg=input.value.trim().replace(/\s+/g,' ').slice(0,200);if(!msg)return;
+ const now=Date.now();if(now-chatLastSend<3000){alert('Подожди 3 секунды перед следующим сообщением.');return}
+ chatLastSend=now;btn.disabled=true;
+ try{
+   const u=chatUser();
+   const {error}=await chatDb.from('chat_messages').insert({telegram_id:u.telegram_id||null,username:u.username||null,display_name:u.display_name,message:msg});
+   if(error)throw error;input.value='';
+ }catch(e){console.warn('Chat send error',e);alert('Не удалось отправить сообщение. Проверь подключение к чату.')}
+ finally{setTimeout(()=>{btn.disabled=false},600)}
+}
+if($('chatSendBtn'))$('chatSendBtn').onclick=sendChatMessage;
+if($('chatInput'))$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChatMessage()}});
+if($('chatInput'))$('chatInput').addEventListener('input',e=>{const c=$('chatCounter');if(c)c.textContent=e.target.value.length+'/200'});
+
+/* ===== v0.0.42 Profiles =====
+ Supabase table expected: player_profiles(telegram_id text primary key, username text,
+ display_name text, showcase_cars jsonb, showcase_plates jsonb, updated_at timestamptz)
+*/
+const PROFILE_LOCAL_KEY='nr-player-profile-v1';
+let profileLocal={display_name:'',showcase_cars:[],showcase_plates:[]};
+function profileLoadLocal(){
+ try{profileLocal={...profileLocal,...JSON.parse(localStorage.getItem(PROFILE_LOCAL_KEY)||'{}')}}catch(e){}
+ const u=chatUser(); if(!profileLocal.display_name)profileLocal.display_name=u.display_name||'Игрок';
+}
+function profileSaveLocal(){try{localStorage.setItem(PROFILE_LOCAL_KEY,JSON.stringify(profileLocal))}catch(e){}}
+function profileMe(){
+ const u=chatUser();
+ return {...u,display_name:(profileLocal.display_name||u.display_name||'Игрок').slice(0,32)};
+}
+function profileInitial(n){return (String(n||'И').trim()[0]||'И').toUpperCase()}
+function profileRefreshHeader(){
+ const b=$('profileAvatarBtn');if(b)b.textContent=profileInitial(profileMe().display_name);
+}
+function profileCarLabel(c){return String(c?.model||c?.name||'Автомобиль')}
+function profilePlateLabel(p){return `${p?.n||p?.num||'Номер'} · ${p?.r||p?.reg||''}`}
+
+function profilePlateParts(p){
+ const raw=String(p?.n||p?.num||'').replace(/\s+/g,'').toUpperCase();
+ const region=String(p?.r||p?.reg||'').trim();
+ const m=raw.match(/^([АВЕКМНОРСТУХA-Z])(\d{3})([АВЕКМНОРСТУХA-Z]{2})$/);
+ if(m)return {left:m[1],digits:m[2],right:m[3],region};
+ return {raw:raw||'—',region};
+}
+
+function profileInstalledPlate(c){
+ if(!c)return null;
+ // Current garage cars normally use installed. Older saves/versions may use plate/number/customPlate.
+ const candidates=[c.installed,c.plate,c.number,c.customPlate,c.installedPlate,c.gosNumber];
+ for(const p of candidates){
+  if(p&&typeof p==='object'){
+   const name=String(p.n||p.num||p.number||p.plate||p.text||'').trim();
+   const region=String(p.r||p.reg||p.region||'').trim();
+   if(name)return {name,region,value:Number(p.v||p.value||0)};
+  }
+  if(typeof p==='string'&&p.trim())return {name:p.trim(),region:String(c.region||c.reg||''),value:0};
+ }
+ // Some old custom-car saves keep the installed plate fields directly on the car.
+ if(c.custom){
+  const name=String(c.n||c.num||c.plateNumber||'').trim();
+  const region=String(c.r||c.reg||c.region||'').trim();
+  if(name)return {name,region,value:Number(c.oldValue||0)};
+ }
+ return null;
+}
+function profileCarPublic(c){
+ const plate=profileInstalledPlate(c);
+ return {
+  name:profileCarLabel(c),
+  value:Number(carRubValue(c)||0),
+  baseValue:Number(carBaseValue(c)||0),
+  rarity:(carRarity(c)?.name||''),
+  rarityRank:(carRarity(c)?.rank||'normal'),
+  plate
+ };
+}
+function profilePlatePublic(p){return {name:String(p?.n||p?.num||'Номер'),region:String(p?.r||p?.reg||''),value:Number(p?.v||0),rarity:String(p?.rarity?.name||p?.rarity||'')}}
+function profileShowItems(target,items,type){
+ const el=$(target);if(!el)return;
+ if(!items?.length){el.innerHTML='<div class="profileEmpty">Ничего не выставлено</div>';return}
+ if(type==='car'){
+  el.classList.add('profileGarageShowcase');
+  el.innerHTML=items.map(x=>{
+   const rank=chatEsc(x.rarityRank||'normal');
+   const pp=x.plate&&x.plate.name?profilePlateParts({n:x.plate.name,r:x.plate.region}):null;
+   const plate=pp?(pp.digits
+    ?`<div class="profileGaragePlate profileRusPlate ${rank}"><div class="profilePlateMain"><strong>${chatEsc(pp.left+pp.digits+pp.right)}</strong></div><div class="profilePlateRegion"><b>${chatEsc(pp.region||'')}</b><div class="profileRusLine"><span>RUS</span><i></i></div></div></div>`
+    :`<div class="profileGaragePlate profileRusPlate"><div class="profilePlateMain"><strong>${chatEsc(pp.raw)}</strong></div><div class="profilePlateRegion"><b>${chatEsc(pp.region||'')}</b><div class="profileRusLine"><span>RUS</span><i></i></div></div></div>`)
+    :'<div class="profileGarageNoPlate">Без номера</div>';
+   return `<div class="profileGarageCar ${rank}">
+    <div class="profileGarageCarTop"><span class="profileGarageIcon">🚘</span><span class="profileGarageRarity">${chatEsc(x.rarity||'Обычная')}</span></div>
+    <b class="profileGarageName">${chatEsc(x.name)}</b>
+    ${plate}
+    <div class="profileGarageValue"><small>СТОИМОСТЬ</small><strong>${money(Number(x.value||0))}</strong></div>
+   </div>`;
+  }).join('');
+ }else{
+  el.classList.remove('profileGarageShowcase');
+  el.innerHTML=items.map(x=>`<div class="profileShowItem"><b>🔢 ${chatEsc(x.name)}${x.region?' · '+chatEsc(x.region):''}</b><span>${chatEsc(x.rarity||'')} · ${money(Number(x.value||0))}</span></div>`).join('');
+ }
+}
+function profileRenderPickers(){
+ const selectedCars=new Set((profileLocal.showcase_cars||[]).map(x=>String(x.id)));
+ const cp=$('profileCarsPicker');
+ cp.innerHTML=cars.length?cars.map(c=>`<div class="profilePick"><label><input type="checkbox" data-profile-car="${chatEsc(c.id)}" ${selectedCars.has(String(c.id))?'checked':''}><span>🚘 ${chatEsc(profileCarLabel(c))}</span></label><b>${money(carRubValue(c))}</b></div>`).join(''):'<div class="profileEmpty">В гараже пока нет машин</div>';
+ const limit=(sel,max)=>{document.querySelectorAll(sel).forEach(x=>x.onchange=()=>{const all=[...document.querySelectorAll(sel)],on=all.filter(y=>y.checked);if(on.length>max){x.checked=false;alert('Можно выбрать максимум '+max+'.')} profilePickerCounts()})};
+ limit('[data-profile-car]',3);profilePickerCounts();
+}
+function profilePickerCounts(){
+ const a=document.querySelectorAll('[data-profile-car]:checked').length;
+ if($('profileCarsCount'))$('profileCarsCount').textContent=`(${a}/3)`;
+}
+async function profileSync(){
+ if(!chatDb)return;
+ const me=profileMe();if(!me.telegram_id)return;
+ profileLocal.showcase_cars=(profileLocal.showcase_cars||[]).map(x=>{
+  const live=cars.find(c=>String(c.id)===String(x.id));
+  return live?{id:String(live.id),public:profileCarPublic(live)}:x;
+ });
+ profileSaveLocal();
+ const payload={telegram_id:me.telegram_id,username:me.username||null,display_name:me.display_name,showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),showcase_plates:[],updated_at:new Date().toISOString()};
+ const {error}=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
+ if(error)console.warn('Profile sync error',error);
+}
+async function openProfile(id='',fallbackName='',fallbackUsername=''){
+ profileLoadLocal();
+ const me=profileMe(),requestedId=String(id||''),own=!requestedId||String(requestedId)===String(me.telegram_id);
+ let data=null;
+ if(own){
+   const liveShowcase=(profileLocal.showcase_cars||[]).map(x=>{
+    const live=cars.find(c=>String(c.id)===String(x.id));
+    return live?profileCarPublic(live):x.public;
+   });
+   data={telegram_id:me.telegram_id,username:me.username,display_name:me.display_name,showcase_cars:liveShowcase,showcase_plates:[]};
+ }else if(chatDb&&requestedId){
+   try{const r=await chatDb.from('player_profiles').select('telegram_id,username,display_name,showcase_cars,showcase_plates').eq('telegram_id',requestedId).maybeSingle();if(!r.error)data=r.data}catch(e){}
+ }
+ data=data||{telegram_id:requestedId,username:fallbackUsername,display_name:fallbackName||'Игрок',showcase_cars:[],showcase_plates:[]};
+ $('profileName').textContent=data.display_name||fallbackName||'Игрок';
+ $('profileAvatarBig').textContent=profileInitial(data.display_name||fallbackName);
+ $('profileMeta').textContent=data.username?'@'+data.username:(own?'Твой профиль':'Профиль игрока');
+ $('profileOwnControls').style.display=own?'block':'none';
+ if(own){$('profileNameInput').value=me.display_name;profileRenderPickers()}
+ profileShowItems('profileCarsShowcase',data.showcase_cars||[],'car');
+  $('profileModal').classList.add('on');
+}
+function closeProfile(){$('profileModal')?.classList.remove('on')}
+profileLoadLocal();profileRefreshHeader();
+$('profileAvatarBtn').onclick=()=>openProfile();
+$('profileClose').onclick=closeProfile;
+$('profileModal').addEventListener('click',e=>{if(e.target===$('profileModal'))closeProfile()});
+document.addEventListener('click',e=>{
+ const a=e.target.closest?.('[data-profile-id]');if(!a)return;
+ openProfile(a.dataset.profileId||'',a.dataset.profileName||'Игрок',a.dataset.profileUsername||'');
+});
+$('profileSaveName').onclick=async()=>{
+ const v=$('profileNameInput').value.trim().replace(/\s+/g,' ').slice(0,32);if(!v)return;
+ profileLocal.display_name=v;profileSaveLocal();profileRefreshHeader();$('profileName').textContent=v;
+ await profileSync();chatSetStatus('Онлайн · '+v,true);alert('Имя сохранено. Новые сообщения будут отправляться с этим именем.');
+};
+$('profileSaveShowcase').onclick=async()=>{
+ const carIds=new Set([...document.querySelectorAll('[data-profile-car]:checked')].map(x=>String(x.dataset.profileCar)));
+ profileLocal.showcase_cars=cars.filter(c=>carIds.has(String(c.id))).slice(0,3).map(c=>({id:String(c.id),public:profileCarPublic(c)}));
+ profileSaveLocal();profileShowItems('profileCarsShowcase',profileLocal.showcase_cars.map(x=>x.public),'car');
+ await profileSync();alert('Витрина сохранена.');
+};
+
+initChat();
 </script>
 <script>
 (function(){
