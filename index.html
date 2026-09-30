@@ -3591,6 +3591,177 @@ img,svg,video,canvas{
  }
 }
 
+
+/* ===== v0.1.0 definitive mobile scrolling ===== */
+@media (max-width:620px){
+ html{
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+ }
+ body{
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  position:relative!important;
+ }
+
+ /* App owns the viewport; active pages own scrolling. */
+ .app{
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+
+ body:not(.mobileFirstPageLocked) .page.active{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  height:calc(100dvh - 70px - env(safe-area-inset-top))!important;
+  min-height:0!important;
+  max-height:calc(100dvh - 70px - env(safe-area-inset-top))!important;
+  overflow-x:hidden!important;
+  overflow-y:scroll!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:auto!important;
+  touch-action:pan-y!important;
+  scrollbar-width:none!important;
+  padding-bottom:calc(120px + env(safe-area-inset-bottom))!important;
+ }
+ body:not(.mobileFirstPageLocked) .page.active::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+ }
+
+ /* Main/first page deliberately stays fixed. */
+ body.mobileFirstPageLocked .page.active{
+  height:calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  min-height:0!important;
+  max-height:calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  overflow:hidden!important;
+  touch-action:none!important;
+ }
+
+ /* Never let cards/grids suppress vertical gestures. */
+ body:not(.mobileFirstPageLocked) .page.active .card,
+ body:not(.mobileFirstPageLocked) .page.active .panel,
+ body:not(.mobileFirstPageLocked) .page.active .grid,
+ body:not(.mobileFirstPageLocked) .page.active .garageGrid,
+ body:not(.mobileFirstPageLocked) .page.active #garageGrid,
+ body:not(.mobileFirstPageLocked) .page.active #storage{
+  touch-action:pan-y!important;
+ }
+}
+
+/* Android browsers without reliable dvh */
+@supports not (height:100dvh){
+ @media (max-width:620px){
+  body:not(.mobileFirstPageLocked) .page.active{
+   height:calc(var(--app-vh,100vh) - 70px)!important;
+   max-height:calc(var(--app-vh,100vh) - 70px)!important;
+  }
+ }
+}
+
+
+/* ===== v0.1.1 mobile storage plate fix ===== */
+@media (max-width:620px){
+ #storage .miniPlate.ccdPlate{
+  display:grid!important;
+  grid-template-columns:75.7% 24.3%!important;
+  width:min(100%,465px)!important;
+  max-width:100%!important;
+  height:auto!important;
+  aspect-ratio:465/94!important;
+  margin-inline:auto!important;
+  box-sizing:border-box!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  overflow:hidden!important;
+ }
+
+ #storage .miniPlate.ccdPlate .miniMain{
+  grid-column:1!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0 2.5%!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  transform:translateY(18%)!important;
+  font-size:clamp(39px,14.2vw,62px)!important;
+  line-height:.78!important;
+  letter-spacing:0!important;
+ }
+
+ #storage .miniPlate.ccdPlate .miniRegion{
+  grid-column:2!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+ }
+
+ #storage .miniPlate.ccdPlate .miniRegion b{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  padding-top:7%!important;
+  text-align:center!important;
+  font-size:clamp(17px,5.8vw,27px)!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+ }
+
+ #storage .plateLetter,
+ #storage .plateDigits{
+  flex:0 0 auto!important;
+  min-width:0!important;
+ }
+
+ #storage .plateLetter.first{
+  margin-right:2.5%!important;
+ }
+ #storage .plateLetter.last{
+  margin-left:2.5%!important;
+ }
+}
+
+/* Extra-small Telegram windows */
+@media (max-width:390px){
+ #storage .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(36px,13.7vw,53px)!important;
+  padding-left:2%!important;
+  padding-right:2%!important;
+ }
+ #storage .miniPlate.ccdPlate .miniRegion b{
+  font-size:clamp(15px,5.5vw,22px)!important;
+ }
+}
+@media (max-width:340px){
+ #storage .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(33px,13.2vw,45px)!important;
+ }
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -5398,6 +5569,33 @@ initChat();
  window.addEventListener('orientationchange',()=>setTimeout(syncViewportSize,120),{passive:true});
  if(window.visualViewport){
   window.visualViewport.addEventListener('resize',syncViewportSize,{passive:true});
+ }
+})();
+</script>
+
+
+<script>
+(function(){
+ function mobileScrollSync(){
+  if(window.innerWidth>620)return;
+  if(typeof syncFirstPageScrollLock==='function')syncFirstPageScrollLock();
+  const locked=document.body.classList.contains('mobileFirstPageLocked');
+  const active=document.querySelector('.page.active');
+  if(active&&!locked){
+   active.style.webkitOverflowScrolling='touch';
+  }
+ }
+ document.addEventListener('click',e=>{
+  if(e.target.closest?.('.tab')){
+   requestAnimationFrame(()=>requestAnimationFrame(mobileScrollSync));
+  }
+ },true);
+ window.addEventListener('load',mobileScrollSync);
+ window.addEventListener('pageshow',mobileScrollSync);
+ window.addEventListener('resize',mobileScrollSync,{passive:true});
+ window.addEventListener('orientationchange',()=>setTimeout(mobileScrollSync,150),{passive:true});
+ if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',mobileScrollSync,{passive:true});
  }
 })();
 </script>
