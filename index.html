@@ -4015,7 +4015,7 @@ function renderGarage(){
   let opts=inv.map(x=>`<option value="${x.id}">${x.p} ${x.r} — ${money(x.v)}</option>`).join('');
   let sale=Math.round(carRubValue(car)/100)*100;
   c.innerHTML=`<div class="carVisual">${carVisual(car)}</div><h3>${car.model}</h3>
-  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${car.model==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${hammerSerialText(car)?`Серийный номер: <b>${hammerSerialText(car)}</b>`:`Серийный номер: <b class="hammerSerialPending">${hammerSerialStatus()}</b><button class="hammerSerialRetry" type="button" onclick="migrateLegacyHammerSerials()">Повторить</button>`}</div>`:''}
+  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${hammerSerialLineHtml(car)}
   <div class="carMeta">${car.custom?'Установлен номер из хранилища':'Случайный номер при покупке'}</div>
   <div class="garagePlate">${plateHtml(car.plate,car.region,car.custom?(car.oldRank||'normal'):'normal')}</div>
   <select class="plateSelect"><option value="">Выбрать номер из хранилища</option>${opts}</select>
@@ -4280,6 +4280,15 @@ function hammerSerialText(car){
 function hammerSerialStatus(){
  const err=String(window.__hammerSerialError||'').trim();
  return err?`ошибка синхронизации`:`получение...`;
+}
+
+function hammerSerialLineHtml(car){
+ if(!car||car.model!=='Mercedes-Benz 300E Hammer AMG')return '';
+ const serial=hammerSerialText(car);
+ if(serial){
+  return '<div class="hammerSerialLine">Серийный номер: <b>'+serial+'</b></div>';
+ }
+ return '<div class="hammerSerialLine">Серийный номер: <b class="hammerSerialPending">'+hammerSerialStatus()+'</b><button class="hammerSerialRetry" type="button" onclick="migrateLegacyHammerSerials()">Повторить</button></div>';
 }
 function hammerFallbackWinner(pool){
  const safe=pool.filter(x=>x!==MYTHIC_HAMMER);
