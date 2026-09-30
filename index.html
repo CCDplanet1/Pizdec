@@ -4018,7 +4018,7 @@ function toggleCarLock(carId,ev){
  const car=cars.find(c=>String(c.id)===String(carId));
  if(!car)return false;
  car.locked=!car.locked;
- renderGarage();
+ renderGarage(); if(typeof renderUpgrader==='function')renderUpgrader();
  if(typeof update==='function')update();
  if(typeof scheduleGameSave==='function')scheduleGameSave();
  if(typeof scheduleCloudSave==='function')scheduleCloudSave();
@@ -4106,7 +4106,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelect
 
 let upgraderBusy=false;
 function upgradeSources(){
- const owned=cars.map(x=>({type:'car',id:x.id,name:x.model||x.name,value:carRubValue(x),obj:x}));
+ const owned=cars.filter(x=>!x.locked).map(x=>({type:'car',id:x.id,name:x.model||x.name,value:carRubValue(x),obj:x}));
  return owned;
 }
 function upgradeTargets(){
@@ -4115,7 +4115,9 @@ function upgradeTargets(){
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
  const key=$('upSource')?.value;if(!key)return null;
- return upgradeSources().find(x=>upKey(x)===key)||null;
+ const source=upgradeSources().find(x=>upKey(x)===key)||null;
+ if(source?.obj?.locked)return null;
+ return source;
 }
 function selectedUpgradeTarget(){
  const i=Number($('upTarget')?.value);return Number.isFinite(i)?upgradeTargets()[i]||null:null;
