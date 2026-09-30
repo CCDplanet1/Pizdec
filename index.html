@@ -3196,6 +3196,69 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  }
 }
 
+
+/* ===== v0.0.88 Car images ===== */
+.carImage{
+ display:block;
+ width:100%;
+ height:150px;
+ object-fit:contain;
+ object-position:center;
+ margin:2px auto 10px;
+ user-select:none;
+ -webkit-user-drag:none;
+}
+@media(max-width:620px){
+ .carImage{
+  height:130px;
+  max-width:100%;
+  margin:0 auto 8px;
+ }
+}
+
+
+/* ===== v0.0.89 Hammer image in garage/profile showcase ===== */
+.garageGrid .carImage,
+.garageCard .carImage,
+.profileShowcase .carImage,
+.profileExactGarageCard .carImage{
+ display:block;
+ width:100%;
+ max-width:320px;
+ height:150px;
+ object-fit:contain;
+ object-position:center;
+ margin:0 auto 10px;
+}
+@media(max-width:620px){
+ .garageGrid .carImage,
+ .garageCard .carImage,
+ .profileShowcase .carImage,
+ .profileExactGarageCard .carImage{
+  max-width:100%;
+  height:125px;
+  margin:0 auto 8px;
+ }
+}
+
+
+/* ===== v0.0.90 Global Hammer edition ===== */
+.limitedSerialBadge{
+ display:inline-flex;
+ align-items:center;
+ min-height:24px;
+ margin-left:7px;
+ padding:3px 8px;
+ border-radius:999px;
+ border:1px solid rgba(255,255,255,.16);
+ background:rgba(255,255,255,.07);
+ color:#fff;
+ font-size:11px;
+ font-weight:800;
+ letter-spacing:.45px;
+ vertical-align:middle;
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3530,7 +3593,7 @@ const CARS=[
 {name:'ЗАЗ 968',price:60000,currency:'₽',rub:60000,icon:'🚘'},
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
 ];
-const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic'};
+const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
 const UPGRADE_F40={name:'Ferrari F40',price:1500000000,currency:'₽',rub:1500000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH={name:'Lamborghini Countach',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
@@ -3903,8 +3966,8 @@ function renderGarage(){
   let c=document.createElement('div'),cr=carRarity(car);c.className='carCard '+carGlowClass(car);
   let opts=inv.map(x=>`<option value="${x.id}">${x.p} ${x.r} — ${money(x.v)}</option>`).join('');
   let sale=Math.round(carRubValue(car)/100)*100;
-  c.innerHTML=`<div class="carVisual">${car.icon}</div><h3>${car.model}</h3>
-  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>
+  c.innerHTML=`<div class="carVisual">${carVisual(car)}</div><h3>${car.model}</h3>
+  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span>${hammerSerialText(car)?`<span class="limitedSerialBadge">${hammerSerialText(car)}</span>`:""}</div>
   <div class="carMeta">${car.custom?'Установлен номер из хранилища':'Случайный номер при покупке'}</div>
   <div class="garagePlate">${plateHtml(car.plate,car.region,car.custom?(car.oldRank||'normal'):'normal')}</div>
   <select class="plateSelect"><option value="">Выбрать номер из хранилища</option>${opts}</select>
@@ -4084,6 +4147,13 @@ function carRubValue(m){
  return base+plate;
 }
 function carBaseValue(m){return Number(m.rub||m.price||0)}
+function carVisual(m,cls='carImage'){
+ if(!m)return `<div class="carIcon">🚘</div>`;
+ const hammerName='Mercedes-Benz 300E Hammer AMG';
+ const image=m.name===hammerName?'images/124.png':m.image;
+ if(image)return `<img class="${cls}" src="${image}" alt="${m.name||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
+ return `<div class="carIcon">🚘</div>`;
+}
 function carRarity(m){
  const v=carBaseValue(m);
  if(m.forcedRarity==='limited')return {rank:'limited',name:'Limited'};
@@ -4147,6 +4217,38 @@ function weightedCaseCar(pool){
  for(let i=0;i<base.length;i++){r-=weights[i];if(r<=0)return base[i]}
  return base[base.length-1];
 }
+
+function hammerSerialText(car){
+ const n=Number(car?.limitedSerial||0),max=Number(car?.limitedTotal||54);
+ return n>0?String(n).padStart(2,'0')+' of '+max:'';
+}
+function hammerFallbackWinner(pool){
+ const safe=pool.filter(x=>x!==MYTHIC_HAMMER);
+ return weightedCaseCar(safe);
+}
+async function claimHammerSerial(){
+ try{
+  if(!window.supabase)throw new Error('Supabase library unavailable');
+  const db=(typeof chatDb!=='undefined'&&chatDb)?chatDb:window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  const u=(typeof chatUser==='function')?chatUser():{telegram_id:'unknown'};
+  const {data,error}=await db.rpc('claim_hammer_serial',{p_telegram_id:String(u.telegram_id||'unknown')});
+  if(error)throw error;
+  const serial=Number(Array.isArray(data)?data[0]?.serial_no:data?.serial_no ?? data);
+  if(!Number.isFinite(serial)||serial<1||serial>54)return null;
+  return serial;
+ }catch(e){
+  console.warn('Hammer serial claim failed:',e);
+  return null;
+ }
+}
+async function resolveLimitedCaseWinner(winner,pool){
+ if(winner!==MYTHIC_HAMMER)return {winner,serial:null};
+ const serial=await claimHammerSerial();
+ if(serial)return {winner,serial};
+ // If all 54 are gone OR global DB is unavailable, never mint an untracked Hammer.
+ return {winner:hammerFallbackWinner(pool),serial:null};
+}
+
 function renderContainers(){
  const root=$('containerGrid');if(!root)return;
  root.innerHTML=CASE_DEFS.map(c=>{
@@ -4185,12 +4287,15 @@ async function openFiveContainers(id){
  caseRolling=true;bal-=totalCost;spent+=totalCost;update();renderContainers();
  try{
    const winners=[];
-   for(let i=0;i<5;i++)winners.push(weightedCaseCar(pool));
-   if(!fastCaseRoll)await animateCase(pool,winners[4]); else await sleep(180);
-   pendingCasePrizes=winners.map(w=>{
+   for(let i=0;i<5;i++){
+     const resolved=await resolveLimitedCaseWinner(weightedCaseCar(pool),pool);
+     winners.push(resolved);
+   }
+   if(!fastCaseRoll)await animateCase(pool,winners[4].winner); else await sleep(180);
+   pendingCasePrizes=winners.map(({winner:w,serial})=>{
      const rp=randomPlateForCar();
      return {
-       car:{id:++carSeq,model:w.model||w.name,price:w.price,currency:w.currency,rub:w.rub||w.price,icon:w.icon||'🚘',forcedRarity:w.forcedRarity||null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null},
+       car:{id:++carSeq,model:w.model||w.name,image:w.image||null,price:w.price,currency:w.currency,rub:w.rub||w.price,icon:w.icon||'🚘',forcedRarity:w.forcedRarity||null,limitedSerial:serial||null,limitedTotal:serial?54:null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null},
        value:carRubValue(w)
      };
    });
@@ -4199,7 +4304,7 @@ async function openFiveContainers(id){
    const result=$('caseResult');
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
    result.innerHTML=`<span style="color:var(--muted)">Открыто 5 × «${c.name}»</span>
-     ${pendingCasePrizes.map(x=>`<strong class="${carGlowClass(x.car)}" style="margin:7px 0;padding:6px;border-radius:8px">${x.car.model} · ${money(x.value)}</strong>`).join('')}
+     ${pendingCasePrizes.map(x=>`<strong class="${carGlowClass(x.car)}" style="margin:7px 0;padding:6px;border-radius:8px">${x.car.model}${hammerSerialText(x.car)?' · '+hammerSerialText(x.car):''} · ${money(x.value)}</strong>`).join('')}
      <small style="color:var(--muted)">Общая стоимость: ${money(totalValue)} · Свободно мест в гараже: ${free}</small>
      <div class="casePrizeActions">
        <button id="caseKeepAllBtn" class="caseKeep" onclick="keepAllCasePrizes()" ${free<5?'disabled':''}>${free<5?'Нужно 5 свободных мест':'Забрать все в гараж'}</button>
@@ -4234,11 +4339,14 @@ async function openContainer(id){
  if(!pool.length)return;
  caseRolling=true;bal-=price;spent+=price;update();renderContainers();
  try{
-   const winner=weightedCaseCar(pool);
+   let winner=weightedCaseCar(pool);
+   const limitedResolved=await resolveLimitedCaseWinner(winner,pool);
+   winner=limitedResolved.winner;
+   const hammerSerial=limitedResolved.serial;
    await animateCase(pool,winner);
    const rp=randomPlateForCar();
    pendingCasePrize={
-     car:{id:++carSeq,model:winner.model||winner.name,price:winner.price,currency:winner.currency,rub:winner.rub||winner.price,icon:winner.icon||'🚘',forcedRarity:winner.forcedRarity||null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null},
+     car:{id:++carSeq,model:winner.model||winner.name,image:winner.image||null,price:winner.price,currency:winner.currency,rub:winner.rub||winner.price,icon:winner.icon||'🚘',forcedRarity:winner.forcedRarity||null,limitedSerial:hammerSerial||null,limitedTotal:hammerSerial?54:null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null},
      caseName:c.name,
      casePrice:price,
      value:carRubValue(winner)
@@ -4246,7 +4354,7 @@ async function openContainer(id){
    const result=$('caseResult'),delta=pendingCasePrize.value-price;
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
    result.innerHTML=`<span style="color:var(--muted)">Выпало из «${c.name}»</span>
-     <strong>${pendingCasePrize.car.model}</strong>
+     <strong>${pendingCasePrize.car.model}${hammerSerialText(pendingCasePrize.car)?' · '+hammerSerialText(pendingCasePrize.car):''}</strong>
      <span>Стоимость в автосалоне: ${money(pendingCasePrize.value)}</span><br>
      <small style="color:var(--muted)">Контейнер: ${money(price)} · ${delta>=0?'выгода':'разница'}: ${delta>=0?'+':''}${money(delta)}</small>
      <div class="casePrizeActions">
@@ -4621,6 +4729,9 @@ function profileCarPublic(c){
   name:profileCarLabel(c),
   model:profileCarLabel(c),
   icon:String(c?.icon||'🚘'),
+  image:String(c?.image||(profileCarLabel(c)==='Mercedes-Benz 300E Hammer AMG'?'images/124.png':'')),
+  limitedSerial:Number(c?.limitedSerial||0)||null,
+  limitedTotal:Number(c?.limitedTotal||0)||null,
   value:Number(carRubValue(c)||0),
   baseValue:Number(carBaseValue(c)||0),
   rarity:(cr?.name||''),
@@ -4650,9 +4761,9 @@ function profileShowItems(target,items,type){
     plate='<div class="garagePlate profileExactGaragePlate">Без номера</div>';
    }
    return `<div class="carCard ${rank} profileExactGarageCard">
-    <div class="carVisual">${chatEsc(x.icon||'🚘')}</div>
+    <div class="carVisual">${x.image?`<img class="carImage" src="${chatEsc(x.image)}" alt="${chatEsc(x.model||x.name||'Автомобиль')}" draggable="false">`:chatEsc(x.icon||'🚘')}</div>
     <h3>${chatEsc(x.model||x.name||'Автомобиль')}</h3>
-    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>
+    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span>${Number(x.limitedSerial||0)>0?`<span class="limitedSerialBadge">${String(Number(x.limitedSerial)).padStart(2,'0')} of ${Number(x.limitedTotal||54)}</span>`:''}</div>
     <div class="carMeta">${x.custom?'Установлен номер из хранилища':'Номер автомобиля'}</div>
     ${plate}
     <div class="profileGaragePrice">Стоимость · ${money(Number(x.value||0))}</div>
