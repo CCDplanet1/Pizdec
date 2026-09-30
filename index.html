@@ -3259,6 +3259,41 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  vertical-align:middle;
 }
 
+
+/* ===== v0.0.91 Serial visibility ===== */
+.limitedSerialBadge{
+ display:inline-flex!important;
+ opacity:1!important;
+ visibility:visible!important;
+ color:#fff!important;
+ font-weight:900!important;
+}
+
+
+/* ===== v0.0.92 Explicit Hammer serial display ===== */
+.hammerSerialLine{
+ display:flex!important;
+ align-items:center!important;
+ gap:5px!important;
+ width:100%!important;
+ margin:2px 0 9px!important;
+ padding:8px 10px!important;
+ box-sizing:border-box!important;
+ border:1px solid rgba(255,255,255,.14)!important;
+ border-radius:10px!important;
+ background:rgba(255,255,255,.055)!important;
+ color:#fff!important;
+ font-size:12px!important;
+ font-weight:600!important;
+ line-height:1.2!important;
+}
+.hammerSerialLine b{
+ font-size:13px!important;
+ font-weight:900!important;
+ letter-spacing:.35px!important;
+}
+.hammerSerialPending{opacity:.65!important}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3545,7 +3580,7 @@ const CARS=[
 {name:'Porsche 718 Cayman',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
 {name:'Porsche 911 Carrera 4S',price:11600000,currency:'₽',rub:11600000,icon:'🚘'},
 {name:'Porsche 911 Dakar',price:280000,currency:'$',rub:25760000,icon:'🚘'},
-{name:'Porsche 911 GT3 RS',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true},
+{name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true},
 {name:'Porsche 918 Spyder',price:991000,currency:'€',rub:100091000,icon:'🚘'},
 {name:'Porsche 930',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
 {name:'Porsche Carrera GT',price:2000000,currency:'$',rub:184000000,icon:'🚘'},
@@ -3594,10 +3629,10 @@ const CARS=[
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
-const UPGRADE_F40={name:'Ferrari F40',price:1500000000,currency:'₽',rub:1500000000,icon:'🚘',forcedRarity:'mythic'};
+const UPGRADE_F40={name:'Ferrari F40',image:'images/f40.png',price:1500000000,currency:'₽',rub:1500000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH={name:'Lamborghini Countach',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
-const MYTHIC_F50={name:'Ferrari F50',price:1200000000,currency:'₽',rub:1200000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'f50'};
+const MYTHIC_F50={name:'Ferrari F50',image:'images/f50.png',price:1200000000,currency:'₽',rub:1200000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'f50'};
 const score={normal:1,uncommon:2,rare:3,epic:4,legendary:5,mythic:6},$=x=>document.getElementById(x),rnd=n=>Math.floor(Math.random()*n),money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
 
 function epicNumberValue(p,region){
@@ -3967,7 +4002,7 @@ function renderGarage(){
   let opts=inv.map(x=>`<option value="${x.id}">${x.p} ${x.r} — ${money(x.v)}</option>`).join('');
   let sale=Math.round(carRubValue(car)/100)*100;
   c.innerHTML=`<div class="carVisual">${carVisual(car)}</div><h3>${car.model}</h3>
-  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span>${hammerSerialText(car)?`<span class="limitedSerialBadge">${hammerSerialText(car)}</span>`:""}</div>
+  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${car.model==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${hammerSerialText(car)?`Серийный номер: <b>${hammerSerialText(car)}</b>`:'Серийный номер: <b class="hammerSerialPending">получение...</b>'}</div>`:''}
   <div class="carMeta">${car.custom?'Установлен номер из хранилища':'Случайный номер при покупке'}</div>
   <div class="garagePlate">${plateHtml(car.plate,car.region,car.custom?(car.oldRank||'normal'):'normal')}</div>
   <select class="plateSelect"><option value="">Выбрать номер из хранилища</option>${opts}</select>
@@ -4149,9 +4184,15 @@ function carRubValue(m){
 function carBaseValue(m){return Number(m.rub||m.price||0)}
 function carVisual(m,cls='carImage'){
  if(!m)return `<div class="carIcon">🚘</div>`;
- const hammerName='Mercedes-Benz 300E Hammer AMG';
- const image=m.name===hammerName?'images/124.png':m.image;
- if(image)return `<img class="${cls}" src="${image}" alt="${m.name||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
+ const carName=String(m.name||m.model||'');
+ const imageByName={
+  'Mercedes-Benz 300E Hammer AMG':'images/124.png',
+  'Ferrari F40':'images/f40.png',
+  'Ferrari F50':'images/f50.png',
+  'Porsche 911 GT3 RS':'images/gt3rs.png'
+ };
+ const image=imageByName[carName]||m.image;
+ if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
  return `<div class="carIcon">🚘</div>`;
 }
 function carRarity(m){
@@ -4233,8 +4274,15 @@ async function claimHammerSerial(){
   const u=(typeof chatUser==='function')?chatUser():{telegram_id:'unknown'};
   const {data,error}=await db.rpc('claim_hammer_serial',{p_telegram_id:String(u.telegram_id||'unknown')});
   if(error)throw error;
-  const serial=Number(Array.isArray(data)?data[0]?.serial_no:data?.serial_no ?? data);
-  if(!Number.isFinite(serial)||serial<1||serial>54)return null;
+  let raw=null;
+  if(Array.isArray(data))raw=data.length?data[0]?.serial_no:null;
+  else if(data&&typeof data==='object')raw=data.serial_no;
+  else raw=data;
+  const serial=Number(raw);
+  if(!Number.isFinite(serial)||serial<1||serial>54){
+   console.warn('Hammer serial RPC returned no available serial:',data);
+   return null;
+  }
   return serial;
  }catch(e){
   console.warn('Hammer serial claim failed:',e);
@@ -4247,6 +4295,34 @@ async function resolveLimitedCaseWinner(winner,pool){
  if(serial)return {winner,serial};
  // If all 54 are gone OR global DB is unavailable, never mint an untracked Hammer.
  return {winner:hammerFallbackWinner(pool),serial:null};
+}
+
+let hammerLegacyMigrationRunning=false;
+async function migrateLegacyHammerSerials(){
+ if(hammerLegacyMigrationRunning)return;
+ const legacy=(garage||[]).filter(c=>c&&c.model==='Mercedes-Benz 300E Hammer AMG'&&!Number(c.limitedSerial||0));
+ if(!legacy.length)return;
+ hammerLegacyMigrationRunning=true;
+ let changed=false;
+ try{
+  for(const car of legacy){
+   const serial=await claimHammerSerial();
+   if(!serial)break;
+   car.limitedSerial=serial;
+   car.limitedTotal=54;
+   car.image=car.image||'images/124.png';
+   changed=true;
+  }
+  if(changed){
+   renderGarage();
+   if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+   if(typeof syncPublicProfile==='function')syncPublicProfile();
+  }
+ }catch(e){
+  console.warn('Legacy Hammer serial migration failed:',e);
+ }finally{
+  hammerLegacyMigrationRunning=false;
+ }
 }
 
 function renderContainers(){
@@ -4729,7 +4805,12 @@ function profileCarPublic(c){
   name:profileCarLabel(c),
   model:profileCarLabel(c),
   icon:String(c?.icon||'🚘'),
-  image:String(c?.image||(profileCarLabel(c)==='Mercedes-Benz 300E Hammer AMG'?'images/124.png':'')),
+  image:String(c?.image||({
+   'Mercedes-Benz 300E Hammer AMG':'images/124.png',
+   'Ferrari F40':'images/f40.png',
+   'Ferrari F50':'images/f50.png',
+   'Porsche 911 GT3 RS':'images/gt3rs.png'
+  }[profileCarLabel(c)]||'')),
   limitedSerial:Number(c?.limitedSerial||0)||null,
   limitedTotal:Number(c?.limitedTotal||0)||null,
   value:Number(carRubValue(c)||0),
@@ -4763,7 +4844,7 @@ function profileShowItems(target,items,type){
    return `<div class="carCard ${rank} profileExactGarageCard">
     <div class="carVisual">${x.image?`<img class="carImage" src="${chatEsc(x.image)}" alt="${chatEsc(x.model||x.name||'Автомобиль')}" draggable="false">`:chatEsc(x.icon||'🚘')}</div>
     <h3>${chatEsc(x.model||x.name||'Автомобиль')}</h3>
-    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span>${Number(x.limitedSerial||0)>0?`<span class="limitedSerialBadge">${String(Number(x.limitedSerial)).padStart(2,'0')} of ${Number(x.limitedTotal||54)}</span>`:''}</div>
+    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>${(x.model||x.name)==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${Number(x.limitedSerial||0)>0?`Серийный номер: <b>${String(Number(x.limitedSerial)).padStart(2,'0')} of ${Number(x.limitedTotal||54)}</b>`:'Серийный номер: <b class="hammerSerialPending">ожидает синхронизации</b>'}</div>`:''}
     <div class="carMeta">${x.custom?'Установлен номер из хранилища':'Номер автомобиля'}</div>
     ${plate}
     <div class="profileGaragePrice">Стоимость · ${money(Number(x.value||0))}</div>
@@ -4885,6 +4966,53 @@ initChat();
  window.addEventListener('resize',syncFirstPageScrollLock);
  window.addEventListener('load',syncFirstPageScrollLock);
  requestAnimationFrame(syncFirstPageScrollLock);
+})();
+</script>
+
+
+<script>
+(function(){
+ function tryHammerMigration(){
+  if(typeof migrateLegacyHammerSerials==='function'){
+   migrateLegacyHammerSerials();
+  }
+ }
+ window.addEventListener('load',()=>setTimeout(tryHammerMigration,1200));
+ document.addEventListener('click',e=>{
+  const t=e.target.closest?.('.tab');
+  if(t)setTimeout(tryHammerMigration,80);
+ });
+})();
+</script>
+
+
+<script>
+(function(){
+ let attempts=0;
+ function legacyHammerNeedsSerial(){
+  try{return Array.isArray(garage)&&garage.some(c=>c&&c.model==='Mercedes-Benz 300E Hammer AMG'&&!Number(c.limitedSerial||0))}catch(_){return false}
+ }
+ function retryHammerSerial(){
+  if(typeof migrateLegacyHammerSerials!=='function')return;
+  if(!legacyHammerNeedsSerial())return;
+  migrateLegacyHammerSerials();
+  attempts++;
+ }
+ window.addEventListener('load',()=>{
+  setTimeout(retryHammerSerial,800);
+  setTimeout(retryHammerSerial,2200);
+  setTimeout(retryHammerSerial,5000);
+ });
+ document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden)setTimeout(retryHammerSerial,250);
+ });
+ document.addEventListener('click',e=>{
+  if(e.target.closest?.('.tab')||e.target.closest?.('.profileAvatarBtn'))setTimeout(retryHammerSerial,180);
+ });
+ const timer=setInterval(()=>{
+  if(attempts>=12||!legacyHammerNeedsSerial()){clearInterval(timer);return}
+  retryHammerSerial();
+ },4000);
 })();
 </script>
 
