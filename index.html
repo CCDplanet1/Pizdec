@@ -3294,6 +3294,19 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 .hammerSerialPending{opacity:.65!important}
 
+
+.hammerSerialRetry{
+ margin-left:auto!important;
+ border:1px solid rgba(255,255,255,.16)!important;
+ border-radius:8px!important;
+ padding:4px 7px!important;
+ background:rgba(255,255,255,.08)!important;
+ color:#fff!important;
+ font:inherit!important;
+ font-size:10px!important;
+ cursor:pointer!important;
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -4002,7 +4015,7 @@ function renderGarage(){
   let opts=inv.map(x=>`<option value="${x.id}">${x.p} ${x.r} — ${money(x.v)}</option>`).join('');
   let sale=Math.round(carRubValue(car)/100)*100;
   c.innerHTML=`<div class="carVisual">${carVisual(car)}</div><h3>${car.model}</h3>
-  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${car.model==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${hammerSerialText(car)?`Серийный номер: <b>${hammerSerialText(car)}</b>`:'Серийный номер: <b class="hammerSerialPending">получение...</b>'}</div>`:''}
+  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${car.model==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${hammerSerialText(car)?`Серийный номер: <b>${hammerSerialText(car)}</b>`:`Серийный номер: <b class="hammerSerialPending">${hammerSerialStatus()}</b><button class="hammerSerialRetry" type="button" onclick="migrateLegacyHammerSerials()">Повторить</button>`}</div>`:''}
   <div class="carMeta">${car.custom?'Установлен номер из хранилища':'Случайный номер при покупке'}</div>
   <div class="garagePlate">${plateHtml(car.plate,car.region,car.custom?(car.oldRank||'normal'):'normal')}</div>
   <select class="plateSelect"><option value="">Выбрать номер из хранилища</option>${opts}</select>
@@ -4263,29 +4276,61 @@ function hammerSerialText(car){
  const n=Number(car?.limitedSerial||0),max=Number(car?.limitedTotal||54);
  return n>0?String(n).padStart(2,'0')+' of '+max:'';
 }
+
+function hammerSerialStatus(){
+ const err=String(window.__hammerSerialError||'').trim();
+ return err?`ошибка синхронизации`:`получение...`;
+}
 function hammerFallbackWinner(pool){
  const safe=pool.filter(x=>x!==MYTHIC_HAMMER);
  return weightedCaseCar(safe);
 }
 async function claimHammerSerial(){
  try{
-  if(!window.supabase)throw new Error('Supabase library unavailable');
-  const db=(typeof chatDb!=='undefined'&&chatDb)?chatDb:window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-  const u=(typeof chatUser==='function')?chatUser():{telegram_id:'unknown'};
-  const {data,error}=await db.rpc('claim_hammer_serial',{p_telegram_id:String(u.telegram_id||'unknown')});
-  if(error)throw error;
+  if(!window.supabase||typeof window.supabase.createClient!=='function')
+   throw new Error('Supabase SDK не загружен');
+
+  let db=null;
+  if(typeof chatDb!=='undefined'&&chatDb&&typeof chatDb.rpc==='function')db=chatDb;
+  if(!db&&typeof supabaseClient!=='undefined'&&supabaseClient&&typeof supabaseClient.rpc==='function')db=supabaseClient;
+  if(!db){
+   if(typeof CHAT_SUPABASE_URL==='undefined'||typeof CHAT_SUPABASE_KEY==='undefined')
+    throw new Error('Нет настроек Supabase');
+   db=window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{
+    auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+   });
+  }
+
+  let telegramId='unknown';
+  try{
+   const u=(typeof chatUser==='function')?chatUser():null;
+   telegramId=String(u?.telegram_id||u?.id||'unknown');
+  }catch(_){}
+  if(telegramId==='unknown'){
+   try{
+    const tg=window.Telegram?.WebApp?.initDataUnsafe?.user;
+    if(tg?.id)telegramId=String(tg.id);
+   }catch(_){}
+  }
+
+  const {data,error}=await db.rpc('claim_hammer_serial',{p_telegram_id:telegramId});
+  if(error)throw new Error(error.message||String(error));
+
   let raw=null;
   if(Array.isArray(data))raw=data.length?data[0]?.serial_no:null;
   else if(data&&typeof data==='object')raw=data.serial_no;
   else raw=data;
+
   const serial=Number(raw);
   if(!Number.isFinite(serial)||serial<1||serial>54){
-   console.warn('Hammer serial RPC returned no available serial:',data);
+   window.__hammerSerialError='Все 54 экземпляра уже выданы или RPC вернул пустой ответ';
    return null;
   }
+  window.__hammerSerialError='';
   return serial;
  }catch(e){
-  console.warn('Hammer serial claim failed:',e);
+  window.__hammerSerialError=String(e?.message||e||'Ошибка Supabase');
+  console.error('Hammer serial claim failed:',e);
   return null;
  }
 }
@@ -4322,6 +4367,7 @@ async function migrateLegacyHammerSerials(){
   console.warn('Legacy Hammer serial migration failed:',e);
  }finally{
   hammerLegacyMigrationRunning=false;
+  try{renderGarage()}catch(_){}
  }
 }
 
@@ -4844,7 +4890,7 @@ function profileShowItems(target,items,type){
    return `<div class="carCard ${rank} profileExactGarageCard">
     <div class="carVisual">${x.image?`<img class="carImage" src="${chatEsc(x.image)}" alt="${chatEsc(x.model||x.name||'Автомобиль')}" draggable="false">`:chatEsc(x.icon||'🚘')}</div>
     <h3>${chatEsc(x.model||x.name||'Автомобиль')}</h3>
-    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>${(x.model||x.name)==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${Number(x.limitedSerial||0)>0?`Серийный номер: <b>${String(Number(x.limitedSerial)).padStart(2,'0')} of ${Number(x.limitedTotal||54)}</b>`:'Серийный номер: <b class="hammerSerialPending">ожидает синхронизации</b>'}</div>`:''}
+    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>${(x.model||x.name)==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${Number(x.limitedSerial||0)>0?`Серийный номер: <b>${String(Number(x.limitedSerial)).padStart(2,'0')} of ${Number(x.limitedTotal||54)}</b>`:'Серийный номер: <b class="hammerSerialPending">${hammerSerialStatus()}</b>'}</div>`:''}
     <div class="carMeta">${x.custom?'Установлен номер из хранилища':'Номер автомобиля'}</div>
     ${plate}
     <div class="profileGaragePrice">Стоимость · ${money(Number(x.value||0))}</div>
