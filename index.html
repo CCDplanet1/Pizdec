@@ -4356,7 +4356,7 @@ async function resolveLimitedCaseWinner(winner,pool){
 let hammerLegacyMigrationRunning=false;
 async function migrateLegacyHammerSerials(){
  if(hammerLegacyMigrationRunning)return;
- const legacy=(garage||[]).filter(c=>c&&c.model==='Mercedes-Benz 300E Hammer AMG'&&!Number(c.limitedSerial||0));
+ const legacy=(Array.isArray(cars)?cars:[]).filter(c=>c&&c.model==='Mercedes-Benz 300E Hammer AMG'&&!Number(c.limitedSerial||0));
  if(!legacy.length)return;
  hammerLegacyMigrationRunning=true;
  let changed=false;
@@ -4568,7 +4568,7 @@ function promoMessage(text,ok=false){
  const el=$('promoCodeResult');if(!el)return;
  el.textContent=text;el.className='promoResult '+(ok?'ok':'bad');
 }
-function redeemPromoCode(){
+async function redeemPromoCode(){
  const input=$('promoCodeInput');if(!input)return;
  const code=String(input.value||'').trim().toUpperCase();
   if(String(code||'').trim().toLowerCase()==='cheat'){
@@ -4580,6 +4580,59 @@ function redeemPromoCode(){
   }
 
  if(!code){promoMessage('Введите промокод.');return}
+
+ if(code==='INDEX124'){
+  if(redeemedPromoCodes.has(code)){
+   promoMessage('Этот промокод уже был активирован.');
+   return;
+  }
+  if(cars.length>=garageCap){
+   promoMessage('В гараже нет свободного места. Освободи или купи слот и попробуй снова.');
+   return;
+  }
+
+  promoMessage('Получаем серийный номер Hammer...');
+  const serial=await claimHammerSerial();
+  if(!serial){
+   const reason=String(window.__hammerSerialError||'Не удалось получить серийный номер.');
+   promoMessage('Hammer не выдан: '+reason);
+   return;
+  }
+
+  const rp=randomPlateForCar();
+  cars.push({
+   id:++carSeq,
+   model:'Mercedes-Benz 300E Hammer AMG',
+   image:'images/124.png',
+   icon:'🚘',
+   price:3000000000,
+   currency:'₽',
+   rub:3000000000,
+   forcedRarity:'mythic',
+   globalLimited:true,
+   globalLimit:54,
+   limitedSerial:serial,
+   limitedTotal:54,
+   plate:rp.p,
+   region:rp.r,
+   custom:false,
+   promoCode:'index124'
+  });
+
+  redeemedPromoCodes.add(code);
+  input.value='';
+  promoMessage('Промокод активирован! Mercedes-Benz 300E Hammer AMG · '+String(serial).padStart(2,'0')+' of 54 добавлен в гараж.',true);
+  update();
+  renderDealer();
+  renderGarage();
+  renderUpgrader();
+  renderContainers();
+  if(typeof scheduleGameSave==='function')scheduleGameSave();
+  if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+  if(typeof syncPublicProfile==='function')syncPublicProfile();
+  return;
+ }
+
  if(code!=='911'){promoMessage('Промокод не найден.');return}
  if(redeemedPromoCodes.has(code)){promoMessage('Этот промокод уже был активирован.');return}
  if(cars.length>=garageCap){promoMessage('В гараже нет свободного места. Освободи или купи слот и попробуй снова.');return}
@@ -4890,6 +4943,14 @@ function profileCarPublic(c){
  };
 }
 function profilePlatePublic(p){return {name:String(p?.n||p?.num||'Номер'),region:String(p?.r||p?.reg||''),value:Number(p?.v||0),rarity:String(p?.rarity?.name||p?.rarity||'')}}
+function profileHammerSerialHtml(x){
+ if(!x||(x.model||x.name)!=='Mercedes-Benz 300E Hammer AMG')return '';
+ const n=Number(x.limitedSerial||0);
+ if(n>0){
+  return '<div class="hammerSerialLine">Серийный номер: <b>'+String(n).padStart(2,'0')+' of '+Number(x.limitedTotal||54)+'</b></div>';
+ }
+ return '<div class="hammerSerialLine">Серийный номер: <b class="hammerSerialPending">'+hammerSerialStatus()+'</b></div>';
+}
 function profileShowItems(target,items,type){
  const el=$(target);if(!el)return;
  if(!items?.length){el.innerHTML='<div class="profileEmpty">Ничего не выставлено</div>';return}
@@ -4909,7 +4970,7 @@ function profileShowItems(target,items,type){
    return `<div class="carCard ${rank} profileExactGarageCard">
     <div class="carVisual">${x.image?`<img class="carImage" src="${chatEsc(x.image)}" alt="${chatEsc(x.model||x.name||'Автомобиль')}" draggable="false">`:chatEsc(x.icon||'🚘')}</div>
     <h3>${chatEsc(x.model||x.name||'Автомобиль')}</h3>
-    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>${(x.model||x.name)==='Mercedes-Benz 300E Hammer AMG'?`<div class="hammerSerialLine">${Number(x.limitedSerial||0)>0?`Серийный номер: <b>${String(Number(x.limitedSerial)).padStart(2,'0')} of ${Number(x.limitedTotal||54)}</b>`:'Серийный номер: <b class="hammerSerialPending">${hammerSerialStatus()}</b>'}</div>`:''}
+    <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>${profileHammerSerialHtml(x)}
     <div class="carMeta">${x.custom?'Установлен номер из хранилища':'Номер автомобиля'}</div>
     ${plate}
     <div class="profileGaragePrice">Стоимость · ${money(Number(x.value||0))}</div>
@@ -5055,7 +5116,7 @@ initChat();
 (function(){
  let attempts=0;
  function legacyHammerNeedsSerial(){
-  try{return Array.isArray(garage)&&garage.some(c=>c&&c.model==='Mercedes-Benz 300E Hammer AMG'&&!Number(c.limitedSerial||0))}catch(_){return false}
+  try{return Array.isArray(cars)&&cars.some(c=>c&&c.model==='Mercedes-Benz 300E Hammer AMG'&&!Number(c.limitedSerial||0))}catch(_){return false}
  }
  function retryHammerSerial(){
   if(typeof migrateLegacyHammerSerials!=='function')return;
