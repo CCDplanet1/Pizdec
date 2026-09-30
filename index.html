@@ -4011,7 +4011,7 @@ function renderDealer(){
   if(q&&!m.name.toLowerCase().includes(q))return;
   let c=document.createElement('div');c.className='carCard';
   let converted=m.currency==='₽'?'':`<div class="carMeta">≈ ${money(carCost(m))} для покупки</div>`;
-  c.innerHTML=`<div class="carVisual">${m.icon}</div><h3>${m.name}</h3><div class="carMeta">CCDPlanet · ${ownedCount(m.name)}/3 в гараже</div><div class="carPrice">${carPriceText(m)}</div>${converted}<button class="buy" data-buy="${i}">Купить</button>`;
+  c.innerHTML=`<div class="carVisual">${carVisual(m)}</div><h3>${m.name}</h3><div class="carMeta">CCDPlanet · ${ownedCount(m.name)}/3 в гараже</div><div class="carPrice">${carPriceText(m)}</div>${converted}<button class="buy" data-buy="${i}">Купить</button>`;
   c.querySelector('.buy').onclick=()=>buyCar(i);box.appendChild(c)
  });renderDealerButtons()
 }
@@ -5046,7 +5046,7 @@ function profileShowItems(target,items,type){
     plate='<div class="garagePlate profileExactGaragePlate">Без номера</div>';
    }
    return `<div class="carCard ${rank} profileExactGarageCard">
-    <div class="carVisual">${x.image?`<img class="carImage" src="${chatEsc(x.image)}" alt="${chatEsc(x.model||x.name||'Автомобиль')}" draggable="false">`:chatEsc(x.icon||'🚘')}</div>
+    <div class="carVisual">${carVisual({name:x.model||x.name,image:x.image,icon:x.icon},'carImage')}</div>
     <h3>${chatEsc(x.model||x.name||'Автомобиль')}</h3>
     <div style="margin:6px 0 8px"><span class="pill ${rank}">${chatEsc(x.rarity||'Обычная')}</span></div>${profileHammerSerialHtml(x)}
     <div class="carMeta">${x.custom?'Установлен номер из хранилища':'Номер автомобиля'}</div>
