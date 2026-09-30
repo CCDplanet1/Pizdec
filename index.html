@@ -3724,7 +3724,7 @@ function legendaryNumberValue(p,region){
 function evaluate(d,a,b,c,r,chosenRegion=''){
  // Шансы: легендарный 0,05%; мифический 0,1% при ручном 77/97,
  // 0% при другом ручном регионе, 0,01% при случайном регионе.
- const mythicChance=chosenRegion?(['77','97'].includes(chosenRegion)?.001:0):.0001;
+ const mythicChance=chosenRegion?(['77','97','99','78','98','777'].includes(String(chosenRegion))?.001:0):.0001;
  const legendaryChance=.0005,epicChance=.0025;
  const baseChance=1-mythicChance-legendaryChance-epicChance;
  const wN=53.9369,wU=38.0507,wR=7.7524,wSum=wN+wU+wR;
@@ -3796,7 +3796,61 @@ async function majesticRollAnimation(){
  }
 }
 
-function plateInStorage(p,r){return inv.some(x=>x.p===p&&x.r===r)}
+function generateMythicPlate(chosenRegion){
+ const requested=String(chosenRegion||'');
+ const allowed=['77','97','99','777','78','98'];
+ let region=allowed.includes(requested)?requested:allowed[rnd(allowed.length)];
+ let plateText,desc;
+
+ if(region==='97'){
+  if(Math.random()<.5){
+   let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}
+   plateText='А'+md+'МР';desc='Мифический · АМР97';
+  }else{
+   const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;desc='Мифический · 777 97';
+  }
+ }else if(region==='78'||region==='98'){
+  const FL=L[rnd(L.length)];
+  // На 78/98 мифические фулл-блаты теперь именно с 777.
+  plateText=FL+'777'+FL+FL;
+  desc='Мифический · фулл-блат 777 '+region;
+ }else{
+  const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;desc='Мифический · 777 '+region;
+ }
+ return {plateText,r:region,desc};
+}
+function mythicNumberValue(plateText,region){
+ const p=String(plateText||'').toUpperCase();
+ const reg=String(region||'');
+ const letters=p.replace(/\d/g,'').slice(0,3);
+ const digits=(p.match(/\d{3}/)||['000'])[0];
+
+ // 777 78/98: ААА, ООО и ХХХ = 80 млн; остальные одинаковые буквы дешевле.
+ if((reg==='78'||reg==='98')&&digits==='777'&&letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2]){
+  if(['ААА','ООО','ХХХ'].includes(letters))return 80000000;
+  const base77=Math.max(35000000,Math.min(75000000,legendaryNumberValue(p,'77')*5));
+  return Math.round(base77/100)*100;
+ }
+
+ // 777 97 = стоимость такого же номера на 77 регионе -15%.
+ if(reg==='97'&&digits==='777'){
+  const value77=Math.max(50000000,legendaryNumberValue(p,'77')*5);
+  return Math.round((value77*.85)/100)*100;
+ }
+
+ // 777 99 = стоимость такого же номера на 77 регионе -20%.
+ if(reg==='99'&&digits==='777'){
+  const value77=Math.max(50000000,legendaryNumberValue(p,'77')*5);
+  return Math.round((value77*.80)/100)*100;
+ }
+
+ return Math.max(50000000,legendaryNumberValue(p,reg)*5);
+}
+function plateInStorage(p,r){
+ const key=plateFontText(p);
+ const region=String(r||'');
+ return inv.some(x=>plateFontText(x.p)===key&&String(x.r||'')===region);
+}
 let mobileRollQueue=0;
 async function roll(){
  if(isRolling){
@@ -3813,7 +3867,7 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
  bal-=COST;spent+=COST;rolls++;
  let a=L[rnd(L.length)],b=L[rnd(L.length)],c=L[rnd(L.length)];
  let d=String(1+rnd(999)).padStart(3,'0');
- let chosen=$('regionChoice').value,r=chosen||REG[rnd(REG.length)],fee=chosen?(['77','97'].includes(chosen)?SPECIAL_REGION_FEE:REGION_FEE):0;
+ let chosen=$('regionChoice').value,r=chosen||REG[rnd(REG.length)],fee=chosen?(['77','97','99','78','98','777'].includes(String(chosen))?SPECIAL_REGION_FEE:REGION_FEE):0;
  if(bal<fee){$('msg').textContent='Не хватает денег на выбор региона';bal+=COST;spent-=COST;rolls--;isRolling=false;update();return}
  bal-=fee;spent+=fee;
 
@@ -3854,29 +3908,18 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
    e.v=legendaryNumberValue(plateText,r);
  }
  if(e.rank==='mythic'){
-   if(chosen==='77'){
-     const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;r='77';e.desc='Мифический · 777 77';
-   }else if(chosen==='97'){
-     let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}
-     plateText='А'+md+'МР';r='97';e.desc='Мифический · АМР97';
-   }else{
-     // При случайном регионе мифический всегда получает допустимый регион 77 или 97.
-     if(Math.random()<.5){const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;r='77';e.desc='Мифический · 777 77'}
-     else{let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}plateText='А'+md+'МР';r='97';e.desc='Мифический · АМР97'}
-   }
-   e.v=Math.max(50000000,legendaryNumberValue(plateText,r)*5);
- }
- // Номер + регион, уже лежащие в хранилище, повторно выпасть не могут.
+ const mythic=generateMythicPlate(chosen);
+ plateText=mythic.plateText;r=mythic.r;e.desc=mythic.desc;
+ e.v=mythicNumberValue(plateText,r);
+} // Полный номер (буквы/цифры + регион), уже лежащий в хранилище, повторно выпасть не может.
  // Для редких фиксированных комбинаций меняем буквы/регион, пока найдём свободную.
  let duplicateTries=0;
  while(plateInStorage(plateText,r)&&duplicateTries++<2000){
    if(e.rank==='mythic'){
-     if(chosen==='77'){const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;r='77';e.desc='Мифический · 777 77'}
-     else if(chosen==='97'){let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}plateText='А'+md+'МР';r='97';e.desc='Мифический · АМР97'}
-     else if(Math.random()<.5){const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;r='77';e.desc='Мифический · 777 77'}
-     else{let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}plateText='А'+md+'МР';r='97';e.desc='Мифический · АМР97'}
-     e.v=Math.max(50000000,legendaryNumberValue(plateText,r)*5);
-   }else if(e.rank==='legendary'){
+ const mythic=generateMythicPlate(chosen);
+ plateText=mythic.plateText;r=mythic.r;e.desc=mythic.desc;
+ e.v=mythicNumberValue(plateText,r);
+}else if(e.rank==='legendary'){
      const lt=rnd(4);
      if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001';if(!chosen)r=REG[rnd(REG.length)]}
      else if(lt===1){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls;if(!chosen)r=REG[rnd(REG.length)]}
