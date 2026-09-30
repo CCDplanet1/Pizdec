@@ -3307,6 +3307,82 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  cursor:pointer!important;
 }
 
+
+/* ===== v0.0.98 Android Telegram WebView scrolling fix ===== */
+@media(max-width:620px){
+ html,body{
+  width:100%!important;
+  min-height:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-x:none!important;
+ }
+ body{
+  position:relative!important;
+  touch-action:pan-y!important;
+ }
+ .app{
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow:visible!important;
+ }
+ .page.active{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  touch-action:pan-y!important;
+ }
+
+ /* Only the first/main page stays fixed as requested earlier. */
+ body.mobileFirstPageLocked{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  touch-action:none!important;
+ }
+ body.mobileFirstPageLocked .app{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+ }
+ body.mobileFirstPageLocked .page.active{
+  height:calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  touch-action:none!important;
+ }
+
+ /* All other tabs scroll normally inside Telegram Android. */
+ body:not(.mobileFirstPageLocked){
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+ }
+ body:not(.mobileFirstPageLocked) .app{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+ }
+ body:not(.mobileFirstPageLocked) .page.active{
+  height:calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  max-height:calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:contain!important;
+  touch-action:pan-y!important;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom))!important;
+ }
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -5078,6 +5154,24 @@ initChat();
   if(attempts>=12||!legacyHammerNeedsSerial()){clearInterval(timer);return}
   retryHammerSerial();
  },4000);
+})();
+</script>
+
+
+<script>
+(function(){
+ function resyncMobilePageScroll(){
+  if(typeof syncFirstPageScrollLock==='function')syncFirstPageScrollLock();
+  if(window.innerWidth<=620 && !document.body.classList.contains('mobileFirstPageLocked')){
+   const active=document.querySelector('.page.active');
+   if(active)active.scrollTop=0;
+  }
+ }
+ document.addEventListener('click',e=>{
+  if(e.target.closest?.('.tab'))requestAnimationFrame(()=>requestAnimationFrame(resyncMobilePageScroll));
+ });
+ window.addEventListener('pageshow',resyncMobilePageScroll);
+ window.addEventListener('orientationchange',()=>setTimeout(resyncMobilePageScroll,180));
 })();
 </script>
 
