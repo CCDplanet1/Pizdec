@@ -2295,6 +2295,907 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  .chatShell{height:calc(100dvh - 145px)!important;min-height:380px!important}
 }
 
+
+/* ===== v0.0.83 PHONE UI REDESIGN ===== */
+@media(max-width:620px){
+ :root{
+  --m-bg:#080a0f;
+  --m-surface:#11141b;
+  --m-surface2:#171b24;
+  --m-border:rgba(255,255,255,.08);
+  --m-text:#f7f8fb;
+  --m-muted:#8f97a8;
+ }
+ html,body{width:100%;min-height:100%;overflow-x:hidden}
+ body{
+  background:
+   radial-gradient(circle at 50% -10%,rgba(255,255,255,.07),transparent 32%),
+   var(--m-bg)!important;
+  color:var(--m-text)!important;
+  padding:0 0 calc(84px + env(safe-area-inset-bottom))!important;
+ }
+ .app{
+  width:100%!important;
+  max-width:none!important;
+  padding:0 12px!important;
+  box-sizing:border-box!important;
+ }
+
+ /* App-style header */
+ .head{
+  position:sticky!important;
+  top:0!important;
+  z-index:70!important;
+  height:64px!important;
+  min-height:64px!important;
+  padding:calc(8px + env(safe-area-inset-top)) 2px 8px!important;
+  margin:0 -2px 8px!important;
+  background:rgba(8,10,15,.88)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  border-bottom:1px solid var(--m-border)!important;
+ }
+ .brand{min-width:0!important}
+ .brand b{
+  font-size:18px!important;
+  letter-spacing:-.45px!important;
+  line-height:1!important;
+ }
+ .brand small{display:none!important}
+ .walletProfile{margin-left:auto!important;gap:7px!important}
+ .wallet{
+  min-height:38px!important;
+  padding:6px 10px!important;
+  border:1px solid var(--m-border)!important;
+  border-radius:12px!important;
+  background:var(--m-surface)!important;
+  box-shadow:none!important;
+ }
+ .wallet small{font-size:8px!important;color:var(--m-muted)!important}
+ .wallet strong{font-size:13px!important}
+ .profileAvatarBtn{
+  width:40px!important;height:40px!important;min-width:40px!important;
+  border-radius:12px!important;
+  border:1px solid var(--m-border)!important;
+  background:var(--m-surface2)!important;
+  box-shadow:none!important;
+ }
+
+ /* Bottom app navigation */
+ .tabs{
+  position:fixed!important;
+  z-index:100!important;
+  left:8px!important;
+  right:8px!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  height:62px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  padding:5px!important;
+  margin:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  background:rgba(17,20,27,.94)!important;
+  backdrop-filter:blur(20px)!important;
+  -webkit-backdrop-filter:blur(20px)!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:20px!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.45)!important;
+  scrollbar-width:none!important;
+ }
+ .tabs::-webkit-scrollbar{display:none!important}
+ .tab{
+  flex:1 0 58px!important;
+  height:50px!important;
+  min-height:50px!important;
+  min-width:58px!important;
+  padding:7px 6px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:15px!important;
+  background:transparent!important;
+  color:#8d95a5!important;
+  font-size:10px!important;
+  line-height:1.05!important;
+  white-space:normal!important;
+  text-align:center!important;
+  box-shadow:none!important;
+ }
+ .tab.active{
+  color:#fff!important;
+  background:rgba(255,255,255,.10)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)!important;
+ }
+
+ .page{
+  width:100%!important;
+  padding:4px 0 16px!important;
+  animation:none!important;
+ }
+ h1{
+  margin:10px 2px 14px!important;
+  font-size:24px!important;
+  line-height:1.08!important;
+  letter-spacing:-.7px!important;
+ }
+ h2,.statsTitle{
+  font-size:19px!important;
+  letter-spacing:-.35px!important;
+ }
+
+ /* Main roll becomes a focused mobile hero */
+ .roll{
+  width:100%!important;
+  padding:18px 12px 16px!important;
+  border:1px solid var(--m-border)!important;
+  border-radius:24px!important;
+  background:linear-gradient(180deg,#141821,#0e1117)!important;
+  box-shadow:0 16px 36px rgba(0,0,0,.28)!important;
+ }
+ .roll .sub{font-size:11px!important;color:var(--m-muted)!important}
+ .plateButton{
+  display:block!important;
+  width:100%!important;
+  margin:18px auto 14px!important;
+  padding:0!important;
+  background:none!important;
+  border:0!important;
+  transform:none!important;
+ }
+ .plate.ccdPlate{
+  width:min(100%,520px)!important;
+  margin:auto!important;
+  filter:none!important;
+ }
+ .info{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  margin-top:12px!important;
+ }
+ .info>div{
+  min-width:0!important;
+  padding:11px 10px!important;
+  border:1px solid var(--m-border)!important;
+  border-radius:14px!important;
+  background:var(--m-surface)!important;
+ }
+ .price{font-size:20px!important}
+ #regionChoice{
+  min-height:46px!important;
+  border-radius:14px!important;
+  background:var(--m-surface2)!important;
+ }
+
+ /* Mobile section toolbar */
+ .storeHead{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  margin-bottom:10px!important;
+ }
+ .storeHead h2,.storeHead h1{margin-bottom:0!important}
+ .tools{
+  display:flex!important;
+  width:calc(100% + 12px)!important;
+  margin-right:-12px!important;
+  gap:7px!important;
+  overflow-x:auto!important;
+  padding:2px 12px 7px 0!important;
+  scrollbar-width:none!important;
+ }
+ .tools::-webkit-scrollbar{display:none!important}
+ .tools button,.tools select,.filter,.sort{
+  flex:0 0 auto!important;
+  min-height:40px!important;
+  border-radius:12px!important;
+  white-space:nowrap!important;
+ }
+ .sellAll{
+  width:100%!important;
+  min-height:46px!important;
+  border-radius:14px!important;
+ }
+
+ /* Unified mobile cards */
+ .grid,.dealerGrid,.garageGrid,.containerGrid,.stats,
+ .profileShowcase.profileGarageShowcase{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+ }
+ .card,.carCard,.caseCard,.stat,.settingsCard,.upPanel{
+  width:100%!important;
+  min-width:0!important;
+  padding:12px!important;
+  border:1px solid var(--m-border)!important;
+  border-radius:18px!important;
+  background:var(--m-surface)!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+ }
+ .card:hover,.carCard:hover,.caseCard:hover{transform:none!important}
+ .cardFoot{margin-top:8px!important}
+ .cardActions{display:grid!important;grid-template-columns:1fr auto!important;gap:8px!important}
+ .cardActions button,.buy,.sell,.applyPlate,.upgradeGo{
+  min-height:46px!important;
+  border-radius:13px!important;
+ }
+ .lockPlate{width:46px!important;min-width:46px!important}
+
+ /* Dealer / garage */
+ #carSearch,#carSort{
+  width:100%!important;
+  min-width:0!important;
+  min-height:46px!important;
+  margin:0!important;
+  border-radius:13px!important;
+ }
+ .carCard{overflow:hidden!important}
+ .carCard .miniPlate.ccdPlate,.garagePlate .miniPlate.ccdPlate{
+  max-width:100%!important;
+ }
+ .garagePlate{margin:10px 0!important}
+
+ /* Containers */
+ .caseCard{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+ }
+ .caseCard .buy{width:100%!important}
+ .caseRouletteWrap{
+  width:100%!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  border-radius:16px!important;
+ }
+ .caseResult,.upgradeResult{
+  width:100%!important;
+  max-width:100%!important;
+  padding:12px!important;
+  box-sizing:border-box!important;
+ }
+
+ /* Upgrader as a vertical flow */
+ .upgrader{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+ }
+ .upPanel{width:100%!important}
+ .upCenter{
+  width:100%!important;
+  order:2!important;
+  padding:4px 0!important;
+ }
+ .upPanel:last-child{order:3!important}
+ .upSelect{width:100%!important;max-width:100%!important}
+ .upSpinner{transform:scale(.84)!important;transform-origin:center!important}
+
+ /* Settings */
+ .settingRow{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  padding:12px 0!important;
+ }
+ .settingRow>div{width:100%!important;min-width:0!important}
+ .settingRow>.buy,.settingRow button{width:100%!important}
+ input,select,textarea{
+  width:100%;
+  max-width:100%;
+  min-height:44px;
+  font-size:16px!important;
+  border-radius:12px!important;
+  box-sizing:border-box;
+ }
+
+ /* Profile becomes a bottom-sheet-like screen */
+ .profileOverlay{
+  align-items:flex-end!important;
+  padding:0!important;
+  background:rgba(0,0,0,.72)!important;
+ }
+ .profileCard{
+  width:100%!important;
+  max-width:none!important;
+  max-height:92dvh!important;
+  margin:0!important;
+  padding:16px 12px calc(18px + env(safe-area-inset-bottom))!important;
+  border-radius:26px 26px 0 0!important;
+  border:1px solid var(--m-border)!important;
+  background:#0f1218!important;
+  box-shadow:0 -20px 50px rgba(0,0,0,.45)!important;
+ }
+ .profileTop{gap:10px!important}
+ .profileShowcase.profileGarageShowcase{grid-template-columns:1fr!important}
+ .profileExactGarageCard{border-radius:18px!important}
+
+ /* Chat is a full mobile conversation surface */
+ .chatShell{
+  width:100%!important;
+  height:calc(100dvh - 150px - env(safe-area-inset-top))!important;
+  min-height:430px!important;
+  border:1px solid var(--m-border)!important;
+  border-radius:20px!important;
+  background:var(--m-surface)!important;
+  overflow:hidden!important;
+ }
+ .chatTop{
+  min-height:48px!important;
+  padding:10px 12px!important;
+  border-bottom:1px solid var(--m-border)!important;
+ }
+ .chatMessages{padding:10px!important}
+ .chatComposer,.chatBottom{
+  gap:7px!important;
+  padding:8px!important;
+  background:#0d1016!important;
+ }
+ .chatComposer input,.chatBottom input{
+  min-width:0!important;
+  min-height:44px!important;
+  font-size:16px!important;
+ }
+ .chatComposer button,.chatBottom button{
+  width:46px!important;
+  min-width:46px!important;
+  min-height:44px!important;
+ }
+
+ .empty{
+  padding:28px 14px!important;
+  border-radius:18px!important;
+  border:1px dashed rgba(255,255,255,.12)!important;
+  background:rgba(255,255,255,.025)!important;
+ }
+ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+ /* Keep the plate tuning exactly as approved before this redesign. */
+ #storage .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(67.5px,22.68vw,99.9px)!important;
+ }
+ #storage .miniPlate.ccdPlate .miniRegion b{
+  font-size:clamp(42.5px,14.25vw,62.5px)!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(21.434787px,7.66095165vw,34.930764px)!important;
+ }
+ .profileExactGarageCard .profileExactGaragePlate .miniPlate.ccdPlate .miniRegion b{
+  font-size:clamp(14.1848091px,5.167323315vw,23.6413485px)!important;
+ }
+}
+@media(max-width:380px){
+ .app{padding:0 9px!important}
+ .head{height:58px!important;min-height:58px!important}
+ .brand b{font-size:16px!important}
+ .wallet{padding:5px 8px!important}
+ .wallet strong{font-size:12px!important}
+ .profileAvatarBtn{width:36px!important;height:36px!important;min-width:36px!important}
+ .tabs{left:6px!important;right:6px!important;height:58px!important;border-radius:18px!important}
+ .tab{height:46px!important;min-height:46px!important;min-width:54px!important;font-size:9px!important}
+ h1{font-size:21px!important}
+ .roll{padding:14px 8px!important;border-radius:20px!important}
+ .card,.carCard,.caseCard,.stat,.settingsCard,.upPanel{padding:10px!important;border-radius:16px!important}
+ .chatShell{height:calc(100dvh - 138px - env(safe-area-inset-top))!important}
+}
+
+
+/* ===== v0.0.84 Telegram Mini App mobile redesign ===== */
+@media(max-width:620px){
+ :root{
+  --tg-bg:#0b0d12;
+  --tg-card:#131720;
+  --tg-card2:#181d27;
+  --tg-line:rgba(255,255,255,.075);
+  --tg-muted:#9299a8;
+  --tg-nav-h:64px;
+ }
+ html{
+  background:var(--tg-bg)!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:none;
+ }
+ body{
+  width:100%!important;
+  min-width:0!important;
+  min-height:100dvh!important;
+  margin:0!important;
+  padding:0 0 calc(var(--tg-nav-h) + 18px + env(safe-area-inset-bottom))!important;
+  background:var(--tg-bg)!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+ }
+ .app{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0 10px!important;
+  box-sizing:border-box!important;
+ }
+
+ /* Telegram-friendly top bar */
+ .head{
+  position:sticky!important;
+  top:0!important;
+  z-index:90!important;
+  width:calc(100% + 20px)!important;
+  height:auto!important;
+  min-height:58px!important;
+  margin:0 -10px 8px!important;
+  padding:calc(8px + env(safe-area-inset-top)) 10px 8px!important;
+  box-sizing:border-box!important;
+  background:rgba(11,13,18,.96)!important;
+  border-bottom:1px solid var(--tg-line)!important;
+  backdrop-filter:blur(16px)!important;
+  -webkit-backdrop-filter:blur(16px)!important;
+ }
+ .brand{flex:1 1 auto!important;min-width:0!important}
+ .brand b{font-size:17px!important;line-height:1!important}
+ .brand small{display:none!important}
+ .walletProfile{flex:0 0 auto!important;gap:6px!important}
+ .wallet{
+  padding:6px 9px!important;
+  min-height:38px!important;
+  border-radius:12px!important;
+  background:var(--tg-card)!important;
+  border:1px solid var(--tg-line)!important;
+ }
+ .wallet small{font-size:8px!important;color:var(--tg-muted)!important}
+ .wallet strong{font-size:12px!important}
+ .profileAvatarBtn{
+  width:38px!important;height:38px!important;min-width:38px!important;
+  border-radius:12px!important;
+  background:var(--tg-card2)!important;
+  border:1px solid var(--tg-line)!important;
+ }
+
+ /* Bottom nav, safe for Telegram gesture area */
+ .tabs{
+  position:fixed!important;
+  z-index:120!important;
+  left:8px!important;
+  right:8px!important;
+  bottom:max(7px,env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  height:var(--tg-nav-h)!important;
+  margin:0!important;
+  padding:5px!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:3px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none!important;
+  background:rgba(19,23,32,.97)!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:19px!important;
+  box-shadow:0 12px 36px rgba(0,0,0,.48)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+ }
+ .tabs::-webkit-scrollbar{display:none!important}
+ .tab{
+  flex:1 0 55px!important;
+  min-width:55px!important;
+  height:52px!important;
+  min-height:52px!important;
+  padding:6px 4px!important;
+  border:0!important;
+  border-radius:14px!important;
+  font-size:9.5px!important;
+  line-height:1.05!important;
+  white-space:normal!important;
+  color:#8f97a7!important;
+  background:transparent!important;
+  box-shadow:none!important;
+ }
+ .tab.active{
+  color:#fff!important;
+  background:rgba(255,255,255,.10)!important;
+ }
+
+ .page{
+  width:100%!important;
+  min-width:0!important;
+  padding:3px 0 12px!important;
+  box-sizing:border-box!important;
+ }
+ h1{margin:8px 2px 13px!important;font-size:22px!important;line-height:1.1!important}
+ h2,.statsTitle{font-size:18px!important}
+
+ /* Roll screen */
+ .roll{
+  width:100%!important;
+  min-width:0!important;
+  padding:15px 10px!important;
+  border-radius:20px!important;
+  background:var(--tg-card)!important;
+  border:1px solid var(--tg-line)!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+ }
+ .plateButton{
+  width:100%!important;
+  max-width:100%!important;
+  margin:16px auto 12px!important;
+  padding:0!important;
+  overflow:visible!important;
+ }
+ .info{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:7px!important;
+ }
+ .info>div{
+  min-width:0!important;
+  padding:10px 8px!important;
+  border-radius:13px!important;
+  background:var(--tg-card2)!important;
+  border:1px solid var(--tg-line)!important;
+ }
+ .price{font-size:18px!important}
+ #regionChoice{width:100%!important;min-height:44px!important}
+
+ /* CRITICAL: mobile plate geometry.
+    Main glyphs are sized from the viewport/plate width and constrained to their 75.7% cell. */
+ .plate.ccdPlate,.miniPlate.ccdPlate{
+  display:grid!important;
+  grid-template-columns:75.7% 24.3%!important;
+  aspect-ratio:465/94!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  background-size:100% 100%!important;
+  overflow:hidden!important;
+ }
+ .plate.ccdPlate .plateMain,
+ .miniPlate.ccdPlate .miniMain{
+  width:100%!important;
+  min-width:0!important;
+  height:100%!important;
+  padding:0 3.2%!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  transform:none!important;
+  letter-spacing:0!important;
+  line-height:.78!important;
+ }
+ .plate.ccdPlate .plateMain{
+  font-size:clamp(44px,14.2vw,72px)!important;
+ }
+ .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(28px,10.8vw,54px)!important;
+ }
+ .plate.ccdPlate .plateMain .plateLetter.first,
+ .miniPlate.ccdPlate .miniMain .plateLetter.first{
+  margin-right:3.6%!important;
+ }
+ .plate.ccdPlate .plateMain .plateDigits,
+ .miniPlate.ccdPlate .miniMain .plateDigits{
+  margin-right:3.6%!important;
+ }
+ .plate.ccdPlate .plateRegion,
+ .miniPlate.ccdPlate .miniRegion{
+  width:100%!important;
+  min-width:0!important;
+  height:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+ }
+
+ /* Storage plate: no giant inherited font. */
+ #storage .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(31px,11.7vw,55px)!important;
+  padding:0 3.2%!important;
+ }
+ /* Garage/dealer/profile plates use the same safe centered geometry. */
+ .garagePlate .miniPlate.ccdPlate .miniMain,
+ .profileExactGaragePlate .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(28px,10.2vw,50px)!important;
+  padding:0 3.2%!important;
+ }
+ /* Keep the tuned profile region size, but never let it escape its region cell. */
+ .profileExactGarageCard .profileExactGaragePlate .miniPlate.ccdPlate .miniRegion b{
+  font-size:clamp(14px,5.1vw,23px)!important;
+ }
+
+ /* Toolbars */
+ .storeHead{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:9px!important;
+ }
+ .tools{
+  width:calc(100% + 10px)!important;
+  margin-right:-10px!important;
+  padding:1px 10px 6px 0!important;
+  display:flex!important;
+  gap:6px!important;
+  overflow-x:auto!important;
+  scrollbar-width:none!important;
+ }
+ .tools::-webkit-scrollbar{display:none!important}
+ .tools>*{flex:0 0 auto!important}
+ .filter,.sort,.tools button,.tools select{
+  min-height:40px!important;
+  border-radius:12px!important;
+ }
+ .sellAll{width:100%!important;min-height:44px!important;border-radius:13px!important}
+
+ /* Cards: compact, thumb friendly */
+ .grid,.dealerGrid,.garageGrid,.containerGrid,.stats,
+ .profileShowcase.profileGarageShowcase{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:9px!important;
+ }
+ .card,.carCard,.caseCard,.stat,.settingsCard,.upPanel{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:11px!important;
+  border-radius:17px!important;
+  background:var(--tg-card)!important;
+  border:1px solid var(--tg-line)!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+ }
+ .cardActions{display:grid!important;grid-template-columns:1fr 46px!important;gap:7px!important}
+ .cardActions button,.buy,.sell,.applyPlate,.upgradeGo{
+  min-height:44px!important;
+  border-radius:12px!important;
+ }
+ .lockPlate{width:46px!important;min-width:46px!important}
+ .cardFoot{gap:6px!important;margin-top:7px!important}
+ .tag{max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+ /* Garage/dealer */
+ #carSearch,#carSort{
+  width:100%!important;
+  min-width:0!important;
+  min-height:44px!important;
+  margin:0!important;
+ }
+ .garagePlate{width:100%!important;max-width:100%!important;margin:8px 0!important}
+
+ /* Containers */
+ .caseCard{gap:8px!important}
+ .caseCard .buy{width:100%!important}
+ .caseRouletteWrap{
+  width:100%!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  border-radius:14px!important;
+ }
+ .caseResult,.upgradeResult{
+  width:100%!important;
+  max-width:100%!important;
+  padding:10px!important;
+  box-sizing:border-box!important;
+ }
+
+ /* Upgrader */
+ .upgrader{display:flex!important;flex-direction:column!important;gap:9px!important}
+ .upPanel{width:100%!important}
+ .upCenter{width:100%!important;order:2!important}
+ .upPanel:last-child{order:3!important}
+ .upSelect{width:100%!important;max-width:100%!important}
+ .upSpinner{transform:scale(.78)!important;transform-origin:center!important}
+
+ /* Settings */
+ .settingRow{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:8px!important;
+  padding:11px 0!important;
+ }
+ .settingRow>div,.settingRow>.buy,.settingRow button{width:100%!important;min-width:0!important}
+ input,select,textarea{
+  max-width:100%!important;
+  min-height:44px!important;
+  box-sizing:border-box!important;
+  font-size:16px!important; /* prevents iOS/Telegram zoom */
+ }
+
+ /* Profile as Telegram bottom sheet */
+ .profileOverlay{
+  align-items:flex-end!important;
+  padding:0!important;
+  background:rgba(0,0,0,.70)!important;
+ }
+ .profileCard{
+  width:100%!important;
+  max-width:100%!important;
+  max-height:90dvh!important;
+  margin:0!important;
+  padding:15px 10px calc(15px + env(safe-area-inset-bottom))!important;
+  border-radius:24px 24px 0 0!important;
+  background:#10141b!important;
+  border:1px solid var(--tg-line)!important;
+  box-sizing:border-box!important;
+ }
+
+ /* Chat */
+ .chatShell{
+  width:100%!important;
+  height:calc(100dvh - 145px - env(safe-area-inset-top))!important;
+  min-height:390px!important;
+  border-radius:18px!important;
+  background:var(--tg-card)!important;
+  border:1px solid var(--tg-line)!important;
+  overflow:hidden!important;
+ }
+ .chatTop{padding:9px 10px!important}
+ .chatMessages{padding:9px!important}
+ .chatComposer,.chatBottom{padding:7px!important;gap:6px!important}
+ .chatComposer input,.chatBottom input{min-width:0!important;min-height:44px!important}
+ .chatComposer button,.chatBottom button{width:44px!important;min-width:44px!important;height:44px!important}
+
+ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+}
+@media(max-width:390px){
+ .app{padding:0 8px!important}
+ .head{width:calc(100% + 16px)!important;margin-left:-8px!important;margin-right:-8px!important;padding-left:8px!important;padding-right:8px!important}
+ .brand b{font-size:15px!important}
+ .wallet strong{font-size:11px!important}
+ .tabs{left:5px!important;right:5px!important}
+ .tab{min-width:52px!important;font-size:9px!important}
+ h1{font-size:20px!important}
+ .roll{padding:12px 8px!important}
+ .plate.ccdPlate .plateMain{font-size:clamp(40px,13.7vw,58px)!important}
+ #storage .miniPlate.ccdPlate .miniMain{font-size:clamp(28px,11.2vw,45px)!important}
+ .garagePlate .miniPlate.ccdPlate .miniMain,
+ .profileExactGaragePlate .miniPlate.ccdPlate .miniMain{font-size:clamp(26px,9.8vw,42px)!important}
+}
+
+
+.mobileMenuToggle,.mobileMenuBackdrop{display:none}
+@media(max-width:620px){
+ body{padding-bottom:max(14px,env(safe-area-inset-bottom))!important}
+ .mobileMenuToggle{
+  display:flex!important;position:fixed!important;z-index:151!important;
+  left:0!important;top:50%!important;width:43px!important;height:64px!important;
+  padding:0!important;align-items:center!important;justify-content:center!important;
+  transform:translateY(-50%)!important;border:1px solid rgba(255,255,255,.13)!important;
+  border-left:0!important;border-radius:0 16px 16px 0!important;
+  background:rgba(20,24,33,.96)!important;color:#fff!important;
+  box-shadow:8px 8px 26px rgba(0,0,0,.35)!important;
+  backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important;
+ }
+ .mobileMenuToggle span{font-size:22px!important;line-height:1!important;transition:transform .22s ease!important}
+ body.mobileMenuOpen .mobileMenuToggle{left:min(78vw,292px)!important}
+ body.mobileMenuOpen .mobileMenuToggle span{transform:rotate(90deg)!important}
+ .mobileMenuBackdrop{
+  display:block!important;position:fixed!important;z-index:139!important;inset:0!important;
+  background:rgba(0,0,0,.58)!important;opacity:0!important;pointer-events:none!important;
+  transition:opacity .22s ease!important;
+ }
+ body.mobileMenuOpen .mobileMenuBackdrop{opacity:1!important;pointer-events:auto!important}
+ .tabs{
+  position:fixed!important;z-index:150!important;left:0!important;top:0!important;
+  bottom:0!important;right:auto!important;width:min(78vw,292px)!important;height:100dvh!important;
+  margin:0!important;padding:calc(18px + env(safe-area-inset-top)) 10px calc(18px + env(safe-area-inset-bottom))!important;
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  justify-content:flex-start!important;gap:6px!important;overflow-y:auto!important;overflow-x:hidden!important;
+  transform:translateX(-102%)!important;transition:transform .22s ease!important;
+  border:0!important;border-right:1px solid rgba(255,255,255,.10)!important;
+  border-radius:0 22px 22px 0!important;background:rgba(15,18,25,.985)!important;
+  box-shadow:18px 0 44px rgba(0,0,0,.48)!important;
+  backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;
+  scrollbar-width:none!important;
+ }
+ .tabs::-webkit-scrollbar{display:none!important}
+ body.mobileMenuOpen .tabs{transform:translateX(0)!important}
+ .tab{
+  flex:0 0 auto!important;width:100%!important;min-width:0!important;height:auto!important;
+  min-height:48px!important;padding:12px 14px!important;display:flex!important;
+  align-items:center!important;justify-content:flex-start!important;border-radius:13px!important;
+  font-size:13px!important;line-height:1.15!important;text-align:left!important;white-space:normal!important;
+  color:#a1a8b7!important;background:transparent!important;
+ }
+ .tab.active{color:#fff!important;background:rgba(255,255,255,.105)!important}
+
+ /* +50% compared with v0.0.84 */
+ .plate.ccdPlate .plateMain{font-size:clamp(66px,21.3vw,108px)!important}
+ .miniPlate.ccdPlate .miniMain{font-size:clamp(42px,16.2vw,81px)!important}
+ #storage .miniPlate.ccdPlate .miniMain{font-size:clamp(46.5px,17.55vw,82.5px)!important}
+ .garagePlate .miniPlate.ccdPlate .miniMain,
+ .profileExactGaragePlate .miniPlate.ccdPlate .miniMain{font-size:clamp(42px,15.3vw,75px)!important}
+
+ .plate.ccdPlate .plateMain,.miniPlate.ccdPlate .miniMain{
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  padding-left:1.5%!important;padding-right:1.5%!important;overflow:hidden!important;
+  justify-content:center!important;box-sizing:border-box!important;white-space:nowrap!important;
+ }
+ .plate.ccdPlate .plateMain .plateLetter.first,
+ .miniPlate.ccdPlate .miniMain .plateLetter.first,
+ .plate.ccdPlate .plateMain .plateDigits,
+ .miniPlate.ccdPlate .miniMain .plateDigits{margin-right:2.7%!important}
+}
+@media(max-width:390px){
+ .plate.ccdPlate .plateMain{font-size:clamp(60px,20.55vw,87px)!important}
+ #storage .miniPlate.ccdPlate .miniMain{font-size:clamp(42px,16.8vw,67.5px)!important}
+ .garagePlate .miniPlate.ccdPlate .miniMain,
+ .profileExactGaragePlate .miniPlate.ccdPlate .miniMain{font-size:clamp(39px,14.7vw,63px)!important}
+}
+
+
+/* ===== v0.0.86 Mobile menu position + plate vertical alignment ===== */
+@media(max-width:620px){
+ /* Menu handle: upper-left corner instead of screen center. */
+ .mobileMenuToggle{
+  top:calc(76px + env(safe-area-inset-top))!important;
+  left:0!important;
+  transform:none!important;
+ }
+ body.mobileMenuOpen .mobileMenuToggle{
+  left:min(78vw,292px)!important;
+ }
+
+ /* Move only letters/digits down by 25% of the plate height. */
+ .plate.ccdPlate .plateMain,
+ .miniPlate.ccdPlate .miniMain{
+  transform:translateY(25%)!important;
+ }
+}
+
+
+/* ===== v0.0.87 Fix clipped plate glyphs + lock first page scroll ===== */
+@media(max-width:620px){
+ /* Keep v0.0.86 size and position, but stop clipping the shifted glyphs. */
+ .plate.ccdPlate,
+ .miniPlate.ccdPlate{
+  overflow:visible!important;
+ }
+ .plate.ccdPlate .plateMain,
+ .miniPlate.ccdPlate .miniMain{
+  overflow:visible!important;
+  clip-path:none!important;
+ }
+
+ /* The plate texture still defines the visual frame; only text may extend
+    inside its own rendered layer without being cut by the container. */
+ .plate.ccdPlate .plateRegion,
+ .miniPlate.ccdPlate .miniRegion{
+  overflow:visible!important;
+ }
+
+ /* First/main roll page: fit to Telegram viewport and do not vertically scroll. */
+ body.mobileFirstPageLocked{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-y:none!important;
+ }
+ body.mobileFirstPageLocked .app{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+ }
+ body.mobileFirstPageLocked .page.active{
+  max-height:calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  overflow:hidden!important;
+ }
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -2318,7 +3219,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -3836,4 +4737,44 @@ initChat();
  document.addEventListener('gesturestart',function(e){e.preventDefault()},{passive:false});
 })();
 </script>
+
+<script>
+(function(){
+ const btn=document.getElementById('mobileMenuToggle');
+ const backdrop=document.getElementById('mobileMenuBackdrop');
+ const tabs=document.querySelector('.tabs');
+ if(!btn||!tabs)return;
+ const setOpen=open=>{
+  document.body.classList.toggle('mobileMenuOpen',open);
+  btn.setAttribute('aria-expanded',open?'true':'false');
+ };
+ btn.addEventListener('click',()=>setOpen(!document.body.classList.contains('mobileMenuOpen')));
+ if(backdrop)backdrop.addEventListener('click',()=>setOpen(false));
+ tabs.addEventListener('click',e=>{if(e.target.closest('.tab'))setOpen(false)});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
+ window.addEventListener('resize',()=>{if(innerWidth>620)setOpen(false)});
+})();
+</script>
+
+
+<script>
+(function(){
+ function syncFirstPageScrollLock(){
+  if(window.innerWidth>620){
+   document.body.classList.remove('mobileFirstPageLocked');
+   return;
+  }
+  const tabs=[...document.querySelectorAll('.tab')];
+  if(!tabs.length)return;
+  document.body.classList.toggle('mobileFirstPageLocked',tabs[0].classList.contains('active'));
+ }
+ document.addEventListener('click',e=>{
+  if(e.target.closest('.tab'))requestAnimationFrame(syncFirstPageScrollLock);
+ });
+ window.addEventListener('resize',syncFirstPageScrollLock);
+ window.addEventListener('load',syncFirstPageScrollLock);
+ requestAnimationFrame(syncFirstPageScrollLock);
+})();
+</script>
+
 </body></html>
