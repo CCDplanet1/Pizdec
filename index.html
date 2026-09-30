@@ -3328,6 +3328,10 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.carLockBtn{width:100%;margin-top:7px;border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:9px 10px;background:rgba(255,255,255,.07);color:inherit;font:inherit;font-weight:800;cursor:pointer}
+.carLockBtn.locked{border-color:rgba(255,80,80,.48);background:rgba(255,55,55,.10)}
+</style>
 </head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
@@ -3940,7 +3944,7 @@ function buyCar(idx){
  cars.push({id:++carSeq,model:m.name,icon:m.icon,price:m.price,currency:m.currency,rub:cost,plate:rp.p,region:rp.r,custom:false});
  update();renderDealer();renderGarage();renderUpgrader()
 }
-function sellCar(carId){
+function sellCar(carId){ let protectedCar=cars.find(c=>c.id===carId); if(protectedCar&&protectedCar.locked){ if(typeof toast==='function')toast('🔒 Машина закрыта. Сначала сними замок.'); return; } 
  let i=cars.findIndex(c=>c.id===carId);if(i<0)return;
  let car=cars[i];
  const value=Math.round(carRubValue(car)/100)*100;
@@ -4006,6 +4010,22 @@ function installPlate(carId,plateId){
  car.oldValue=x.v;car.oldRank=x.rank;car.oldRarity=x.rarity;
  update();render();renderGarage();renderUpgrader();
 }
+function toggleCarLock(carId,ev){
+ if(ev){
+  ev.preventDefault();
+  ev.stopPropagation();
+ }
+ const car=cars.find(c=>String(c.id)===String(carId));
+ if(!car)return false;
+ car.locked=!car.locked;
+ renderGarage();
+ if(typeof update==='function')update();
+ if(typeof scheduleGameSave==='function')scheduleGameSave();
+ if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+ if(typeof syncPublicProfile==='function')syncPublicProfile();
+ if(typeof toast==='function')toast(car.locked?'🔒 Машина закрыта от продажи':'🔓 Машина снова доступна для продажи');
+ return false;
+}
 function renderGarage(){
  let box=$('garage');box.innerHTML='';
  if(!cars.length){box.innerHTML='<div class="garageEmpty">Гараж пуст. Купи первую машину в автосалоне.</div>';return}
@@ -4021,12 +4041,20 @@ function renderGarage(){
   <select class="plateSelect"><option value="">Выбрать номер из хранилища</option>${opts}</select>
   <button class="applyPlate">Установить номер</button>
   ${car.custom?'<button class="applyPlate removePlate">Снять номер · 50 000 ₽</button>':''}
-  <button class="sell" style="margin-top:7px">Продать машину · ${money(sale)}</button>
+  <button class="carLockBtn ${car.locked?'locked':''}" type="button" onclick="return toggleCarLock('${car.id}',event)">${car.locked?'🔒 На ключике':'🔑 Поставить на ключик'}</button>
+ <button class="sell" style="margin-top:7px" ${car.locked?'disabled':''}>${car.locked?'🔒 Продажа заблокирована':'Продать машину · '+money(sale)}</button>
   ${car.custom?'<div class="carMeta" style="margin-top:6px">В цену продажи включена стоимость установленного номера.</div>':''}`;
   let sel=c.querySelector('.plateSelect');
   c.querySelector('.applyPlate').onclick=()=>{if(sel.value)installPlate(car.id,+sel.value)};
   let remove=c.querySelector('.removePlate');if(remove)remove.onclick=()=>removePlate(car.id);
-  c.querySelector('.sell').onclick=()=>sellCar(car.id);
+  c.querySelector('.sell').onclick=(ev)=>{
+  ev.preventDefault();ev.stopPropagation();
+  if(car.locked){
+   if(typeof toast==='function')toast('🔒 Машина на ключике. Сначала сними защиту.');
+   return;
+  }
+  sellCar(car.id);
+ };
   g.appendChild(c)
  });box.appendChild(g)
 
@@ -4210,8 +4238,9 @@ function carVisual(m,cls='carImage'){
 }
 function carRarity(m){
  const v=carBaseValue(m);
+ const carName=String(m?.name||m?.model||'');
  if(m.forcedRarity==='limited')return {rank:'limited',name:'Limited'};
- if(m.forcedRarity==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
+ if(carName==='Ferrari F40'||m.forcedRarity==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
  if(v>=20000000)return {rank:'legendary',name:'Легендарная'};
  if(v>=5000000)return {rank:'epic',name:'Эпическая'};
  if(v>=1200000)return {rank:'rare',name:'Редкая'};
@@ -4220,8 +4249,9 @@ function carRarity(m){
 }
 function carGlowClass(m){
  const v=carBaseValue(m);
+ const carName=String(m?.name||m?.model||'');
  if(m.forcedRarity==='limited')return 'carGlowLimited';
- if(m.forcedRarity==='mythic'||v>=3000000000)return 'carGlowMythic';
+ if(carName==='Ferrari F40'||m.forcedRarity==='mythic'||v>=3000000000)return 'carGlowMythic';
  if(v>=20000000)return 'carGlowLegendary';
  if(v>=5000000)return 'carGlowEpic';
  if(v>=1200000)return 'carGlowRare';
