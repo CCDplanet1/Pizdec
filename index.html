@@ -3815,6 +3815,112 @@ img,svg,video,canvas{
  }
 }
 
+
+/* ===== v0.1.3: scroll ONLY inside the selected tab ===== */
+@media (max-width:620px){
+ html, body{
+  height:100%!important;
+  min-height:100%!important;
+  max-height:none!important;
+  overflow:hidden!important;
+ }
+
+ body.mobileFirstPageLocked,
+ body:not(.mobileFirstPageLocked){
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  position:relative!important;
+ }
+
+ .app{
+  height:100dvh!important;
+  min-height:0!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+ }
+
+ /* Header/navigation stays fixed as part of the app layout. */
+ .app > header,
+ .app > .header,
+ .app > nav,
+ .app > .tabs{
+  flex:0 0 auto!important;
+ }
+
+ /* Only the currently opened tab gets its own scroll area. */
+ .page{
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+
+ .page.active{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  height:auto!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  scrollbar-width:auto!important;
+  scrollbar-color:rgba(255,255,255,.48) rgba(255,255,255,.08)!important;
+  padding-bottom:calc(110px + env(safe-area-inset-bottom))!important;
+ }
+
+ .page.active::-webkit-scrollbar{
+  display:block!important;
+  width:7px!important;
+ }
+ .page.active::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.06)!important;
+  border-radius:999px!important;
+ }
+ .page.active::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.46)!important;
+  border-radius:999px!important;
+  min-height:44px!important;
+ }
+
+ /* Remove the old special rule that froze the first tab content. */
+ body.mobileFirstPageLocked .page.active{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  height:auto!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+ }
+
+ /* Elements inside a tab must not steal the vertical swipe. */
+ .page.active .card,
+ .page.active .panel,
+ .page.active .grid,
+ .page.active .garageGrid,
+ .page.active #garageGrid,
+ .page.active #storage{
+  touch-action:pan-y!important;
+ }
+}
+
+@supports not (height:100dvh){
+ @media (max-width:620px){
+  body.mobileFirstPageLocked,
+  body:not(.mobileFirstPageLocked),
+  .app{
+   height:var(--app-vh,100vh)!important;
+   min-height:0!important;
+   max-height:var(--app-vh,100vh)!important;
+  }
+ }
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -5650,6 +5756,33 @@ initChat();
  if(window.visualViewport){
   window.visualViewport.addEventListener('resize',mobileScrollSync,{passive:true});
  }
+})();
+</script>
+
+
+<script>
+/* v0.1.3 tab-scroller normalization */
+(function(){
+ function normalizeActiveTabScroller(){
+  if(window.innerWidth>620)return;
+  document.querySelectorAll('.page').forEach(function(page){
+   if(page.classList.contains('active')){
+    page.style.webkitOverflowScrolling='touch';
+   }
+  });
+ }
+ document.addEventListener('click',function(e){
+  if(e.target.closest && e.target.closest('.tab')){
+   requestAnimationFrame(function(){
+    requestAnimationFrame(normalizeActiveTabScroller);
+   });
+  }
+ },true);
+ window.addEventListener('load',normalizeActiveTabScroller);
+ window.addEventListener('pageshow',normalizeActiveTabScroller);
+ window.addEventListener('orientationchange',function(){
+  setTimeout(normalizeActiveTabScroller,120);
+ },{passive:true});
 })();
 </script>
 
