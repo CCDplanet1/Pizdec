@@ -3383,6 +3383,214 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  }
 }
 
+
+/* ===== v0.0.99 Responsive layout optimization ===== */
+:root{
+ --responsive-gap:clamp(10px,1.35vw,18px);
+ --responsive-pad:clamp(10px,1.7vw,24px);
+ --responsive-radius:clamp(12px,1.25vw,18px);
+}
+html{
+ -webkit-text-size-adjust:100%;
+ text-size-adjust:100%;
+}
+body{
+ overflow-x:hidden;
+}
+.app{
+ width:min(100%,1600px)!important;
+ margin-inline:auto!important;
+ box-sizing:border-box!important;
+}
+main,.page,.card,.panel{
+ min-width:0!important;
+ box-sizing:border-box!important;
+}
+.page.active{
+ width:100%!important;
+}
+.card,.panel{
+ border-radius:var(--responsive-radius)!important;
+}
+button,input,select,textarea{
+ max-width:100%;
+ box-sizing:border-box;
+}
+img,svg,video,canvas{
+ max-width:100%;
+}
+
+/* Flexible desktop/tablet grids */
+.grid,
+.garageGrid,
+#garageGrid,
+#storage,
+.dealerGrid,
+.containerGrid,
+.carsGrid{
+ gap:var(--responsive-gap)!important;
+}
+.garageGrid,
+#garageGrid,
+.dealerGrid,
+.containerGrid,
+.carsGrid{
+ grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))!important;
+}
+
+/* Main plate scales continuously without breaking its proportions. */
+.plateButton{
+ width:min(100%,720px)!important;
+ max-width:100%!important;
+}
+.plate.ccdPlate{
+ width:min(100%,720px)!important;
+ max-width:100%!important;
+ aspect-ratio:465/94!important;
+}
+.plate.ccdPlate .plateMain{
+ font-size:clamp(52px,8vw,104px);
+}
+.miniPlate.ccdPlate{
+ max-width:100%!important;
+ aspect-ratio:465/94!important;
+}
+
+/* Medium windows / tablets */
+@media (min-width:621px) and (max-width:1100px){
+ .app{
+  padding-inline:clamp(12px,2vw,22px)!important;
+ }
+ .page.active{
+  padding-inline:clamp(4px,1vw,12px)!important;
+ }
+ .garageGrid,
+ #garageGrid,
+ .dealerGrid,
+ .containerGrid,
+ .carsGrid{
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr))!important;
+ }
+ .plateButton,
+ .plate.ccdPlate{
+  width:min(82vw,650px)!important;
+ }
+ .plate.ccdPlate .plateMain{
+  font-size:clamp(54px,9vw,92px)!important;
+ }
+}
+
+/* Phones: preserve drawer + Android scroll fix, improve narrow widths. */
+@media (max-width:620px){
+ :root{
+  --responsive-gap:10px;
+  --responsive-pad:clamp(9px,3.2vw,14px);
+ }
+ body{
+  width:100%!important;
+ }
+ .app{
+  width:100%!important;
+  padding-left:max(8px,env(safe-area-inset-left))!important;
+  padding-right:max(8px,env(safe-area-inset-right))!important;
+ }
+ .page.active{
+  width:100%!important;
+  padding-left:var(--responsive-pad)!important;
+  padding-right:var(--responsive-pad)!important;
+  box-sizing:border-box!important;
+ }
+ .card,.panel{
+  width:100%!important;
+  max-width:100%!important;
+ }
+ .garageGrid,
+ #garageGrid,
+ .dealerGrid,
+ .containerGrid,
+ .carsGrid{
+  grid-template-columns:1fr!important;
+ }
+ .plateButton,
+ .plate.ccdPlate{
+  width:100%!important;
+  max-width:100%!important;
+ }
+ .mobileMenuToggle{
+  max-width:44px!important;
+ }
+ input,select,textarea{
+  font-size:16px!important; /* prevents unwanted mobile zoom */
+ }
+}
+
+/* Very narrow Android/iPhone windows */
+@media (max-width:390px){
+ .app{
+  padding-left:max(5px,env(safe-area-inset-left))!important;
+  padding-right:max(5px,env(safe-area-inset-right))!important;
+ }
+ .page.active{
+  padding-left:7px!important;
+  padding-right:7px!important;
+ }
+ .card,.panel{
+  padding-left:10px!important;
+  padding-right:10px!important;
+ }
+ button{
+  min-width:0!important;
+ }
+ .hammerSerialLine{
+  flex-wrap:wrap!important;
+ }
+ .hammerSerialRetry{
+  margin-left:0!important;
+ }
+}
+
+/* Extremely narrow embedded Telegram windows */
+@media (max-width:340px){
+ .plate.ccdPlate .plateMain{
+  font-size:clamp(50px,19vw,65px)!important;
+ }
+ #storage .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(36px,15vw,50px)!important;
+ }
+ .garagePlate .miniPlate.ccdPlate .miniMain,
+ .profileExactGaragePlate .miniPlate.ccdPlate .miniMain{
+  font-size:clamp(34px,14vw,46px)!important;
+ }
+}
+
+/* Large monitors: avoid stretched cards/content. */
+@media (min-width:1400px){
+ .app{
+  max-width:1500px!important;
+ }
+ .garageGrid,
+ #garageGrid,
+ .dealerGrid,
+ .carsGrid{
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr))!important;
+ }
+}
+
+/* Landscape phones / short Telegram windows */
+@media (max-height:560px) and (orientation:landscape) and (max-width:950px){
+ .page.active{
+  padding-top:8px!important;
+  padding-bottom:80px!important;
+ }
+ body:not(.mobileFirstPageLocked) .page.active{
+  height:calc(100dvh - 52px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  max-height:calc(100dvh - 52px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+ }
+ .mobileMenuToggle{
+  top:calc(54px + env(safe-area-inset-top))!important;
+ }
+}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -5172,6 +5380,25 @@ initChat();
  });
  window.addEventListener('pageshow',resyncMobilePageScroll);
  window.addEventListener('orientationchange',()=>setTimeout(resyncMobilePageScroll,180));
+})();
+</script>
+
+
+<script>
+(function(){
+ function syncViewportSize(){
+  const vv=window.visualViewport;
+  const h=vv?vv.height:window.innerHeight;
+  const w=vv?vv.width:window.innerWidth;
+  document.documentElement.style.setProperty('--app-vh',h+'px');
+  document.documentElement.style.setProperty('--app-vw',w+'px');
+ }
+ syncViewportSize();
+ window.addEventListener('resize',syncViewportSize,{passive:true});
+ window.addEventListener('orientationchange',()=>setTimeout(syncViewportSize,120),{passive:true});
+ if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',syncViewportSize,{passive:true});
+ }
 })();
 </script>
 
