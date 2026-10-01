@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.00</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.01</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5650,7 +5650,7 @@ async function readSupabaseGameState(){
  const id=String(chatUser().telegram_id||'');if(!id)return null;
  const r=await chatDb.from('player_profiles').select('game_state,garage_cars,storage_plates').eq('telegram_id',id).maybeSingle();
  if(r.error||!r.data){if(r.error)console.warn('Supabase load error:',r.error);return null}
- if(r.data.game_state&&typeof r.data.game_state==='object'){
+ if(r.data.game_state&&typeof r.data.game_state==='object'&&Object.keys(r.data.game_state).length){
   const state={...r.data.game_state};
   if(Array.isArray(r.data.garage_cars)&&r.data.garage_cars.length)state.cars=r.data.garage_cars;
   if(Array.isArray(r.data.storage_plates))state.inv=r.data.storage_plates;
@@ -5702,6 +5702,17 @@ const CHAT_SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 let chatDb=null,chatChannel=null,chatLastSend=0,chatLoaded=false;
 function chatConfigured(){return CHAT_SUPABASE_URL.startsWith('https://')&&!CHAT_SUPABASE_URL.includes('PASTE_')&&CHAT_SUPABASE_KEY&&!CHAT_SUPABASE_KEY.includes('PASTE_')}
 function chatEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+const LEGACY_GUEST_ID_MAP={
+ 'guest_mupz8pjd_x9k4chal':'guest_munsk23y_9np31f31',
+ 'guest_mupznv8y_hcix2863':'guest_muohd7xy_hmzexct2'
+};
+function migrateGuestId(id){
+ const oldId=LEGACY_GUEST_ID_MAP[String(id||'')];
+ if(!oldId)return String(id||'');
+ try{localStorage.setItem('nr-guest-id',oldId)}catch(e){}
+ return oldId;
+}
 function chatUser(){
  const u=window.Telegram?.WebApp?.initDataUnsafe?.user;
  let guestId='';
@@ -5711,7 +5722,7 @@ function chatUser(){
    if(!guestId){guestId='guest_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem('nr-guest-id',guestId)}
   }catch(e){guestId='guest_local'}
  }
- const fallback=u?(u.first_name||u.username||'Игрок'):('Игрок '+guestId.slice(-5));
+ if(!u?.id&&guestId)guestId=migrateGuestId(guestId); const fallback=u?(u.first_name||u.username||'Игрок'):('Игрок '+guestId.slice(-5));
  let savedName='';
  try{
   const p=JSON.parse(localStorage.getItem('nr-player-profile-v1')||'{}');
