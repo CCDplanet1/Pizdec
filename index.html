@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.95</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.96</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4217,7 +4217,7 @@ function renderDealerButtons(){
 function carPriceText(m){return m.price.toLocaleString('ru-RU')+' '+m.currency}
 function renderDealer(){
  let box=$('dealer'),q=($('carSearch')?.value||'').toLowerCase(),sort=$('carSort')?.value||'default';box.innerHTML='';
- let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly&&!x.m.dealerHidden);
+ let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly&&!x.m.dealerHidden&&x.m.name!=='Lamborghini Murciélago');
  if(sort==='cheap')list.sort((a,b)=>carBaseValue(a.m)-carBaseValue(b.m));
  else if(sort==='expensive')list.sort((a,b)=>carBaseValue(b.m)-carBaseValue(a.m));
  list.forEach(({m,i})=>{
@@ -4427,7 +4427,7 @@ function upgradeSources(){
  return owned;
 }
 function upgradeTargets(){
- return [...CARS.filter(x=>!x.promoOnly&&!x.dealerHidden),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_CARRERA_GT].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ return [...CARS.filter(x=>x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_CARRERA_GT].sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
@@ -4789,7 +4789,7 @@ function isLimitedBMW(m){
  return n.startsWith('BMW ')&&m.limited===true;
 }
 function brandCasePool(prefix){
- return CARS.filter(x=>!x.promoOnly&&String(x.name||'').startsWith(prefix))
+ return CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&String(x.name||'').startsWith(prefix))
   .sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function bmwCasePool(){return brandCasePool('BMW ');}
@@ -4797,7 +4797,7 @@ function mercedesCasePool(){return brandCasePool('Mercedes-Benz ');}
 function casePool(c){
  if(c.id==='mercedes')return mercedesCasePool();
  if(c.id==='bmw')return bmwCasePool();
- const sorted=CARS.filter(x=>!x.promoOnly&&!isLimitedMercedes(x)&&!isLimitedBMW(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
+ const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!isLimitedMercedes(x)&&!isLimitedBMW(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
  if(c.id==='legendary'){pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50);}
