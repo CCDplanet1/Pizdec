@@ -3608,7 +3608,7 @@ const CARS=[
 {name:'BMW XM',price:24000000,currency:'₽',rub:24000000,icon:'🚘'},
 {name:'BMW Z8',price:10000000,currency:'₽',rub:10000000,icon:'🚘'},
 {name:'Bugatti Chiron',price:3870000,currency:'$',rub:356040000,icon:'🚘'},
-{name:'Bugatti Divo',price:6800000,currency:'€',rub:686800000,icon:'🚘'},
+{name:'Bugatti Divo',image:'images/divo.png',price:6800000,currency:'€',rub:686800000,icon:'🚘'},
 {name:'Bugatti Veyron 16.4',price:2990000,currency:'$',rub:275080000,icon:'🚘'},
 {name:'Cadillac CT5-V',price:9100000,currency:'₽',rub:9100000,icon:'🚘'},
 {name:'Cadillac Escalade ESV',price:7000000,currency:'₽',rub:7000000,icon:'🚘'},
@@ -3718,7 +3718,7 @@ const CARS=[
 {name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true},
 {name:'Porsche 918 Spyder',price:991000,currency:'€',rub:100091000,icon:'🚘'},
 {name:'Porsche 930',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
-{name:'Porsche Carrera GT',image:'images/carrera.gt.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true},
+{name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true},
 {name:'Porsche Cayenne Coupe',price:18700000,currency:'₽',rub:18700000,icon:'🚘'},
 {name:'Porsche Gemballa Marsien',price:450000,currency:'€',rub:45450000,icon:'🚘'},
 {name:'Porsche Panamera II',price:13000000,currency:'₽',rub:13000000,icon:'🚘'},
@@ -3764,7 +3764,7 @@ const CARS=[
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
-const MYTHIC_CARRERA_GT={name:'Porsche Carrera GT',image:'images/carrera.gt.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'carrera_gt'};
+const MYTHIC_CARRERA_GT={name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'carrera_gt'};
 const UPGRADE_F40={name:'Ferrari F40',image:'images/f40.png',price:1500000000,currency:'₽',rub:1500000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH={name:'Lamborghini Countach',image:'images/count.png',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',image:'images/count800.png',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
@@ -4434,10 +4434,11 @@ function carVisual(m,cls='carImage'){
   'Ferrari F40':'images/f40.png',
   'Ferrari F50':'images/f50.png',
   'Porsche 911 GT3 RS':'images/gt3rs.png',
- 'Pagani Zonda Cinque':'images/zonda.png', 'Porsche Carrera GT':'images/carrera.gt.png',
+ 'Pagani Zonda Cinque':'images/zonda.png', 'Porsche Carrera GT':'images/carrera.png',
  'Mercedes-Benz G63 6x6':'images/6x6.png',
  'Mercedes-Benz 300SL':'images/300sl.png',
  'Mercedes-Benz CLK GTR':'images/clk.png',
+ 'Bugatti Divo':'images/divo.png',
  'Lamborghini Countach 800-4':'images/count800.png',
  'Lamborghini Countach':'images/count.png'
  };
