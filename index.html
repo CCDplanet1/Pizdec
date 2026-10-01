@@ -3849,7 +3849,21 @@ function mythicNumberValue(plateText,region){
 function plateInStorage(p,r){
  const key=plateFontText(p);
  const region=String(r||'');
- return inv.some(x=>plateFontText(x.p)===key&&String(x.r||'')===region);
+
+ const inStorage=inv.some(x=>
+  plateFontText(x.p)===key &&
+  String(x.r||'')===region
+ );
+ if(inStorage)return true;
+
+ const onCar=cars.some(car=>{
+  if(!car)return false;
+  const installed=car.installed;
+  const plate=installed?.p ?? car.plate;
+  const reg=installed?.r ?? car.region;
+  return plateFontText(plate)===key && String(reg||'')===region;
+ });
+ return onCar;
 }
 let mobileRollQueue=0;
 async function roll(){
@@ -3911,7 +3925,7 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
  const mythic=generateMythicPlate(chosen);
  plateText=mythic.plateText;r=mythic.r;e.desc=mythic.desc;
  e.v=mythicNumberValue(plateText,r);
-} // Полный номер (буквы/цифры + регион), уже лежащий в хранилище, повторно выпасть не может.
+} // Полный номер (буквы/цифры + регион), который лежит в хранилище ИЛИ установлен на машине, повторно выпасть не может.
  // Для редких фиксированных комбинаций меняем буквы/регион, пока найдём свободную.
  let duplicateTries=0;
  while(plateInStorage(plateText,r)&&duplicateTries++<2000){
