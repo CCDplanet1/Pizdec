@@ -4611,7 +4611,6 @@ function carVisual(m,cls='carImage'){
        'ВАЗ 21011':'images2/2101.png',
        'ВАЗ 2107':'images2/2107.png',
        'ВАЗ 2114':'images2/2114.png',
-       'Dodge Charger R/T':'images2/tranzit.png',
        'Nissan 350Z':'images2/350z.png',
        'Nissan 400Z':'images2/400z.png',
        'Mercedes-Benz AMG GT63':'images2/4gt63.png',
@@ -4701,7 +4700,14 @@ function carVisual(m,cls='carImage'){
        'Toyota Supra JZA80':'images2/supraa80.png',
        'BMW X5M E70':'images2/x5e70.png',
        'BMW X5M F95':'images2/x5f95.png',
-       'ЗАЗ 968':'images2/zaz968.png'
+       'ЗАЗ 968':'images2/zaz968.png',
+       'DeLorean DMC-12 BTTF':'images2/dmc12bttf.png',
+       'Dodge Charger R/T':'images2/chargerrt.png',
+       'Mercedes-Benz S63 W221':'images2/s63w211.png',
+       'Mitsubishi Lancer Evolution IX':'images2/evolutuion9.png',
+       'Mitsubishi Lancer Evolution VI':'images2/evolutiob6.png',
+       '2180 "Веста"':'images2/2180vesta.png',
+       'Ford Transit':'images2/tranzit.png'
 };
  const image=imageByName[carName]||m.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
