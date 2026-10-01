@@ -3564,7 +3564,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.89</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.93</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4749,44 +4749,44 @@ function carGlowClass(m){
  return 'carGlowNormal';
 }
 function isLimitedMercedes(m){
- const n=String(m?.name||m?.model||'');
- return n.startsWith('Mercedes-Benz ')&&m?.limited===true;
+ const n=String(m&& (m.name||m.model) ||'');
+ return n.startsWith('Mercedes-Benz ')&&m.limited===true;
 }
-function isLimitedBMW(m){const n=String(m?.name||m?.model||'');return n.startsWith('BMW ')&&m?.limited===true;} function bmwCasePool(){return CARS.filter(x=>!x.promoOnly&&String(x.name||'').startsWith('BMW ')).sort((a,b)=>carRubValue(a)-carRubValue(b));} function mercedesCasePool(){
- return CARS.filter(x=>!x.promoOnly&&String(x.name||'').startsWith('Mercedes-Benz ')&&x.name!=='Mercedes-Benz 300E Hammer AMG')
-   .sort((a,b)=>carRubValue(a)-carRubValue(b));
+function isLimitedBMW(m){
+ const n=String(m&& (m.name||m.model) ||'');
+ return n.startsWith('BMW ')&&m.limited===true;
 }
+function brandCasePool(prefix){
+ return CARS.filter(x=>!x.promoOnly&&String(x.name||'').startsWith(prefix))
+  .sort((a,b)=>carRubValue(a)-carRubValue(b));
+}
+function bmwCasePool(){return brandCasePool('BMW ');}
+function mercedesCasePool(){return brandCasePool('Mercedes-Benz ');}
 function casePool(c){
- if(c.id==='mercedes')return mercedesCasePool(); if(c.id==='bmw')return bmwCasePool();
- // Limited Mercedes are exclusive to the Mercedes-Benz container.
+ if(c.id==='mercedes')return mercedesCasePool();
+ if(c.id==='bmw')return bmwCasePool();
  const sorted=CARS.filter(x=>!x.promoOnly&&!isLimitedMercedes(x)&&!isLimitedBMW(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
- if(c.id==='legendary'){
-  pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50);
- }
+ if(c.id==='legendary'){pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50);}
  return pool;
 }
-function bmwWeight(m){const v=Math.max(1,carRubValue(m));return Math.max(.00001,Math.pow(1000000/v,.72));} function bmwCaseChance(m,pool){
- const limited=pool.filter(isLimitedBMW);
- const normal=pool.filter(x=>!isLimitedBMW(x));
- // Every limited BMW has an exact 1% chance.
- if(isLimitedBMW(m))return 0.01;
+function brandWeight(m){
+ const v=Math.max(1,carRubValue(m));
+ return Math.max(.00001,Math.pow(1000000/v,.72));
+}
+function brandCaseChance(m,pool,isLimited){
+ const limited=pool.filter(isLimited),normal=pool.filter(x=>!isLimited(x));
+ if(isLimited(m))return .01;
  const limitedShare=Math.min(.99,limited.length*.01);
  const normalShare=1-limitedShare;
- const total=normal.reduce((sum,x)=>sum+bmwWeight(x),0);
- return total?normalShare*(bmwWeight(m)/total):0;
+ const total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
+ return total?normalShare*(brandWeight(m)/total):0;
 }
-function mercedesCaseChance(m,pool){
- const limited=pool.filter(isLimitedMercedes);
- const normal=pool.filter(x=>!isLimitedMercedes(x));
- // Every limited Mercedes has an exact 1% chance.
- if(isLimitedMercedes(m))return 0.01;
- const limitedShare=Math.min(.99,limited.length*.01);
- const normalShare=1-limitedShare;
- const total=normal.reduce((sum,x)=>sum+mercedesWeight(x),0);
- return total?normalShare*(mercedesWeight(m)/total):0;
-}
+function bmwWeight(m){return brandWeight(m);}
+function mercedesWeight(m){return brandWeight(m);}
+function bmwCaseChance(m,pool){return brandCaseChance(m,pool,isLimitedBMW);}
+function mercedesCaseChance(m,pool){return brandCaseChance(m,pool,isLimitedMercedes);}
 function caseExpectedValue(pool,c){
  if(c?.id==='bmw')return pool.reduce((sum,m)=>sum+carRubValue(m)*bmwCaseChance(m,pool),0);
  if(c?.id==='mercedes'){
@@ -4810,16 +4810,16 @@ function casePrice(c){
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
 }
 function weightedCaseCar(pool,c){
- if(c?.id==='bmw'){let r=Math.random(),acc=0;for(const m of pool){acc+=bmwCaseChance(m,pool);if(r<acc)return m;}return pool[pool.length-1];}
- if(c?.id==='mercedes'){
-  // Exact probabilities: each limited Mercedes = 1%; remaining 97% is split
-  // between ordinary Mercedes according to their prices.
-  let r=Math.random(),acc=0;
-  for(const m of pool){
-   acc+=mercedesCaseChance(m,pool);
-   if(r<acc)return m;
-  }
-  return pool[pool.length-1];
+ if(c&& (c.id==='bmw'||c.id==='mercedes')){
+  const isLim=c.id==='bmw'?isLimitedBMW:isLimitedMercedes;
+  const limited=pool.filter(isLim),normal=pool.filter(x=>!isLim(x));
+  const limitedShare=Math.min(.99,limited.length*.01),r=Math.random();
+  if(r<limitedShare)return limited[Math.min(limited.length-1,Math.floor(r/.01))];
+  const total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
+  if(!normal.length||!total)return limited[limited.length-1]||pool[0];
+  let n=((r-limitedShare)/(1-limitedShare))*total;
+  for(const m of normal){n-=brandWeight(m);if(n<=0)return m}
+  return normal[normal.length-1];
  }
  const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
  const specialRoll=Math.random();
@@ -5044,7 +5044,10 @@ function renderContainers(){
    <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
 }
-function rouletteItem(m){return `<div class="caseItem ${carGlowClass(m)}"><div class="ci">${carVisual(m,'caseCarImage')}</div><b>${m.name}</b><small>${money(carRubValue(m))}</small></div>`;}
+function rouletteItem(m,light=false){
+ const visual=light?'<div class="carIcon" style="font-size:42px">🚘</div>':carVisual(m,'caseCarImage');
+ return `<div class="caseItem ${carGlowClass(m)}"><div class="ci">${visual}</div><b>${m.name}</b><small>${money(carRubValue(m))}</small></div>`;
+}
 function hideCaseOpening(){
  const wrap=$('caseRouletteWrap'),result=$('caseResult');
  if(wrap)wrap.style.display='none';
@@ -5070,7 +5073,7 @@ async function animateFiveCaseWinners(winners,pool){
  const totalItems=winnerIndex+9;
  const items=[];
  for(let i=0;i<totalItems;i++)items.push(i===winnerIndex?winner:pool[rnd(pool.length)]);
- track.innerHTML=items.map(rouletteItem).join('');
+ track.innerHTML=items.map(x=>rouletteItem(x,false)).join('');
 
  // Start with several cards already to the left, like a CS case opening.
  const startX=-(itemW*(fast?2:3)+rnd(80));
@@ -5092,7 +5095,13 @@ async function animateFiveCaseWinners(winners,pool){
  roulette.classList.add('caseRouletteGlow');
  await sleep(fast?500:850);
  roulette.classList.remove('caseRouletteGlow');
-}async function openFiveContainers(id){
+}function resetCaseOpenState(){
+ caseRolling=false;
+ const roulette=$('caseRoulette');
+ if(roulette){roulette.classList.remove('running');roulette.classList.remove('caseRouletteGlow')}
+ renderContainers();
+}
+async function openFiveContainers(id){
  if(caseRolling||pendingCasePrize||pendingCasePrizes.length)return;
  const c=CASE_DEFS.find(x=>x.id===id);if(!c)return;
  const pool=casePool(c),price=casePrice(c),totalCost=price*5;
@@ -5179,56 +5188,31 @@ function sellAllCasePrizes(){
 }
 
 async function openContainer(id){
- if(caseRolling||pendingCasePrize||pendingCasePrizes.length)return;
+ if(caseRolling)return;
+ if(pendingCasePrize||pendingCasePrizes.length){hideCaseOpening();return}
  const c=CASE_DEFS.find(x=>x.id===id);if(!c)return;
  const pool=casePool(c),price=casePrice(c);
  if(bal<price){alert('Недостаточно денег для открытия контейнера.');return}
- if(!pool.length)return;
+ if(!pool.length){alert('В этом контейнере нет машин.');return}
  caseRolling=true;bal-=price;spent+=price;update();renderContainers();
  try{
-   let winner=weightedCaseCar(pool,c);
-   const limitedResolved=await resolveLimitedCaseWinner(winner,pool);
-   winner=limitedResolved.winner;
-   const hammerSerial=limitedResolved.serial;
-   await animateCase(pool,winner);
-   const rp=randomPlateForCar();
-   pendingCasePrize={
-     car:{id:++carSeq,model:winner.model||winner.name,image:winner.image||null,price:winner.price,currency:winner.currency,rub:winner.rub||winner.price,icon:winner.icon||'🚘',forcedRarity:winner.forcedRarity||null,limitedSerial:hammerSerial||null,limitedTotal:hammerSerial?54:null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null},
-     caseName:c.name,
-     casePrice:price,
-     value:carRubValue(winner)
-   };
-   const result=$('caseResult'),delta=pendingCasePrize.value-price;
-   result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
-   result.innerHTML=`<span style="color:var(--muted)">Выпало из «${c.name}»</span>
-     <strong>${pendingCasePrize.car.model}${hammerSerialText(pendingCasePrize.car)?' · '+hammerSerialText(pendingCasePrize.car):''}</strong>
-     <span>Стоимость в автосалоне: ${money(pendingCasePrize.value)}</span><br>
-     <small style="color:var(--muted)">Контейнер: ${money(price)} · ${delta>=0?'выгода':'разница'}: ${delta>=0?'+':''}${money(delta)}</small>
-     <div class="casePrizeActions">
-       <button id="caseKeepBtn" class="caseKeep" onclick="keepCasePrize()" ${cars.length>=garageCap?'disabled':''}>${cars.length>=garageCap?'Гараж заполнен':'Оставить в гараже'}</button>
-       <button class="caseSell" onclick="sellCasePrize()">Продать за ${money(pendingCasePrize.value)}</button>
-     </div>`;
+  let winner=weightedCaseCar(pool,c);
+  if(!winner)throw new Error('Не удалось выбрать машину');
+  const limitedResolved=await resolveLimitedCaseWinner(winner,pool);
+  winner=(limitedResolved&&limitedResolved.winner)||winner;
+  const hammerSerial=(limitedResolved&&limitedResolved.serial)||null;
+  await animateCase(pool,winner);
+  const rp=randomPlateForCar();
+  pendingCasePrize={car:{id:++carSeq,model:winner.model||winner.name,image:winner.image||null,price:winner.price,currency:winner.currency,rub:winner.rub||winner.price,icon:winner.icon||'🚘',forcedRarity:winner.forcedRarity||null,limitedSerial:hammerSerial||null,limitedTotal:hammerSerial?54:null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null},caseName:c.name,casePrice:price,value:carRubValue(winner)};
+  const result=$('caseResult'),delta=pendingCasePrize.value-price;
+  result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
+  result.innerHTML=`<span style="color:var(--muted)">Выпало из ${c.name}</span><div class="caseResultCar ${carGlowClass(winner)}">${carVisual(winner,'caseResultImage')}<div><strong>${winner.name}</strong><small>${money(pendingCasePrize.value)} · ${delta>=0?'+':''}${money(delta)}</small></div></div><div class="caseResultActions"><button class="buy" onclick="keepCasePrize()">Забрать в гараж</button><button class="sell" onclick="sellCasePrize()">Продать за ${money(pendingCasePrize.value)}</button></div>`;
+ }catch(e){
+  console.error('Container open failed:',c&&c.id,e);
+  bal+=price;spent-=price;update();
+  alert('Ошибка открытия контейнера. Деньги возвращены. '+String((e&&e.message)||e||''));
  }finally{
-   caseRolling=false;
-   update();renderGarage();renderDealer();renderUpgrader();renderContainers();
- }
-}
-function refreshPendingCasePrize(){
- const free=Math.max(0,garageCap-cars.length);
- const btn=$('caseKeepBtn');
- if(btn&&pendingCasePrize){
-   const full=free<1;
-   btn.disabled=full;
-   btn.textContent=full?'Гараж заполнен':'Оставить в гараже';
- }
- if(pendingCasePrizes.length){
-   if(typeof updateFiveCaseChoiceButton==='function')updateFiveCaseChoiceButton();
-   const allBtn=$('caseKeepAllBtn');
-   if(allBtn){
-     const need=pendingCasePrizes.length;
-     allBtn.disabled=free<need;
-     allBtn.textContent=free<need?`Нужно ${need} свободных мест`:'Забрать все в гараж';
-   }
+  resetCaseOpenState();
  }
 }
 function keepCasePrize(){
