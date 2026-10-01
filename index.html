@@ -3484,14 +3484,20 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 .caseFiveChoice{position:relative;min-width:0;padding:11px 8px;border:1px solid #303b49;border-radius:12px;background:linear-gradient(160deg,#202a36,#111821);cursor:pointer;user-select:none;touch-action:manipulation;transition:.16s}
 .caseFiveChoice.selectedSell{border-color:#ef6464;box-shadow:inset 0 0 0 1px rgba(239,100,100,.38);opacity:.72}
 .caseFiveChoice input{position:absolute;top:8px;right:8px;width:18px;height:18px}
+
 .caseFiveChoice .choiceVisual{height:54px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .caseFiveChoice .choiceVisual .carImage{max-width:100%;max-height:52px}
 .caseFiveChoice b{display:block;font-size:11px;margin-top:5px}.caseFiveChoice small{display:block;font-size:10px;color:#9ca8b7;margin-top:3px}
 .caseChoiceHint{display:block;color:var(--muted);margin:8px 0}
 @media(max-width:700px){.caseFiveChoiceList{grid-template-columns:repeat(5,145px);overflow-x:auto;padding-bottom:7px;-webkit-overflow-scrolling:touch}}
+</style><style>
+.garageSortWrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.garageSortWrap label{font-size:12px;color:var(--muted);font-weight:800}
+.garageSortWrap select{min-width:210px;padding:9px 11px;border-radius:10px;border:1px solid #303b49;background:#121a23;color:var(--text)}
+@media(max-width:700px){.garageSortWrap{width:100%;margin-top:8px}.garageSortWrap select{width:100%;min-width:0}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -3514,7 +3520,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <option value="expensive">Сначала дорогие</option>
 </select></div>
 <div class="dealerGrid" id="dealer"></div></section>
-<section class="page" id="garagePage"><div class="storeHead"><div><h2>Гараж</h2><div class="count" id="garageCount">0 машин</div></div></div><div id="garage"></div></section>
+<section class="page" id="garagePage"><div class="storeHead"><div><h2>Гараж</h2><div class="count" id="garageCount">0 машин</div></div><div class="garageSortWrap"><label for="garageSort">Сортировка</label><select id="garageSort" onchange="renderGarage()"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="priceDesc">Цена: дорогие → дешёвые</option><option value="priceAsc">Цена: дешёвые → дорогие</option><option value="rarity">По редкости</option><option value="name">По названию</option><option value="serial">По серийному номеру</option></select></div></div><div id="garage"></div></section>
 
 
 
@@ -3711,7 +3717,7 @@ const CARS=[
 {name:'Mercedes-Benz C63 Edition 507',price:2600000,currency:'₽',rub:2600000,icon:'🚘'},
 {name:'Mercedes-Benz C63 W204',price:4900000,currency:'₽',rub:4900000,icon:'🚘'},
 {name:'Mercedes-Benz C63 W205',price:6700000,currency:'₽',rub:6700000,icon:'🚘'},
-{name:'Mercedes-Benz CLK GTR',price:99000000,currency:'₽',rub:99000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true},
+{name:'Mercedes-Benz CLK GTR',price:150000000,currency:'₽',rub:150000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'clk_gtr'},
 {name:'Mercedes-Benz CLS 55 AMG',price:3670000,currency:'₽',rub:3670000,icon:'🚘'},
 {name:'Mercedes-Benz CLS 63 W218',price:4700000,currency:'₽',rub:4700000,icon:'🚘'},
 {name:'Mercedes-Benz E55 AMG W210',price:850000,currency:'₽',rub:850000,icon:'🚘'},
@@ -3909,7 +3915,7 @@ function update(){
    $('plateButton').disabled=true;
    $('msg').textContent='Хранилище заполнено ('+inv.length+'/'+storageCap+'). Продай номера или улучши хранилище.';
  }
-let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).reduce((s,x)=>s+x.v,0);$('balance').textContent=money(bal);$('badge').textContent=inv.length;$('count').textContent=inv.length+' номеров';$('total').textContent=money(sellableTotal);$('sellAll').disabled=!inv.some(x=>!x.locked);$('sRolls').textContent=rolls;$('sSpent').textContent=money(spent);$('sEarned').textContent=money(earned);$('sBalance').textContent=money(bal);$('sStored').textContent=inv.length;$('sCollection').textContent=money(total);$('plateButton').disabled=inv.length>=storageCap;$('garageBadge').textContent=cars.length;$('garageCount').textContent=cars.length+' машин';renderDealerButtons();const rc=$('regionChoice');if(rc){const need=COST+(rc.value?REGION_FEE:0);refreshRollButton();}if(bal<COST)$('msg').textContent=inv.length?'Не хватает денег — продай номер из хранилища':'Недостаточно денег'
+let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).reduce((s,x)=>s+x.v,0);$('balance').textContent=money(bal);$('badge').textContent=inv.length;$('count').textContent=inv.length+' номеров';$('total').textContent=money(sellableTotal);$('sellAll').disabled=!inv.some(x=>!x.locked);$('sRolls').textContent=rolls;$('sSpent').textContent=money(spent);$('sEarned').textContent=money(earned);$('sBalance').textContent=money(bal);$('sStored').textContent=inv.length;$('sCollection').textContent=money(total);$('plateButton').disabled=inv.length>=storageCap;$('garageBadge').textContent=cars.length;$('garageCount').textContent=`${cars.length}/${garageCap}`;renderDealerButtons();const rc=$('regionChoice');if(rc){const need=COST+(rc.value?REGION_FEE:0);refreshRollButton();}if(bal<COST)$('msg').textContent=inv.length?'Не хватает денег — продай номер из хранилища':'Недостаточно денег'
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);
  if(typeof renderContainers==='function'&&!caseRolling)setTimeout(renderContainers,0);
 }
@@ -4169,6 +4175,9 @@ function sellCar(carId){ let protectedCar=cars.find(c=>c.id===carId); if(protect
  const value=Math.round(carRubValue(car)/100)*100;
  bal+=value;earned+=value;cars.splice(i,1);
  update();render();renderDealer();renderGarage();renderUpgrader();
+ // Если игрок освободил место, пока приз из контейнера ждёт решения,
+ // сразу обновляем кнопку получения машины.
+ if(typeof refreshPendingCasePrize==='function')refreshPendingCasePrize();
 }
 function renderDealerButtons(){
  document.querySelectorAll('[data-buy]').forEach(b=>{
@@ -4276,7 +4285,25 @@ function renderGarage(){
  let box=$('garage');box.innerHTML='';
  if(!cars.length){box.innerHTML='<div class="garageEmpty">Гараж пуст. Купи первую машину в автосалоне.</div>';return}
  let g=document.createElement('div');g.className='garageGrid';
- cars.forEach(car=>{
+ const garageSortMode=$('garageSort')?.value||'new';
+ const rarityOrder={deleted:7,mythic:6,limited:5,legendary:4,epic:3,rare:2,uncommon:1,common:0};
+ const garageCars=[...cars].sort((a,b)=>{
+  if(garageSortMode==='old')return Number(a.id||0)-Number(b.id||0);
+  if(garageSortMode==='priceDesc')return carRubValue(b)-carRubValue(a);
+  if(garageSortMode==='priceAsc')return carRubValue(a)-carRubValue(b);
+  if(garageSortMode==='rarity'){
+   const ar=rarityOrder[carRarity(a).rank]??0,br=rarityOrder[carRarity(b).rank]??0;
+   return br-ar||carRubValue(b)-carRubValue(a);
+  }
+  if(garageSortMode==='name')return String(a.model||'').localeCompare(String(b.model||''),'ru');
+  if(garageSortMode==='serial'){
+   const as=a.model==='Mercedes-Benz 300E Hammer AMG'?Number(a.limitedSerial||0):Number(a.globalSerial||0);
+   const bs=b.model==='Mercedes-Benz 300E Hammer AMG'?Number(b.limitedSerial||0):Number(b.globalSerial||0);
+   return (as||Number.MAX_SAFE_INTEGER)-(bs||Number.MAX_SAFE_INTEGER);
+  }
+  return Number(b.id||0)-Number(a.id||0);
+ });
+ garageCars.forEach(car=>{
   let c=document.createElement('div'),cr=carRarity(car);c.className='carCard '+carGlowClass(car);
   let opts=inv.map(x=>`<option value="${x.id}">${x.p} ${x.r} — ${money(x.v)}</option>`).join('');
   let sale=Math.round(carRubValue(car)/100)*100;
@@ -4462,7 +4489,7 @@ const CASE_DEFS=[
  {id:'uncommon',name:'Необычный контейнер',cls:'case-uncommon',icon:'🟩',from:.18,to:.54,desc:'Средний ценовой сегмент автосалона.'},
  {id:'rare',name:'Редкий контейнер',cls:'case-rare',icon:'🟦',from:.42,to:.73,desc:'Спорт и премиум из автосалона.'},
  {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары. Mercedes-Benz G63 6x6 — 1%.'},
- {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Эксклюзивы: Porsche Carrera GT — 2%, Ferrari F50 — 1%. Остальное — дорогие автомобили.'}
+ {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Эксклюзивы: Porsche Carrera GT — 2%, Ferrari F50 — 1%. Mercedes-Benz CLK GTR — 2%.'}
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
@@ -4521,18 +4548,22 @@ function casePool(c){
   const g63=CARS.find(x=>x.name==='Mercedes-Benz G63 6x6');
   if(g63)pool.push(g63);
  }
- if(c.id==='legendary'){pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50)}
+ if(c.id==='legendary'){
+  pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50);
+  const clk=CARS.find(x=>x.name==='Mercedes-Benz CLK GTR');
+  if(clk&&!pool.includes(clk))pool.push(clk);
+ }
  return pool;
 }
 function caseExpectedValue(pool){
  const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
- const g63=pool.find(x=>x.name==='Mercedes-Benz G63 6x6'&&x.caseExclusive==='g63_6x6');
- const base=pool.filter(x=>x!==carrera&&x!==f50&&x!==g63);
+ const g63=pool.find(x=>x.name==='Mercedes-Benz G63 6x6'&&x.caseExclusive==='g63_6x6'); const clk=pool.find(x=>x.name==='Mercedes-Benz CLK GTR');
+ const base=pool.filter(x=>x!==carrera&&x!==f50&&x!==g63&&x!==clk);
  let total=0,wSum=0;
  for(let i=0;i<base.length;i++){let w=Math.pow(base.length-i,1.35);total+=carRubValue(base[i])*w;wSum+=w}
  const baseEv=wSum?total/wSum:0;
  if(g63)return baseEv*.99+carRubValue(g63)*.01;
- if(carrera&&f50)return baseEv*.97+carRubValue(carrera)*.02+carRubValue(f50)*.01;
+ if(carrera&&f50&&clk)return baseEv*.95+carRubValue(carrera)*.02+carRubValue(f50)*.01+carRubValue(clk)*.02; if(carrera&&f50)return baseEv*.97+carRubValue(carrera)*.02+carRubValue(f50)*.01;
  if(carrera)return baseEv*.98+carRubValue(carrera)*.02;
  if(f50)return baseEv*.99+carRubValue(f50)*.01;
  return baseEv;
@@ -4546,12 +4577,12 @@ function casePrice(c){
 }
 function weightedCaseCar(pool){
  const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
- const g63=pool.find(x=>x.name==='Mercedes-Benz G63 6x6'&&x.caseExclusive==='g63_6x6');
+ const g63=pool.find(x=>x.name==='Mercedes-Benz G63 6x6'&&x.caseExclusive==='g63_6x6'); const clk=pool.find(x=>x.name==='Mercedes-Benz CLK GTR');
  const specialRoll=Math.random();
  if(g63&&specialRoll<0.01)return g63;
  if(carrera&&specialRoll<0.02)return carrera;
- if(f50&&specialRoll<0.03)return f50;
- const base=pool.filter(x=>x!==carrera&&x!==f50&&x!==g63);
+ if(f50&&specialRoll<0.03)return f50; if(clk&&specialRoll<0.05)return clk;
+ const base=pool.filter(x=>x!==carrera&&x!==f50&&x!==g63&&x!==clk);
  let weights=base.map((_,i)=>Math.pow(base.length-i,1.35));
  let total=weights.reduce((a,b)=>a+b,0),r=Math.random()*total;
  for(let i=0;i<base.length;i++){r-=weights[i];if(r<=0)return base[i]}
@@ -4839,7 +4870,7 @@ async function animateFiveCaseWinners(winners){
    const result=$('caseResult');
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
    result.innerHTML=`<span style="color:var(--muted)">Открыто 5 × «${c.name}»</span>
- <small class="caseChoiceHint">Выбери машины, которые хочешь продать. Остальные отправятся в гараж.</small>
+ <small class="caseChoiceHint">Отметь галочкой машины, которые нужно ПРОДАТЬ. Неотмеченные останутся и отправятся в гараж.</small>
  <div class="caseFiveChoiceList">
  ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}" id="caseChoice${i}">
   <input type="checkbox" onchange="toggleFiveCaseSell(${i},this.checked)">
@@ -4850,7 +4881,7 @@ async function animateFiveCaseWinners(winners){
  </div>
  <small style="color:var(--muted)">Общая стоимость: ${money(totalValue)} · Свободно мест в гараже: ${free}</small>
  <div class="casePrizeActions">
-  <button id="caseMixedActionBtn" class="caseKeep" onclick="resolveSelectedCasePrizes()">Оставить 5 · Продать 0</button>
+  <button id="caseMixedActionBtn" class="caseKeep" onclick="resolveSelectedCasePrizes()">Подтвердить: продать 0 · оставить 5</button>
   <button class="caseSell" onclick="sellAllCasePrizes()">Продать все за ${money(totalValue)}</button>
  </div>`;
  }finally{
@@ -4868,7 +4899,7 @@ function updateFiveCaseChoiceButton(){
  const sell=pendingCasePrizes.filter(x=>x.sellSelected),keep=pendingCasePrizes.length-sell.length;
  const value=sell.reduce((sum,x)=>sum+x.value,0),free=Math.max(0,garageCap-cars.length);
  btn.disabled=keep>free;
- btn.textContent=keep>free?'Нужно '+keep+' мест в гараже':'Оставить '+keep+' · Продать '+sell.length+(sell.length?' за '+money(value):'');
+ btn.textContent=keep>free?'Нужно '+keep+' мест в гараже':'Подтвердить: продать '+sell.length+' · оставить '+keep+(sell.length?' · +'+money(value):'');
 }
 function resolveSelectedCasePrizes(){
  if(!pendingCasePrizes.length)return;
@@ -4935,17 +4966,21 @@ async function openContainer(id){
  }
 }
 function refreshPendingCasePrize(){
+ const free=Math.max(0,garageCap-cars.length);
  const btn=$('caseKeepBtn');
  if(btn&&pendingCasePrize){
-   const full=cars.length>=garageCap;
+   const full=free<1;
    btn.disabled=full;
    btn.textContent=full?'Гараж заполнен':'Оставить в гараже';
  }
- const allBtn=$('caseKeepAllBtn');
- if(allBtn&&pendingCasePrizes.length){
-   const free=garageCap-cars.length,need=pendingCasePrizes.length;
-   allBtn.disabled=free<need;
-   allBtn.textContent=free<need?`Нужно ${need} свободных мест`:'Забрать все в гараж';
+ if(pendingCasePrizes.length){
+   if(typeof updateFiveCaseChoiceButton==='function')updateFiveCaseChoiceButton();
+   const allBtn=$('caseKeepAllBtn');
+   if(allBtn){
+     const need=pendingCasePrizes.length;
+     allBtn.disabled=free<need;
+     allBtn.textContent=free<need?`Нужно ${need} свободных мест`:'Забрать все в гараж';
+   }
  }
 }
 function keepCasePrize(){
