@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.96</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.98</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -3693,13 +3693,13 @@ const CARS=[
 {name:'Dodge Viper GTS',price:9700000,currency:'₽',rub:9700000,icon:'🚘'},
 {name:'Ferrari 12Cilindri',price:440000,currency:'$',rub:40480000,icon:'🚘'},
 {name:'Ferrari 488 Pista',price:350000,currency:'$',rub:32200000,icon:'🚘'},
-{name:'Ferrari 812 Competizione',price:600000,currency:'$',rub:55200000,icon:'🚘'},
+{name:'Ferrari 812 Competizione',price:200000000,currency:'₽',rub:200000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true,limited:true,caseExclusive:'ferrari'},
 {name:'Ferrari 812 Superfast',price:370000,currency:'€',rub:37370000,icon:'🚘'},
-{name:'Ferrari F430',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
+{name:'Ferrari F430',price:50000000,currency:'₽',rub:50000000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'ferrari'},
 {name:'Ferrari LaFerrari',price:4500000,currency:'$',rub:414000000,icon:'🚘'},
 {name:'Ferrari Purosangue',price:600000,currency:'$',rub:55200000,icon:'🚘'},
 {name:'Ferrari SF90',price:515000,currency:'$',rub:47380000,icon:'🚘'},
-{name:'Ferrari SF90XX',price:515000,currency:'$',rub:47380000,icon:'🚘'},
+{name:'Ferrari SF90XX',price:150000000,currency:'₽',rub:150000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'ferrari'},
 {name:'Ford Bronco',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Ford F-150 Raptor',price:50000,currency:'$',rub:4600000,icon:'🚘'},
 {name:'Ford GT',price:27000000,currency:'₽',rub:27000000,icon:'🚘'},
@@ -3748,7 +3748,7 @@ const CARS=[
 {name:'Mercedes-Benz E63 AMG W211',price:3900000,currency:'₽',rub:3900000,icon:'🚘'},
 {name:'Mercedes-Benz E63 AMG W212',price:6500000,currency:'₽',rub:6500000,icon:'🚘'},
 {name:'Mercedes-Benz E63s W213',price:9500000,currency:'₽',rub:9500000,icon:'🚘'},
-{name:'Mercedes-Benz G63 6x6',price:150000000,currency:'₽',rub:150000000,icon:'🚘',forcedRarity:'epic',dealerHidden:true,limited:true,caseExclusive:'g63_6x6'},
+{name:'Mercedes-Benz G63 6x6',price:150000000,currency:'₽',rub:150000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'g63_6x6'},
 {name:'Mercedes-Benz G63 AMG III',price:25000000,currency:'₽',rub:25000000,icon:'🚘'},
 {name:'Mercedes-Benz G65 AMG',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Mercedes-Benz GLE',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
@@ -4427,7 +4427,7 @@ function upgradeSources(){
  return owned;
 }
 function upgradeTargets(){
- return [...CARS.filter(x=>x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_CARRERA_GT].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ return [...CARS.filter(x=>x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden&&!isLimitedFerrari(x)),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_CARRERA_GT].sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
@@ -4534,7 +4534,7 @@ const CASE_DEFS=[
  {id:'rare',name:'Редкий контейнер',cls:'case-rare',icon:'🟦',from:.42,to:.73,desc:'Спорт и премиум из автосалона.'},
  {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары. Лимитированные Mercedes-Benz отсюда убраны.'},
  {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Эксклюзивы: Porsche Carrera GT — 2%, Ferrari F50 — 1%. Лимитированные Mercedes-Benz отсюда убраны.'},
- {id:'mercedes',name:'Mercedes-Benz контейнер',cls:'case-legendary',icon:'⭐',desc:'Только Mercedes-Benz. 300SL, CLK GTR и G63 6x6 — по 1% каждый и выпадают только здесь.'}, {id:'bmw',name:'BMW контейнер',cls:'case-rare',icon:'🔵',desc:'Только BMW. Лимитированные 3.0 CSL, 850 CSI, M1 E26 и Z8 выпадают только здесь.'}
+ {id:'mercedes',name:'Mercedes-Benz контейнер',cls:'case-legendary',icon:'⭐',desc:'Только Mercedes-Benz. 300SL, CLK GTR и G63 6x6 — по 1% каждый и выпадают только здесь.'}, {id:'bmw',name:'BMW контейнер',cls:'case-rare',icon:'🔵',desc:'Только BMW. Лимитированные 3.0 CSL, 850 CSI, M1 E26 и Z8 выпадают только здесь.'}, {id:'ferrari',name:'Ferrari контейнер',cls:'case-legendary',icon:'🔴',desc:'Только Ferrari. 812 Competizione — 1%, F430 — 5%, SF90XX — 2%.'}
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
@@ -4784,6 +4784,7 @@ function isLimitedMercedes(m){
  const n=String(m&& (m.name||m.model) ||'');
  return n.startsWith('Mercedes-Benz ')&&m.limited===true;
 }
+function isLimitedFerrari(m){const n=String(m&&(m.name||m.model)||'');return n.startsWith('Ferrari ')&&m.limited===true;}
 function isLimitedBMW(m){
  const n=String(m&& (m.name||m.model) ||'');
  return n.startsWith('BMW ')&&m.limited===true;
@@ -4793,11 +4794,13 @@ function brandCasePool(prefix){
   .sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function bmwCasePool(){return brandCasePool('BMW ');}
+function ferrariCasePool(){return brandCasePool('Ferrari ');}
 function mercedesCasePool(){return brandCasePool('Mercedes-Benz ');}
 function casePool(c){
  if(c.id==='mercedes')return mercedesCasePool();
  if(c.id==='bmw')return bmwCasePool();
- const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!isLimitedMercedes(x)&&!isLimitedBMW(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
+ if(c.id==='ferrari')return ferrariCasePool();
+ const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!isLimitedMercedes(x)&&!isLimitedBMW(x)&&!isLimitedFerrari(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
  if(c.id==='legendary'){pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50);}
@@ -4819,7 +4822,16 @@ function bmwWeight(m){return brandWeight(m);}
 function mercedesWeight(m){return brandWeight(m);}
 function bmwCaseChance(m,pool){return brandCaseChance(m,pool,isLimitedBMW);}
 function mercedesCaseChance(m,pool){return brandCaseChance(m,pool,isLimitedMercedes);}
+function ferrariCaseChance(m,pool){
+ const n=String(m&&(m.name||m.model)||'');
+ if(n==='Ferrari 812 Competizione')return .01;
+ if(n==='Ferrari F430')return .05;
+ if(n==='Ferrari SF90XX')return .02;
+ const normal=pool.filter(x=>!isLimitedFerrari(x)),total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
+ return total?.92*(brandWeight(m)/total):0;
+}
 function caseExpectedValue(pool,c){
+ if(c?.id==='ferrari')return pool.reduce((sum,m)=>sum+carRubValue(m)*ferrariCaseChance(m,pool),0);
  if(c?.id==='bmw')return pool.reduce((sum,m)=>sum+carRubValue(m)*bmwCaseChance(m,pool),0);
  if(c?.id==='mercedes'){
   return pool.reduce((sum,m)=>sum+carRubValue(m)*mercedesCaseChance(m,pool),0);
@@ -4835,6 +4847,7 @@ function caseExpectedValue(pool,c){
  return baseEv;
 }
 function casePrice(c){
+ if(c.id==='ferrari')return 55000000;
  if(c.id==='legendary')return 69990000;
  if(c.id==='mercedes'||c.id==='bmw')return 6500000;
  const pool=casePool(c),ev=caseExpectedValue(pool,c);
@@ -4842,6 +4855,16 @@ function casePrice(c){
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
 }
 function weightedCaseCar(pool,c){
+ if(c&&c.id==='ferrari'){
+  const r=Math.random();
+  if(r<.01)return pool.find(x=>x.name==='Ferrari 812 Competizione');
+  if(r<.06)return pool.find(x=>x.name==='Ferrari F430');
+  if(r<.08)return pool.find(x=>x.name==='Ferrari SF90XX');
+  const normal=pool.filter(x=>!isLimitedFerrari(x)),total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
+  let n=((r-.08)/.92)*total;
+  for(const m of normal){n-=brandWeight(m);if(n<=0)return m}
+  return normal[normal.length-1];
+ }
  if(c&& (c.id==='bmw'||c.id==='mercedes')){
   const isLim=c.id==='bmw'?isLimitedBMW:isLimitedMercedes;
   const limited=pool.filter(isLim),normal=pool.filter(x=>!isLim(x));
@@ -4864,6 +4887,7 @@ function weightedCaseCar(pool,c){
  return base[base.length-1];
 }
 function caseChancePercent(m,pool,c){
+ if(c?.id==='ferrari')return ferrariCaseChance(m,pool)*100;
  if(c?.id==='mercedes')return mercedesCaseChance(m,pool)*100; if(c?.id==='bmw')return bmwCaseChance(m,pool)*100;
  return null;
 }
