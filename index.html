@@ -3945,23 +3945,15 @@ async function majesticRollAnimation(){
 }
 
 function generateMythicPlate(chosenRegion){
- const requested=String(chosenRegion||'');
- const allowed=['77','97','99','777','78','98'];
- let region=allowed.includes(requested)?requested:allowed[rnd(allowed.length)];
- let plateText,desc;
-
- if(region==='97'){
-  if(Math.random()<.5){
-   let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}
-   plateText='А'+md+'МР';desc='Мифический · АМР97';
-  }else{
-   const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;desc='Мифический · 777 97';
-  }
- }else if(region==='78'||region==='98'){
-  const FL=L[rnd(L.length)];
-  // На 78/98 мифические фулл-блаты теперь именно с 777.
-  plateText=FL+'777'+FL+FL;
-  desc='Мифический · фулл-блат 777 '+region;
+ const requested=String(chosenRegion||''),allowed=['77','99','97','777','98','78'];
+ const repeatDigits=['111','222','333','444','555','666','777','888','999'];
+ let region=allowed.includes(requested)?requested:allowed[rnd(allowed.length)],plateText,desc;
+ if(Math.random()<0.68){
+  const md=repeatDigits[rnd(repeatDigits.length)],ML=L[rnd(L.length)];
+  plateText=ML+md+ML+ML;desc='Мифический · фулл-блат '+md+' '+region;
+ }else if(region==='97'&&Math.random()<.5){
+  let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}
+  plateText='А'+md+'МР';desc='Мифический · АМР97';
  }else{
   const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;desc='Мифический · 777 '+region;
  }
@@ -4653,6 +4645,7 @@ async function migrateLegacyHammerSerials(){
 
 function mobileCaseTap(id,count=1){
  if(caseRolling)return;
+ if(pendingCasePrize||pendingCasePrizes.length){pendingCasePrize=null;pendingCasePrizes=[];hideCaseOpening()}
  return count===5?openFiveContainers(id):openContainer(id);
 }
 function renderContainers(){
@@ -4660,8 +4653,8 @@ function renderContainers(){
  root.innerHTML=CASE_DEFS.map(c=>{
    const pool=casePool(c),price=casePrice(c),min=pool.length?Math.min(...pool.map(carRubValue)):0,max=pool.length?Math.max(...pool.map(carRubValue)):0;
    const exclusives=c.id==='legendary'?'<br>':'';
-   return `<div class="caseCard ${c.cls}"><div class="caseIcon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price?'disabled':''}>Открыть контейнер</button>
-   <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
+   return `<div class="caseCard ${c.cls}"><div class="caseIcon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||bal<price?'disabled':''}>Открыть контейнер</button>
+   <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
 }
 function rouletteItem(m){
@@ -4965,8 +4958,7 @@ function buildSaveData(){
    schema:SAVE_SCHEMA,
    savedAt:Date.now(),
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
-   pendingCasePrize:pendingCasePrize||null,
-   pendingCasePrizes:pendingCasePrizes||[],
+   pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
    redeemedPromoCodes:[...redeemedPromoCodes]
  };
@@ -4987,8 +4979,7 @@ function applySaveData(d){
  if(Number.isFinite(d.carSeq))carSeq=d.carSeq;
  if(Number.isFinite(d.storageCap))storageCap=Math.max(50,d.storageCap);
  if(Number.isFinite(d.garageCap))garageCap=Math.max(1,d.garageCap);
- pendingCasePrize=d.pendingCasePrize||null;
- pendingCasePrizes=Array.isArray(d.pendingCasePrizes)?d.pendingCasePrizes:[];
+ pendingCasePrize=null;pendingCasePrizes=[];
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
  if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String));
  isRolling=false;caseRolling=false;upgradeRolling=false;
