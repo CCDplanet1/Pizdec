@@ -4707,7 +4707,14 @@ function carVisual(m,cls='carImage'){
        'Ford Transit':'images2/tranzit.png',
        'ВАЗ 2180 "Веста"':'images2/2180vesta.png',
        'Mitsubishi Lancer Evolution IX':'images2/evolution9.png',
-       'Mitsubishi Lancer Evolution VI':'images2/evolution6.png'
+       'Mitsubishi Lancer Evolution VI':'images2/evolution6.png',
+       'ВАЗ 2108':'images3/2108.png',
+       'Toyota Camry XV70':'images3/camryxv70.png',
+       'Bugatti Chiron':'images3/chiron.png',
+       'Mercedes-Benz G65 AMG':'images3/g65.png',
+       'BMW M3 F80':'images3/m3f80.png',
+       'Porsche Taycan':'images3/taycan.png',
+       'Lamborghini Urus':'images3/urus.png'
 };
  const image=imageByName[carName]||m.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
