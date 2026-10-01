@@ -4269,7 +4269,7 @@ function mercedesCollectionModels(){
  const mercedes=CARS.map(x=>x.name).filter(n=>String(n).startsWith('Mercedes-Benz ')&&n!=='Mercedes-Benz 300E Hammer AMG');
  return [...new Set([...mercedes,'Ferrari F40','Ferrari F50'])].sort();
 }
-function hasCarModel(model){return cars.some(c=>(c.model||c.name)===model)}
+function hasCarModel(model){return cars.some(c=>(c.model||c.name)===model&&!c.locked)}
 let collectionHammerClaimed=false;
 function renderMercedesCollection(){
  const grid=$('mercCollectionGrid');if(!grid)return;
