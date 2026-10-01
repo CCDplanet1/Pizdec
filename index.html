@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.99</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.00</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5539,7 +5539,7 @@ async function processAdminCarGrants(){
  }catch(e){console.warn('Admin car grants error',e)}
 }
 
-const SAVE_SCHEMA=2;
+const SAVE_SCHEMA=3;
 const SAVE_PREFIX='nr_save_v2';
 const SAVE_MANIFEST=SAVE_PREFIX+'_manifest';
 const SAVE_CHUNK_SIZE=3500;
@@ -5628,6 +5628,7 @@ async function saveGame(force=false){
  if(!force&&fingerprint===lastSavedFingerprint)return;
  const raw=JSON.stringify(data);
  localBackupWrite(raw);
+ try{await writeSupabaseGameState(data)}catch(e){console.warn('Supabase save mirror error:',e)}
  if(saveBusy){saveQueued=true;return}
  saveBusy=true;
  try{
@@ -5643,24 +5644,44 @@ async function saveGame(force=false){
    if(saveQueued){saveQueued=false;setTimeout(()=>saveGame(false),100)}
  }
 }
-async function loadGame(){
- let raw='',source='new';
- try{
-   if(cloudAvailable()){raw=await readCloudSave();if(raw)source='cloud'}
- }catch(e){console.warn('Cloud load error:',e)}
- if(!raw){raw=localBackupRead();if(raw)source='local'}
- if(raw){
-   try{
-     const data=JSON.parse(raw);
-     if(applySaveData(data)){
-       lastSavedFingerprint=saveFingerprint(buildSaveData());
-       console.info('Прогресс загружен:',source);
-     }
-   }catch(e){console.warn('Save parse error:',e)}
+function supabaseSaveAvailable(){return typeof chatDb!=='undefined'&&chatDb&&typeof chatDb.from==='function'&&typeof chatUser==='function'}
+async function readSupabaseGameState(){
+ if(!supabaseSaveAvailable())return null;
+ const id=String(chatUser().telegram_id||'');if(!id)return null;
+ const r=await chatDb.from('player_profiles').select('game_state,garage_cars,storage_plates').eq('telegram_id',id).maybeSingle();
+ if(r.error||!r.data){if(r.error)console.warn('Supabase load error:',r.error);return null}
+ if(r.data.game_state&&typeof r.data.game_state==='object'){
+  const state={...r.data.game_state};
+  if(Array.isArray(r.data.garage_cars)&&r.data.garage_cars.length)state.cars=r.data.garage_cars;
+  if(Array.isArray(r.data.storage_plates))state.inv=r.data.storage_plates;
+  return state;
  }
- saveSystemReady=true;
- // Immediately create/sync cloud save if this is a new player or local fallback was used.
- if(source!=='cloud')saveGame(true);
+ const base=buildSaveData();base.__legacyProfile=true;
+ if(Array.isArray(r.data.garage_cars))base.cars=r.data.garage_cars;
+ if(Array.isArray(r.data.storage_plates))base.inv=r.data.storage_plates;
+ return base;
+}
+async function writeSupabaseGameState(data){
+ if(!supabaseSaveAvailable())return false;
+ const me=chatUser(),id=String(me.telegram_id||'');if(!id)return false;
+ let display=me.display_name||'Игрок',username=me.username||null;
+ try{const p=profileMe();display=p.display_name||display;username=p.username||username}catch(e){}
+ const payload={telegram_id:id,username,display_name:display,game_state:data,garage_cars:Array.isArray(data.cars)?data.cars:[],storage_plates:Array.isArray(data.inv)?data.inv:[],updated_at:new Date().toISOString()};
+ const r=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
+ if(r.error){console.warn('Supabase save error:',r.error);return false}return true;
+}
+async function loadGame(){
+ let raw='',source='new',ss=null;
+ try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
+ if(ss&&!ss.__legacyProfile){raw=JSON.stringify(ss);source='supabase'}
+ else{
+  try{if(cloudAvailable()){raw=await readCloudSave();if(raw)source='cloud'}}catch(e){console.warn('Cloud load error:',e)}
+  if(!raw){raw=localBackupRead();if(raw)source='local'}
+ }
+ if(raw){
+  try{const data=JSON.parse(raw);if(ss&&ss.__legacyProfile){if(Array.isArray(ss.cars)&&ss.cars.length)data.cars=ss.cars;if(Array.isArray(ss.inv))data.inv=ss.inv}if(applySaveData(data)){lastSavedFingerprint=saveFingerprint(buildSaveData());console.info('Прогресс загружен:',source)}}catch(e){console.warn('Save parse error:',e)}
+ }else if(ss&&ss.__legacyProfile){applySaveData(ss);source='supabase-legacy'}
+ saveSystemReady=true;await saveGame(true);try{await writeSupabaseGameState(buildSaveData())}catch(e){console.warn('Initial Supabase sync error:',e)}
 }
 function flushSave(){saveGame(true)}
 if(window.Telegram&&Telegram.WebApp){
@@ -5898,7 +5919,7 @@ async function profileSync(){
  showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),
  showcase_plates:[],
  garage_cars:Array.isArray(cars)?cars:[],
- storage_plates:Array.isArray(inv)?inv:[],
+ storage_plates:Array.isArray(inv)?inv:[], game_state:(typeof buildSaveData==='function'?buildSaveData():{}),
  updated_at:new Date().toISOString()
 };
  const {error}=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
