@@ -3332,9 +3332,127 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .carLockBtn{width:100%;margin-top:7px;border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:9px 10px;background:rgba(255,255,255,.07);color:inherit;font:inherit;font-weight:800;cursor:pointer}
 .carLockBtn.locked{border-color:rgba(255,80,80,.48);background:rgba(255,55,55,.10)}
 </style>
-</head><body><div class="app">
+<style>
+#containersPage{position:relative}.caseOpeningStage{position:relative;z-index:20;max-width:900px;margin:12px auto 18px}
+.caseOpeningStage .caseRouletteWrap{margin:0 auto}.caseOpeningStage .caseResult{margin:12px auto 0}
+.caseFiveRoll{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;padding:10px}
+.caseFiveRollItem{min-width:0;border:1px solid #303b49;border-radius:12px;background:linear-gradient(160deg,#202a36,#111821);padding:10px 7px;text-align:center;opacity:0;transform:translateY(18px) scale(.92)}
+.caseFiveRollItem.show{animation:caseFiveReveal .42s cubic-bezier(.2,.9,.25,1.2) forwards}.caseFiveRollItem .fiveCar{font-size:27px;margin-bottom:5px}.caseFiveRollItem b{display:block;font-size:11px}.caseFiveRollItem small{display:block;font-size:10px;color:#9ca8b7;margin-top:4px}
+@keyframes caseFiveReveal{to{opacity:1;transform:none}}@media(max-width:700px){.caseFiveRoll{grid-template-columns:repeat(5,130px);overflow-x:auto}}
+</style><style>
+/* CS-style container roulette v0.1.24 */
+.caseRoulette{height:154px!important;background:linear-gradient(180deg,#121923,#080c12);border:1px solid #394657;box-shadow:inset 0 0 45px rgba(0,0,0,.72),0 12px 35px rgba(0,0,0,.28)}
+.caseRoulette:before{content:"";position:absolute;z-index:7;left:50%;top:0;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:17px solid #ffd34d;filter:drop-shadow(0 0 6px rgba(255,211,77,.75))}
+.caseRoulette:after{top:14px;bottom:0;width:2px;background:#ffd34d;box-shadow:0 0 12px rgba(255,211,77,.9)}
+.caseTrack{top:17px!important;height:120px!important;gap:8px}
+.caseItem{width:158px;height:120px;flex:0 0 158px;border-radius:8px;background:linear-gradient(160deg,#27313d,#121820);box-shadow:inset 0 -4px 0 rgba(255,255,255,.08);transition:filter .15s,transform .15s}
+.caseItem .ci{font-size:31px}.caseRoulette.running .caseItem{filter:brightness(.86)}
+.caseRoulette.caseRouletteGlow .caseItem{filter:brightness(1.08)}
+.caseRoulette.running:before{animation:casePointerTick .12s linear infinite}
+@keyframes casePointerTick{0%,100%{transform:translateX(-50%) rotate(0)}50%{transform:translateX(-50%) rotate(-5deg)}}
+</style><style>
+.collectionProgress{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;margin:14px 0;border:1px solid var(--line);border-radius:15px;background:var(--card)}
+.collectionGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.collectionCar{padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--card);display:flex;gap:9px;align-items:center}.collectionCar.got{box-shadow:inset 3px 0 0 #2fb968}.collectionCar.missing{opacity:.58}.collectionMark{font-size:18px}.collectionClaim{margin:16px auto;display:block;min-width:260px}
+</style><style>
+.miniPlate.deleted,.plate.deleted{--glow:#050505!important;background:#090909!important;color:#f5f5f5!important;border-color:#000!important;box-shadow:0 0 18px 5px rgba(0,0,0,.95),0 0 48px rgba(0,0,0,.85),inset 0 0 0 1px #242424!important}
+.miniPlate.deleted .miniRegion,.plate.deleted .region,.plate.deleted .miniRegion{background:#0d0d0d!important;color:#fff!important;border-color:#333!important}
+.pill.deleted{background:#050505!important;color:#fff!important;border:1px solid #303030!important;box-shadow:0 0 12px rgba(0,0,0,.9)}
+.deletedCollectionReward{border:1px solid #111!important;background:linear-gradient(145deg,#151515,#030303)!important;box-shadow:0 0 26px rgba(0,0,0,.75)!important;color:#fff}
+</style><style>
+/* v0.1.27 — collection plate text is 30% smaller only in the В888ВВ88 recipe */
+.deletedPlateCollection .miniPlate .miniMain,
+.deletedPlateCollection .miniPlate .plateMain{font-size:157.5%!important}
+.deletedPlateCollection .miniPlate .plateChar,
+.deletedPlateCollection .miniPlate .plateDigit{font-size:1.575em!important}
+</style><style>
+/* v0.1.29 — deleted plate: black rarity aura, normal readable region */
+.miniPlate.deleted,.plate.deleted{
+ background:#f3f3f0!important;
+ color:#080808!important;
+ border-color:#050505!important;
+ box-shadow:0 0 18px 5px rgba(0,0,0,.95),0 0 48px rgba(0,0,0,.85),inset 0 0 0 1px #242424!important;
+}
+.miniPlate.deleted .miniRegion,
+.miniPlate.deleted .region,
+.plate.deleted .region,
+.plate.deleted .miniRegion{
+ background:#f3f3f0!important;
+ color:#080808!important;
+ border-color:#222!important;
+ box-shadow:none!important;
+}
+.miniPlate.deleted .regionNum,.plate.deleted .regionNum{color:#080808!important;background:transparent!important}
+</style><style>
+/* v0.1.30 — В888ВВ88: no white rectangle behind region digits */
+.miniPlate.deleted .miniRegion,
+.miniPlate.deleted .region,
+.plate.deleted .region,
+.plate.deleted .miniRegion{
+ background:transparent!important;
+ border-color:transparent!important;
+ box-shadow:none!important;
+}
+.miniPlate.deleted .regionNum,
+.plate.deleted .regionNum{
+ background:transparent!important;
+ color:#080808!important;
+ border:0!important;
+ box-shadow:none!important;
+}
+</style><style>
+/* v0.1.31 — choose one plate for the В888ВВ88 exchange */
+.deletedPlateCollection .collectionCar{cursor:pointer;user-select:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+.deletedPlateCollection .collectionCar.selectable:hover{transform:translateY(-1px)}
+.deletedPlateCollection .collectionCar.selected{opacity:1!important;border-color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.22),0 0 20px rgba(0,0,0,.8)!important}
+.deletedPlateCollection .collectionCar.unavailable{cursor:not-allowed;opacity:.42}
+</style><style>
+/* v0.1.32 — redesigned В888ВВ88 collection */
+.deletedExchangePanel{
+ position:relative;overflow:hidden;margin-top:26px!important;padding:20px!important;
+ border:1px solid #272727!important;border-radius:22px!important;
+ background:radial-gradient(circle at 85% 5%,rgba(255,255,255,.08),transparent 30%),linear-gradient(145deg,#151515,#050505 68%)!important;
+ box-shadow:0 22px 60px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.025)!important;
+}
+.deletedExchangePanel:before{content:"";position:absolute;inset:-80px auto auto -80px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.035);filter:blur(3px);pointer-events:none}
+.deletedExchangeHead{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:center}
+.deletedEyebrow{font-size:10px;letter-spacing:2.2px;font-weight:900;color:#7f8791;margin-bottom:7px}
+.deletedExchangeHead h3{font-size:30px;line-height:1;margin:0 0 9px;color:#fff}
+.deletedExchangeHead p{margin:0;max-width:540px;color:#9da5af;font-size:13px;line-height:1.55}
+.deletedRewardPreview{padding:13px;border:1px solid #282828;border-radius:16px;background:rgba(0,0,0,.38);text-align:center;box-shadow:inset 0 0 25px rgba(0,0,0,.45)}
+.deletedRewardLabel{font-size:9px;letter-spacing:2px;font-weight:900;color:#717984;margin-bottom:8px}
+.deletedRewardPlate{display:flex;justify-content:center;transform:scale(.88);transform-origin:center}
+.deletedRewardPreview>span{display:block;margin-top:5px;font-size:10px;font-weight:800;color:#a8afb7;text-transform:uppercase;letter-spacing:.8px}
+.deletedExchangeArrow{display:flex;align-items:center;gap:12px;margin:20px 0 11px;color:#68717d;font-size:9px;font-weight:900;letter-spacing:1.7px}
+.deletedExchangeArrow:before,.deletedExchangeArrow:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#303740)}
+.deletedExchangeArrow:after{background:linear-gradient(90deg,#303740,transparent)}
+.deletedPlateCollection{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:11px!important}
+.deletedPlateCollection .collectionCar{min-height:105px;justify-content:center;position:relative;border-radius:15px!important;background:linear-gradient(155deg,#181c22,#0d1015)!important;border:1px solid #292f38!important}
+.deletedPlateCollection .collectionCar.got{box-shadow:inset 0 0 0 1px rgba(255,255,255,.045)!important}
+.deletedPlateCollection .collectionCar.selected{border-color:#e7e7e7!important;background:linear-gradient(155deg,#242830,#101319)!important;box-shadow:0 0 0 2px rgba(255,255,255,.12),0 12px 28px rgba(0,0,0,.35)!important;transform:translateY(-2px)}
+.deletedPlateCollection .collectionMark{position:absolute;right:8px;top:8px;font-size:14px}
+.deletedClaimBtn{width:min(100%,430px);min-height:48px;margin:17px auto 0!important;border-radius:14px!important;background:#f1f1f1!important;color:#090909!important;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.deletedClaimBtn:disabled{background:#24272d!important;color:#717780!important;box-shadow:none}
+@media(max-width:700px){
+ .deletedExchangePanel{padding:15px!important;border-radius:17px!important}
+ .deletedExchangeHead{grid-template-columns:1fr;gap:14px}
+ .deletedExchangeHead h3{font-size:25px}
+ .deletedRewardPreview{max-width:320px;width:100%;margin:auto}
+ .deletedPlateCollection{grid-template-columns:1fr!important}
+ .deletedPlateCollection .collectionCar{min-height:96px}
+}
+</style><style>
+/* v0.1.33 — collection plates use the exact storage plate component */
+.deletedPlateCollection .miniPlate .miniMain,
+.deletedPlateCollection .miniPlate .plateMain,
+.deletedPlateCollection .miniPlate .plateChar,
+.deletedPlateCollection .miniPlate .plateDigit{font-size:revert!important}
+.collectionStoragePlate{display:flex;align-items:center;justify-content:center;width:100%;overflow:visible}
+.deletedRewardPlate #deletedRewardPlateMount,
+#deletedRewardPlateMount{display:flex;align-items:center;justify-content:center;width:100%}
+.deletedRewardPlate{transform:none!important}
+</style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -3362,7 +3480,8 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 
 
 
-<section class="page" id="upgraderPage">
+<section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
+</section> <section class="page" id="upgraderPage">
 <h2 class="statsTitle">Апгрейдер</h2>
 <p style="color:var(--muted);margin-top:-6px">Поставь автомобиль из гаража и попробуй улучшить его до более дорогой машины.</p>
 <div class="upgrader">
@@ -3375,8 +3494,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 <section class="page" id="containersPage">
 <h2 class="statsTitle">Контейнеры</h2>
 <p style="color:var(--muted);margin-top:-6px">Открой контейнер и получи случайный автомобиль. Чем выше редкость контейнера, тем дороже пул машин.</p>
-<label class="caseFastToggle"><input type="checkbox" id="fastCaseRoll" checked> Быстрый прокрут контейнеров</label><div class="containerGrid" id="containerGrid"></div>
-<div class="caseRouletteWrap" id="caseRouletteWrap"><div class="caseRoulette" id="caseRoulette"><div class="caseTrack" id="caseTrack"></div></div></div><div class="caseResult" id="caseResult" style="display:none"></div>
+<label class="caseFastToggle"><input type="checkbox" id="fastCaseRoll" checked> Быстрый прокрут контейнеров</label><div class="caseOpeningStage" id="caseOpeningStage"><div class="caseRouletteWrap" id="caseRouletteWrap"><div class="caseRoulette" id="caseRoulette"><div class="caseTrack" id="caseTrack"></div></div></div><div class="caseResult" id="caseResult" style="display:none"></div></div><div class="containerGrid" id="containerGrid"></div>
 </section>
 <section class="page" id="upgradesPage">
 <h2 class="statsTitle">Улучшения</h2>
@@ -3547,21 +3665,21 @@ const CARS=[
 {name:'McLaren 720S',price:300000,currency:'$',rub:27600000,icon:'🚘'},
 {name:'McLaren P1',price:1400000,currency:'$',rub:128800000,icon:'🚘'},
 {name:'McLaren SLR C199',price:400000,currency:'$',rub:36800000,icon:'🚘'},
-{name:'Mercedes-Benz 300SL',price:99000000,currency:'₽',rub:99000000,icon:'🚘'},
+{name:'Mercedes-Benz 300SL',price:99000000,currency:'₽',rub:99000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true},
 {name:'Mercedes-Benz AMG GT',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Mercedes-Benz AMG GT63',price:13500000,currency:'₽',rub:13500000,icon:'🚘'},
 {name:'Mercedes-Benz AMG GT63 II',price:31000000,currency:'₽',rub:31000000,icon:'🚘'},
 {name:'Mercedes-Benz C63 Edition 507',price:2600000,currency:'₽',rub:2600000,icon:'🚘'},
 {name:'Mercedes-Benz C63 W204',price:4900000,currency:'₽',rub:4900000,icon:'🚘'},
 {name:'Mercedes-Benz C63 W205',price:6700000,currency:'₽',rub:6700000,icon:'🚘'},
-{name:'Mercedes-Benz CLK GTR',price:99000000,currency:'₽',rub:99000000,icon:'🚘'},
+{name:'Mercedes-Benz CLK GTR',price:99000000,currency:'₽',rub:99000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true},
 {name:'Mercedes-Benz CLS 55 AMG',price:3670000,currency:'₽',rub:3670000,icon:'🚘'},
 {name:'Mercedes-Benz CLS 63 W218',price:4700000,currency:'₽',rub:4700000,icon:'🚘'},
 {name:'Mercedes-Benz E55 AMG W210',price:850000,currency:'₽',rub:850000,icon:'🚘'},
 {name:'Mercedes-Benz E63 AMG W211',price:3900000,currency:'₽',rub:3900000,icon:'🚘'},
 {name:'Mercedes-Benz E63 AMG W212',price:6500000,currency:'₽',rub:6500000,icon:'🚘'},
 {name:'Mercedes-Benz E63s W213',price:9500000,currency:'₽',rub:9500000,icon:'🚘'},
-{name:'Mercedes-Benz G63 6x6',price:500000,currency:'$',rub:46000000,icon:'🚘'},
+{name:'Mercedes-Benz G63 6x6',price:150000000,currency:'₽',rub:150000000,icon:'🚘',forcedRarity:'epic',dealerHidden:true,limited:true,caseExclusive:'g63_6x6'},
 {name:'Mercedes-Benz G63 AMG III',price:25000000,currency:'₽',rub:25000000,icon:'🚘'},
 {name:'Mercedes-Benz G65 AMG',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Mercedes-Benz GLE',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
@@ -3600,7 +3718,7 @@ const CARS=[
 {name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true},
 {name:'Porsche 918 Spyder',price:991000,currency:'€',rub:100091000,icon:'🚘'},
 {name:'Porsche 930',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
-{name:'Porsche Carrera GT',price:2000000,currency:'$',rub:184000000,icon:'🚘'},
+{name:'Porsche Carrera GT',image:'images/carrera.gt.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true},
 {name:'Porsche Cayenne Coupe',price:18700000,currency:'₽',rub:18700000,icon:'🚘'},
 {name:'Porsche Gemballa Marsien',price:450000,currency:'€',rub:45450000,icon:'🚘'},
 {name:'Porsche Panamera II',price:13000000,currency:'₽',rub:13000000,icon:'🚘'},
@@ -3646,11 +3764,12 @@ const CARS=[
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
+const MYTHIC_CARRERA_GT={name:'Porsche Carrera GT',image:'images/carrera.gt.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'carrera_gt'};
 const UPGRADE_F40={name:'Ferrari F40',image:'images/f40.png',price:1500000000,currency:'₽',rub:1500000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH={name:'Lamborghini Countach',image:'images/count.png',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
 const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',image:'images/count800.png',price:350000000,currency:'₽',rub:350000000,icon:'🚘',forcedRarity:'mythic'};
 const MYTHIC_F50={name:'Ferrari F50',image:'images/f50.png',price:1200000000,currency:'₽',rub:1200000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'f50'};
-const score={normal:1,uncommon:2,rare:3,epic:4,legendary:5,mythic:6},$=x=>document.getElementById(x),rnd=n=>Math.floor(Math.random()*n),money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const score={normal:1,uncommon:2,rare:3,epic:4,legendary:5,mythic:6,deleted:7},$=x=>document.getElementById(x),rnd=n=>Math.floor(Math.random()*n),money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
 
 function epicNumberValue(p,region){
  const plate=String(p||'').toUpperCase();
@@ -4018,7 +4137,7 @@ function renderDealerButtons(){
 function carPriceText(m){return m.price.toLocaleString('ru-RU')+' '+m.currency}
 function renderDealer(){
  let box=$('dealer'),q=($('carSearch')?.value||'').toLowerCase(),sort=$('carSort')?.value||'default';box.innerHTML='';
- let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly);
+ let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly&&!x.m.dealerHidden);
  if(sort==='cheap')list.sort((a,b)=>carBaseValue(a.m)-carBaseValue(b.m));
  else if(sort==='expensive')list.sort((a,b)=>carBaseValue(b.m)-carBaseValue(a.m));
  list.forEach(({m,i})=>{
@@ -4082,6 +4201,31 @@ function toggleCarLock(carId,ev){
  if(typeof syncPublicProfile==='function')syncPublicProfile();
  if(typeof toast==='function')toast(car.locked?'🔒 Машина закрыта от продажи':'🔓 Машина снова доступна для продажи');
  return false;
+}
+function mercedesCollectionModels(){
+ const mercedes=CARS.map(x=>x.name).filter(n=>String(n).startsWith('Mercedes-Benz ')&&n!=='Mercedes-Benz 300E Hammer AMG');
+ return [...new Set([...mercedes,'Ferrari F40','Ferrari F50'])].sort();
+}
+function hasCarModel(model){return cars.some(c=>(c.model||c.name)===model)}
+function renderMercedesCollection(){
+ const grid=$('mercCollectionGrid');if(!grid)return;
+ const models=mercedesCollectionModels(),owned=models.filter(hasCarModel).length,progress=$('mercCollectionProgress'),status=$('mercCollectionStatus'),btn=$('mercCollectionClaim');
+ progress.textContent=owned+' / '+models.length;
+ grid.innerHTML=models.map(n=>`<div class="collectionCar ${hasCarModel(n)?'got':'missing'}"><span class="collectionMark">${hasCarModel(n)?'✅':'⬜'}</span><b>${n}</b></div>`).join('');
+ const already=cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
+ status.textContent=already?'Награда уже получена':owned===models.length?'Коллекция собрана!':'Не хватает '+(models.length-owned)+' машин';
+ btn.disabled=already||owned!==models.length||cars.length>=garageCap;
+ btn.textContent=already?'Hammer уже получен':(owned===models.length&&cars.length>=garageCap?'Нужно место в гараже':'Получить W124 300E Hammer');
+}
+async function claimMercedesCollection(){
+ const models=mercedesCollectionModels();if(!models.every(hasCarModel))return;
+ if(cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG'))return;
+ if(cars.length>=garageCap){alert('Нужно свободное место в гараже.');return}
+ const serial=await claimHammerSerial();if(!serial){alert('Не удалось получить серийный номер Hammer.');return}
+ const rp=randomPlateForCar();
+ cars.push({id:++carSeq,model:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54,limitedSerial:serial,limitedTotal:54,plate:rp.p,region:rp.r,custom:false,collectionReward:true});
+ update();renderGarage();renderMercedesCollection();
+ if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave();if(typeof syncPublicProfile==='function')syncPublicProfile();
 }
 function renderGarage(){
  let box=$('garage');box.innerHTML='';
@@ -4156,7 +4300,7 @@ holdRollBtn.addEventListener('pointerdown',e=>{
 window.addEventListener('blur',stopHoldRoll);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopHoldRoll()});$('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();update()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
 
 
 
@@ -4167,7 +4311,7 @@ function upgradeSources(){
  return owned;
 }
 function upgradeTargets(){
- return [...CARS.filter(x=>!x.promoOnly),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_HAMMER].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ return [...CARS.filter(x=>!x.promoOnly&&!x.dealerHidden),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_CARRERA_GT].sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
@@ -4272,8 +4416,8 @@ const CASE_DEFS=[
  {id:'common',name:'Обычный контейнер',cls:'case-common',icon:'📦',from:0,to:.34,desc:'Бюджетные автомобили из автосалона.'},
  {id:'uncommon',name:'Необычный контейнер',cls:'case-uncommon',icon:'🟩',from:.18,to:.54,desc:'Средний ценовой сегмент автосалона.'},
  {id:'rare',name:'Редкий контейнер',cls:'case-rare',icon:'🟦',from:.42,to:.73,desc:'Спорт и премиум из автосалона.'},
- {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары.'},
- {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Верхушка цен автосалона.'}
+ {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары. Mercedes-Benz G63 6x6 — 1%.'},
+ {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Эксклюзивы: Porsche Carrera GT — 2%, Ferrari F50 — 1%. Остальное — дорогие автомобили.'}
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
@@ -4290,7 +4434,10 @@ function carVisual(m,cls='carImage'){
   'Ferrari F40':'images/f40.png',
   'Ferrari F50':'images/f50.png',
   'Porsche 911 GT3 RS':'images/gt3rs.png',
- 'Pagani Zonda Cinque':'images/zonda.png',
+ 'Pagani Zonda Cinque':'images/zonda.png', 'Porsche Carrera GT':'images/carrera.gt.png',
+ 'Mercedes-Benz G63 6x6':'images/6x6.png',
+ 'Mercedes-Benz 300SL':'images/300sl.png',
+ 'Mercedes-Benz CLK GTR':'images/clk.png',
  'Lamborghini Countach 800-4':'images/count800.png',
  'Lamborghini Countach':'images/count.png'
  };
@@ -4301,8 +4448,8 @@ function carVisual(m,cls='carImage'){
 function carRarity(m){
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
- if(m.forcedRarity==='limited')return {rank:'limited',name:'Limited'};
- if(carName==='Ferrari F40'||m.forcedRarity==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
+ if(m.forcedRarity==='limited')return {rank:'limited',name:'Limited'}; if(m.forcedRarity==='epic')return {rank:'epic',name:'Эпическая'}; if(m.forcedRarity==='legendary')return {rank:'legendary',name:'Легендарная'};
+ if(carName==='Ferrari F40'||carName==='Porsche Carrera GT'||m.forcedRarity==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
  if(v>=20000000)return {rank:'legendary',name:'Легендарная'};
  if(v>=5000000)return {rank:'epic',name:'Эпическая'};
  if(v>=1200000)return {rank:'rare',name:'Редкая'};
@@ -4312,8 +4459,8 @@ function carRarity(m){
 function carGlowClass(m){
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
- if(m.forcedRarity==='limited')return 'carGlowLimited';
- if(carName==='Ferrari F40'||m.forcedRarity==='mythic'||v>=3000000000)return 'carGlowMythic';
+ if(m.forcedRarity==='limited')return 'carGlowLimited'; if(m.forcedRarity==='epic')return 'carGlowEpic'; if(m.forcedRarity==='legendary')return 'carGlowLegendary';
+ if(carName==='Ferrari F40'||carName==='Porsche Carrera GT'||m.forcedRarity==='mythic'||v>=3000000000)return 'carGlowMythic';
  if(v>=20000000)return 'carGlowLegendary';
  if(v>=5000000)return 'carGlowEpic';
  if(v>=1200000)return 'carGlowRare';
@@ -4321,27 +4468,27 @@ function carGlowClass(m){
  return 'carGlowNormal';
 }
 function casePool(c){
- const sorted=CARS.filter(x=>!x.promoOnly).sort((a,b)=>carRubValue(a)-carRubValue(b));
+ const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Mercedes-Benz G63 6x6').sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
- if(c.id==='legendary'){
-   // Два эксклюзива легендарного контейнера:
-   // Mercedes-Benz 300E Hammer AMG — 1%, Ferrari F50 — 2%.
-   pool.push(MYTHIC_HAMMER);
-   pool.push(MYTHIC_F50);
+ if(c.id==='epic'){
+  const g63=CARS.find(x=>x.name==='Mercedes-Benz G63 6x6');
+  if(g63)pool.push(g63);
  }
+ if(c.id==='legendary'){pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50)}
  return pool;
 }
 function caseExpectedValue(pool){
- const hammer=pool.find(x=>x===MYTHIC_HAMMER);
- const f50=pool.find(x=>x===MYTHIC_F50);
- const base=pool.filter(x=>x!==MYTHIC_HAMMER&&x!==MYTHIC_F50);
+ const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
+ const g63=pool.find(x=>x.name==='Mercedes-Benz G63 6x6'&&x.caseExclusive==='g63_6x6');
+ const base=pool.filter(x=>x!==carrera&&x!==f50&&x!==g63);
  let total=0,wSum=0;
  for(let i=0;i<base.length;i++){let w=Math.pow(base.length-i,1.35);total+=carRubValue(base[i])*w;wSum+=w}
  const baseEv=wSum?total/wSum:0;
- if(f50&&hammer)return baseEv*.97+carRubValue(f50)*.02+carRubValue(hammer)*.01;
- if(f50)return baseEv*.98+carRubValue(f50)*.02;
- if(hammer)return baseEv*.99+carRubValue(hammer)*.01;
+ if(g63)return baseEv*.99+carRubValue(g63)*.01;
+ if(carrera&&f50)return baseEv*.97+carRubValue(carrera)*.02+carRubValue(f50)*.01;
+ if(carrera)return baseEv*.98+carRubValue(carrera)*.02;
+ if(f50)return baseEv*.99+carRubValue(f50)*.01;
  return baseEv;
 }
 function casePrice(c){
@@ -4352,18 +4499,18 @@ function casePrice(c){
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
 }
 function weightedCaseCar(pool){
- const hammer=pool.find(x=>x===MYTHIC_HAMMER);
- const f50=pool.find(x=>x===MYTHIC_F50);
+ const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
+ const g63=pool.find(x=>x.name==='Mercedes-Benz G63 6x6'&&x.caseExclusive==='g63_6x6');
  const specialRoll=Math.random();
- if(f50&&specialRoll<0.02)return f50; // Ferrari F50: ровно 2%
- if(hammer&&specialRoll<0.03)return hammer; // Hammer: следующий 1%
- const base=pool.filter(x=>x!==MYTHIC_HAMMER&&x!==MYTHIC_F50);
+ if(g63&&specialRoll<0.01)return g63;
+ if(carrera&&specialRoll<0.02)return carrera;
+ if(f50&&specialRoll<0.03)return f50;
+ const base=pool.filter(x=>x!==carrera&&x!==f50&&x!==g63);
  let weights=base.map((_,i)=>Math.pow(base.length-i,1.35));
  let total=weights.reduce((a,b)=>a+b,0),r=Math.random()*total;
  for(let i=0;i<base.length;i++){r-=weights[i];if(r<=0)return base[i]}
  return base[base.length-1];
 }
-
 function hammerSerialText(car){
  const n=Number(car?.limitedSerial||0),max=Number(car?.limitedTotal||54);
  return n>0?String(n).padStart(2,'0')+' of '+max:'';
@@ -4478,7 +4625,7 @@ function renderContainers(){
  const root=$('containerGrid');if(!root)return;
  root.innerHTML=CASE_DEFS.map(c=>{
    const pool=casePool(c),price=casePrice(c),min=pool.length?Math.min(...pool.map(carRubValue)):0,max=pool.length?Math.max(...pool.map(carRubValue)):0;
-   const exclusives=c.id==='legendary'?'<br><b>Эксклюзивы:</b> Mercedes-Benz 300E Hammer AMG — 1% · Ferrari F50 — 2%':'';
+   const exclusives=c.id==='legendary'?'<br>':'';
    return `<div class="caseCard ${c.cls}"><div class="caseIcon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onclick="openContainer('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price?'disabled':''}>Открыть контейнер</button>
    <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onclick="openFiveContainers('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
@@ -4486,24 +4633,53 @@ function renderContainers(){
 function rouletteItem(m){
  return `<div class="caseItem ${carGlowClass(m)}"><div class="ci">🚘</div><b>${m.name}</b><small>${money(carRubValue(m))}</small></div>`;
 }
-async function animateCase(pool,winner){
+function hideCaseOpening(){
+ const wrap=$('caseRouletteWrap'),result=$('caseResult');
+ if(wrap)wrap.style.display='none';
+ if(result){result.style.display='none';result.innerHTML=''}
+}
+async function animateFiveCaseWinners(winners){
+ // Five sequential CS-style spins. Each winning car visibly lands on the center marker.
+ for(let i=0;i<winners.length;i++){
+  await animateCase(casePool(CASE_DEFS.find(c=>casePool(c).some(x=>(x.name||x.model)===(winners[i].winner.name||winners[i].winner.model)))||CASE_DEFS[0]),winners[i].winner);
+  if(i<winners.length-1)await sleep(fastCaseRoll?140:350);
+ }
+}async function animateCase(pool,winner){
  const wrap=$('caseRouletteWrap'),roulette=$('caseRoulette'),track=$('caseTrack');
- wrap.style.display='block';roulette.classList.add('running');
- const fast=fastCaseRoll,items=[],winnerIndex=fast?12:42,totalItems=fast?20:55;
+ wrap.style.display='block';
+ roulette.style.height='154px';
+ track.style.position='absolute';track.style.top='17px';track.style.height='120px';track.style.display='flex';
+ roulette.classList.remove('caseRouletteGlow');roulette.classList.add('running');
+
+ const fast=fastCaseRoll;
+ const itemW=166;
+ const winnerIndex=fast?24:46;
+ const totalItems=winnerIndex+9;
+ const items=[];
  for(let i=0;i<totalItems;i++)items.push(i===winnerIndex?winner:pool[rnd(pool.length)]);
  track.innerHTML=items.map(rouletteItem).join('');
- track.style.transition='none';track.style.transform='translateX(0px)';
- await sleep(20);
- const itemW=158,rouletteW=roulette.clientWidth||760;
- const target=winnerIndex*itemW-(rouletteW/2-itemW/2)+(Math.random()*50-25);
- const duration=fast?.65:5.2;
- track.style.transition=`transform ${duration}s cubic-bezier(.08,.72,.12,1)`;
- track.style.transform=`translateX(${-target}px)`;
- await sleep(fast?700:5300);
- roulette.classList.remove('running');roulette.classList.add('caseRouletteGlow');
- await sleep(fast?120:550);roulette.classList.remove('caseRouletteGlow');
-}
-async function openFiveContainers(id){
+
+ // Start with several cards already to the left, like a CS case opening.
+ const startX=-(itemW*(fast?2:3)+rnd(80));
+ track.style.transition='none';
+ track.style.transform=`translate3d(${startX}px,0,0)`;
+ await new Promise(requestAnimationFrame);
+ await sleep(30);
+
+ const rouletteW=roulette.clientWidth||760;
+ // Small random landing point while keeping the winning card under the center marker.
+ const landingJitter=Math.floor(Math.random()*70)-35;
+ const target=winnerIndex*itemW-(rouletteW/2-itemW/2)+landingJitter;
+ const duration=fast?2.15:6.4;
+ track.style.transition=`transform ${duration}s cubic-bezier(.08,.64,.10,1)`;
+ track.style.transform=`translate3d(${-target}px,0,0)`;
+
+ await sleep(duration*1000+70);
+ roulette.classList.remove('running');
+ roulette.classList.add('caseRouletteGlow');
+ await sleep(fast?500:850);
+ roulette.classList.remove('caseRouletteGlow');
+}async function openFiveContainers(id){
  if(caseRolling||pendingCasePrize||pendingCasePrizes.length)return;
  const c=CASE_DEFS.find(x=>x.id===id);if(!c)return;
  const pool=casePool(c),price=casePrice(c),totalCost=price*5;
@@ -4516,7 +4692,7 @@ async function openFiveContainers(id){
      const resolved=await resolveLimitedCaseWinner(weightedCaseCar(pool),pool);
      winners.push(resolved);
    }
-   if(!fastCaseRoll)await animateCase(pool,winners[4].winner); else await sleep(180);
+   await animateFiveCaseWinners(winners);
    pendingCasePrizes=winners.map(({winner:w,serial})=>{
      const rp=randomPlateForCar();
      return {
@@ -4544,14 +4720,14 @@ function keepAllCasePrizes(){
  const free=garageCap-cars.length;
  if(free<pendingCasePrizes.length){alert('Недостаточно мест в гараже. Нужно '+pendingCasePrizes.length+' свободных мест.');return}
  cars.push(...pendingCasePrizes.map(x=>x.car));
- pendingCasePrizes=[];
+ pendingCasePrizes=[]; hideCaseOpening();
  const result=$('caseResult');result.innerHTML='<strong>Все 5 машин отправлены в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function sellAllCasePrizes(){
  if(!pendingCasePrizes.length)return;
  const value=pendingCasePrizes.reduce((sum,x)=>sum+x.value,0);
- bal+=value;earned+=value;pendingCasePrizes=[];
+ bal+=value;earned+=value;pendingCasePrizes=[]; hideCaseOpening();
  const result=$('caseResult');result.innerHTML=`<strong>Все 5 машин проданы за ${money(value)}</strong>`;
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
@@ -4609,7 +4785,7 @@ function keepCasePrize(){
  if(!pendingCasePrize)return;
  if(cars.length>=garageCap){alert('Нет свободного слота в гараже. Продай машину или улучши гараж.');return}
  cars.push(pendingCasePrize.car);
- pendingCasePrize=null;
+ pendingCasePrize=null; hideCaseOpening();
  const result=$('caseResult');result.innerHTML='<strong>Машина отправлена в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
@@ -4617,7 +4793,7 @@ function sellCasePrize(){
  if(!pendingCasePrize)return;
  const value=pendingCasePrize.value;
  bal+=value;earned+=value;
- pendingCasePrize=null;
+ pendingCasePrize=null; hideCaseOpening();
  const result=$('caseResult');result.innerHTML=`<strong>Машина продана за ${money(value)}</strong><span style="color:var(--muted)">Можно открывать следующий контейнер.</span>`;
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
