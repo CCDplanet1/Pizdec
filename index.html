@@ -3552,7 +3552,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <h2 class="statsTitle">Улучшения</h2>
 <div class="settingsCard">
   <div class="settingRow">
-    <div><h3>Хранилище номеров</h3><p>Сейчас: <b id="storageCapText">10 мест</b>. Каждое улучшение добавляет +50 мест. Максимум — 500.</p></div>
+    <div><h3>Хранилище номеров</h3><p>Сейчас: <b id="storageCapText">10 мест</b>. Каждое улучшение добавляет +5 мест.</p></div>
     <button class="buy" id="upgradeStorageBtn" onclick="upgradeStorage()">+50 мест · 5 000 000 ₽</button>
   </div>
 </div>
@@ -3916,11 +3916,7 @@ function update(){
  if($('storageCapacityLabel'))$('storageCapacityLabel').textContent=inv.length+' / '+storageCap;
  if($('storageCapText'))$('storageCapText').textContent=storageCap+' мест';
  if($('garageCapText'))$('garageCapText').textContent=garageCap+' '+(garageCap===1?'место':'мест');
- if($('upgradeStorageBtn')){
- const maxed=storageCap>=500;
- $('upgradeStorageBtn').disabled=maxed||bal<5000000;
- $('upgradeStorageBtn').textContent=maxed?'Максимум · 500 мест':'+50 мест · 5 000 000 ₽';
-}
+ if($('upgradeStorageBtn'))$('upgradeStorageBtn').disabled=bal<1000000;
  if($('upgradeGarageBtn'))$('upgradeGarageBtn').disabled=bal<1500000;
  if(inv.length>=storageCap){
    $('plateButton').disabled=true;
@@ -3929,7 +3925,7 @@ function update(){
 let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).reduce((s,x)=>s+x.v,0);$('balance').textContent=money(bal);$('badge').textContent=inv.length;$('count').textContent=inv.length+' номеров';$('total').textContent=money(sellableTotal);$('sellAll').disabled=!inv.some(x=>!x.locked);$('sRolls').textContent=rolls;$('sSpent').textContent=money(spent);$('sEarned').textContent=money(earned);$('sBalance').textContent=money(bal);$('sStored').textContent=inv.length;$('sCollection').textContent=money(total);$('plateButton').disabled=inv.length>=storageCap;$('garageBadge').textContent=cars.length;$('garageCount').textContent=`${cars.length}/${garageCap}`;renderDealerButtons();const rc=$('regionChoice');if(rc){const need=COST+(rc.value?REGION_FEE:0);refreshRollButton();}if(bal<COST)$('msg').textContent=inv.length?'Не хватает денег — продай номер из хранилища':'Недостаточно денег'
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);
  if(typeof renderContainers==='function'&&!caseRolling)setTimeout(renderContainers,0);
-}
+ if(typeof scheduleSupabaseInventorySave==='function')scheduleSupabaseInventorySave(); }
 
 
 function refreshRollButton(){
@@ -5094,17 +5090,9 @@ function sellCasePrize(){
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function upgradeStorage(){
- const cost=5000000,MAX_STORAGE_CAP=500;
- if(storageCap>=MAX_STORAGE_CAP){
-   storageCap=MAX_STORAGE_CAP;
-   alert('Хранилище уже улучшено до максимума — 500 мест.');
-   update();
-   return;
- }
+ const cost=5000000;
  if(bal<cost){alert('Недостаточно денег. Нужно 5 000 000 ₽.');return}
- bal-=cost;
- spent+=cost;
- storageCap=Math.min(MAX_STORAGE_CAP,storageCap+50);
+ bal-=cost;spent+=cost;storageCap+=50;
  update();renderStore();renderUpgrades();
 }
 function upgradeGarage(){
@@ -5443,7 +5431,7 @@ if($('chatInput'))$('chatInput').addEventListener('input',e=>{const c=$('chatCou
 
 /* ===== v0.0.42 Profiles =====
  Supabase table expected: player_profiles(telegram_id text primary key, username text,
- display_name text, showcase_cars jsonb, showcase_plates jsonb, updated_at timestamptz)
+ display_name text, showcase_cars jsonb, showcase_plates jsonb, garage_cars jsonb, storage_plates jsonb, updated_at timestamptz)
 */
 const PROFILE_LOCAL_KEY='nr-player-profile-v1';
 let profileLocal={display_name:'',showcase_cars:[],showcase_plates:[]};
@@ -5569,6 +5557,14 @@ function profilePickerCounts(){
  const a=document.querySelectorAll('[data-profile-car]:checked').length;
  if($('profileCarsCount'))$('profileCarsCount').textContent=`(${a}/3)`;
 }
+let supabaseInventorySaveTimer=null;
+function scheduleSupabaseInventorySave(){
+ if(!chatDb)return;
+ clearTimeout(supabaseInventorySaveTimer);
+ supabaseInventorySaveTimer=setTimeout(()=>{
+   profileSync().catch(e=>console.warn('Supabase inventory save error',e));
+ },900);
+}
 async function profileSync(){
  if(!chatDb)return;
  const me=profileMe();if(!me.telegram_id)return;
@@ -5577,7 +5573,16 @@ async function profileSync(){
   return live?{id:String(live.id),public:profileCarPublic(live)}:x;
  });
  profileSaveLocal();
- const payload={telegram_id:me.telegram_id,username:me.username||null,display_name:me.display_name,showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),showcase_plates:[],updated_at:new Date().toISOString()};
+ const payload={
+ telegram_id:me.telegram_id,
+ username:me.username||null,
+ display_name:me.display_name,
+ showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),
+ showcase_plates:[],
+ garage_cars:Array.isArray(cars)?cars:[],
+ storage_plates:Array.isArray(inv)?inv:[],
+ updated_at:new Date().toISOString()
+};
  const {error}=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
  if(error)console.warn('Profile sync error',error);
 }
