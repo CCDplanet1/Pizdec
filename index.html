@@ -3925,7 +3925,7 @@ function update(){
 let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).reduce((s,x)=>s+x.v,0);$('balance').textContent=money(bal);$('badge').textContent=inv.length;$('count').textContent=inv.length+' номеров';$('total').textContent=money(sellableTotal);$('sellAll').disabled=!inv.some(x=>!x.locked);$('sRolls').textContent=rolls;$('sSpent').textContent=money(spent);$('sEarned').textContent=money(earned);$('sBalance').textContent=money(bal);$('sStored').textContent=inv.length;$('sCollection').textContent=money(total);$('plateButton').disabled=inv.length>=storageCap;$('garageBadge').textContent=cars.length;$('garageCount').textContent=`${cars.length}/${garageCap}`;renderDealerButtons();const rc=$('regionChoice');if(rc){const need=COST+(rc.value?REGION_FEE:0);refreshRollButton();}if(bal<COST)$('msg').textContent=inv.length?'Не хватает денег — продай номер из хранилища':'Недостаточно денег'
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);
  if(typeof renderContainers==='function'&&!caseRolling)setTimeout(renderContainers,0);
- if(typeof scheduleInventorySupabaseSync==='function')scheduleInventorySupabaseSync(); }
+}
 
 
 function refreshRollButton(){
@@ -4520,7 +4520,7 @@ function carVisual(m,cls='carImage'){
  'Bugatti Divo':'images/divo.png',
  'Lamborghini Countach 800-4':'images/count800.png',
  'Lamborghini Countach':'images/count.png',
-       'BMW Z8':'images2/z8.png',
+       'BMW Z8':'images/z8.png',
        'BMW X5M F85':'images/x5f85.png',
        'McLaren P1':'images/p1.png',
        'Lamborghini Murciélago':'images/murcielago.png',
@@ -5431,7 +5431,7 @@ if($('chatInput'))$('chatInput').addEventListener('input',e=>{const c=$('chatCou
 
 /* ===== v0.0.42 Profiles =====
  Supabase table expected: player_profiles(telegram_id text primary key, username text,
- display_name text, showcase_cars jsonb, showcase_plates jsonb, garage_cars jsonb, storage_plates jsonb, updated_at timestamptz)
+ display_name text, showcase_cars jsonb, showcase_plates jsonb, updated_at timestamptz)
 */
 const PROFILE_LOCAL_KEY='nr-player-profile-v1';
 let profileLocal={display_name:'',showcase_cars:[],showcase_plates:[]};
@@ -5557,12 +5557,6 @@ function profilePickerCounts(){
  const a=document.querySelectorAll('[data-profile-car]:checked').length;
  if($('profileCarsCount'))$('profileCarsCount').textContent=`(${a}/3)`;
 }
-let inventorySupabaseSyncTimer=null;
-function scheduleInventorySupabaseSync(){
- if(!chatDb)return;
- clearTimeout(inventorySupabaseSyncTimer);
- inventorySupabaseSyncTimer=setTimeout(()=>{profileSync().catch(e=>console.warn('Garage/storage sync error',e))},700);
-}
 async function profileSync(){
  if(!chatDb)return;
  const me=profileMe();if(!me.telegram_id)return;
@@ -5571,16 +5565,7 @@ async function profileSync(){
   return live?{id:String(live.id),public:profileCarPublic(live)}:x;
  });
  profileSaveLocal();
- const payload={
- telegram_id:me.telegram_id,
- username:me.username||null,
- display_name:me.display_name,
- showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),
- showcase_plates:[],
- garage_cars:Array.isArray(cars)?cars:[],
- storage_plates:Array.isArray(inv)?inv:[],
- updated_at:new Date().toISOString()
-};
+ const payload={telegram_id:me.telegram_id,username:me.username||null,display_name:me.display_name,showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),showcase_plates:[],updated_at:new Date().toISOString()};
  const {error}=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
  if(error)console.warn('Profile sync error',error);
 }
