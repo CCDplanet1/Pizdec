@@ -3479,6 +3479,16 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  .page{min-height:0!important;padding-bottom:90px!important}
  #containersPage{overflow:visible!important;touch-action:pan-y!important}
 }
+</style><style>
+.caseFiveChoiceList{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:10px 0}
+.caseFiveChoice{position:relative;min-width:0;padding:11px 8px;border:1px solid #303b49;border-radius:12px;background:linear-gradient(160deg,#202a36,#111821);cursor:pointer;user-select:none;touch-action:manipulation;transition:.16s}
+.caseFiveChoice.selectedSell{border-color:#ef6464;box-shadow:inset 0 0 0 1px rgba(239,100,100,.38);opacity:.72}
+.caseFiveChoice input{position:absolute;top:8px;right:8px;width:18px;height:18px}
+.caseFiveChoice .choiceVisual{height:54px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.caseFiveChoice .choiceVisual .carImage{max-width:100%;max-height:52px}
+.caseFiveChoice b{display:block;font-size:11px;margin-top:5px}.caseFiveChoice small{display:block;font-size:10px;color:#9ca8b7;margin-top:3px}
+.caseChoiceHint{display:block;color:var(--muted);margin:8px 0}
+@media(max-width:700px){.caseFiveChoiceList{grid-template-columns:repeat(5,145px);overflow-x:auto;padding-bottom:7px;-webkit-overflow-scrolling:touch}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
@@ -4829,15 +4839,48 @@ async function animateFiveCaseWinners(winners){
    const result=$('caseResult');
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
    result.innerHTML=`<span style="color:var(--muted)">Открыто 5 × «${c.name}»</span>
-     ${pendingCasePrizes.map(x=>`<strong class="${carGlowClass(x.car)}" style="margin:7px 0;padding:6px;border-radius:8px">${x.car.model}${hammerSerialText(x.car)?' · '+hammerSerialText(x.car):''} · ${money(x.value)}</strong>`).join('')}
-     <small style="color:var(--muted)">Общая стоимость: ${money(totalValue)} · Свободно мест в гараже: ${free}</small>
-     <div class="casePrizeActions">
-       <button id="caseKeepAllBtn" class="caseKeep" onclick="keepAllCasePrizes()" ${free<5?'disabled':''}>${free<5?'Нужно 5 свободных мест':'Забрать все в гараж'}</button>
-       <button class="caseSell" onclick="sellAllCasePrizes()">Продать все за ${money(totalValue)}</button>
-     </div>`;
+ <small class="caseChoiceHint">Выбери машины, которые хочешь продать. Остальные отправятся в гараж.</small>
+ <div class="caseFiveChoiceList">
+ ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}" id="caseChoice${i}">
+  <input type="checkbox" onchange="toggleFiveCaseSell(${i},this.checked)">
+  <div class="choiceVisual">${carVisual(x.car,'carImage')}</div>
+  <b>${x.car.model}${hammerSerialText(x.car)?' · '+hammerSerialText(x.car):''}</b>
+  <small>${money(x.value)}</small>
+ </label>`).join('')}
+ </div>
+ <small style="color:var(--muted)">Общая стоимость: ${money(totalValue)} · Свободно мест в гараже: ${free}</small>
+ <div class="casePrizeActions">
+  <button id="caseMixedActionBtn" class="caseKeep" onclick="resolveSelectedCasePrizes()">Оставить 5 · Продать 0</button>
+  <button class="caseSell" onclick="sellAllCasePrizes()">Продать все за ${money(totalValue)}</button>
+ </div>`;
  }finally{
    caseRolling=false;update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  }
+}
+function toggleFiveCaseSell(index,checked){
+ const x=pendingCasePrizes[index];if(!x)return;
+ x.sellSelected=!!checked;
+ const card=$('caseChoice'+index);if(card)card.classList.toggle('selectedSell',!!checked);
+ updateFiveCaseChoiceButton();
+}
+function updateFiveCaseChoiceButton(){
+ const btn=$('caseMixedActionBtn');if(!btn||!pendingCasePrizes.length)return;
+ const sell=pendingCasePrizes.filter(x=>x.sellSelected),keep=pendingCasePrizes.length-sell.length;
+ const value=sell.reduce((sum,x)=>sum+x.value,0),free=Math.max(0,garageCap-cars.length);
+ btn.disabled=keep>free;
+ btn.textContent=keep>free?'Нужно '+keep+' мест в гараже':'Оставить '+keep+' · Продать '+sell.length+(sell.length?' за '+money(value):'');
+}
+function resolveSelectedCasePrizes(){
+ if(!pendingCasePrizes.length)return;
+ const sell=pendingCasePrizes.filter(x=>x.sellSelected),keep=pendingCasePrizes.filter(x=>!x.sellSelected);
+ const free=garageCap-cars.length;
+ if(keep.length>free){alert('Недостаточно мест в гараже. Нужно '+keep.length+' свободных мест.');return}
+ const value=sell.reduce((sum,x)=>sum+x.value,0);
+ if(keep.length)cars.push(...keep.map(x=>x.car));
+ if(value){bal+=value;earned+=value}
+ const kept=keep.length,sold=sell.length;pendingCasePrizes=[];hideCaseOpening();
+ $('caseResult').innerHTML='<strong>Оставлено: '+kept+' · Продано: '+sold+(sold?' за '+money(value):'')+'</strong>';
+ update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function keepAllCasePrizes(){
  if(!pendingCasePrizes.length)return;
