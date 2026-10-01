@@ -4232,12 +4232,13 @@ function mercedesCollectionModels(){
  return [...new Set([...mercedes,'Ferrari F40','Ferrari F50'])].sort();
 }
 function hasCarModel(model){return cars.some(c=>(c.model||c.name)===model)}
+let collectionHammerClaimed=false;
 function renderMercedesCollection(){
  const grid=$('mercCollectionGrid');if(!grid)return;
  const models=mercedesCollectionModels(),owned=models.filter(hasCarModel).length,progress=$('mercCollectionProgress'),status=$('mercCollectionStatus'),btn=$('mercCollectionClaim');
  progress.textContent=owned+' / '+models.length;
  grid.innerHTML=models.map(n=>`<div class="collectionCar ${hasCarModel(n)?'got':'missing'}"><span class="collectionMark">${hasCarModel(n)?'✅':'⬜'}</span><b>${n}</b></div>`).join('');
- const already=cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
+ const already=collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
  status.textContent=already?'Награда уже получена':owned===models.length?'Коллекция собрана!':'Не хватает '+(models.length-owned)+' машин';
  btn.disabled=already||owned!==models.length||cars.length>=garageCap;
  btn.textContent=already?'Hammer уже получен':(owned===models.length&&cars.length>=garageCap?'Нужно место в гараже':'Получить W124 300E Hammer');
@@ -4253,6 +4254,7 @@ async function claimMercedesCollection(){
  if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave();if(typeof syncPublicProfile==='function')syncPublicProfile();
 }
 function renderGarage(){
+ if(cars.some(c=>c.model!=='Mercedes-Benz 300E Hammer AMG'&&!Number(c.globalSerial)))setTimeout(()=>migrateGlobalCarSerials(),0);
  let box=$('garage');box.innerHTML='';
  if(!cars.length){box.innerHTML='<div class="garageEmpty">Гараж пуст. Купи первую машину в автосалоне.</div>';return}
  let g=document.createElement('div');g.className='garageGrid';
@@ -4261,7 +4263,7 @@ function renderGarage(){
   let opts=inv.map(x=>`<option value="${x.id}">${x.p} ${x.r} — ${money(x.v)}</option>`).join('');
   let sale=Math.round(carRubValue(car)/100)*100;
   c.innerHTML=`<div class="carVisual">${carVisual(car)}</div><h3>${car.model}</h3>
-  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${hammerSerialLineHtml(car)}
+  <div style="margin:6px 0 8px"><span class="pill ${cr.rank}">${cr.name}</span></div>${carSerialLineHtml(car)}
   <div class="carMeta">${car.custom?'Установлен номер из хранилища':'Случайный номер при покупке'}</div>
   <div class="garagePlate">${plateHtml(car.plate,car.region,car.custom?(car.oldRank||'normal'):'normal')}</div>
   <select class="plateSelect"><option value="">Выбрать номер из хранилища</option>${opts}</select>
@@ -4555,9 +4557,53 @@ function hammerSerialLineHtml(car){
  }
  return '<div class="hammerSerialLine">Серийный номер: <b class="hammerSerialPending">'+hammerSerialStatus()+'</b><button class="hammerSerialRetry" type="button" onclick="migrateLegacyHammerSerials()">Повторить</button></div>';
 }
+function carSerialText(car){
+ if(!car)return '';
+ if(car.model==='Mercedes-Benz 300E Hammer AMG'){const hs=hammerSerialText(car);return hs||hammerSerialStatus()}
+ const raw=Number(car.globalSerial||0);
+ return raw>0?'#'+String(raw).padStart(4,'0'):'получение...';
+}
+function carSerialLineHtml(car){
+ if(!car)return '';
+ if(car.model==='Mercedes-Benz 300E Hammer AMG')return hammerSerialLineHtml(car);
+ return '<div class="hammerSerialLine">Серийный номер: <b>'+carSerialText(car)+'</b></div>';
+}
 function hammerFallbackWinner(pool){
  const safe=pool.filter(x=>x!==MYTHIC_HAMMER);
  return weightedCaseCar(safe);
+}
+
+async function claimGlobalCarSerial(model){
+ try{
+  if(!supabaseClient||!tgUser?.id)return null;
+  const {data,error}=await supabaseClient.rpc('claim_car_serial',{
+   p_telegram_id:String(tgUser.id),
+   p_model:String(model||'Unknown')
+  });
+  if(error)throw error;
+  const n=Number(Array.isArray(data)?data[0]?.serial_no:data);
+  return Number.isFinite(n)&&n>0?n:null;
+ }catch(e){
+  console.warn('Global car serial error',e);
+  return null;
+ }
+}
+async function ensureGlobalCarSerial(car){
+ if(!car||car.model==='Mercedes-Benz 300E Hammer AMG')return car?.limitedSerial||null;
+ if(Number(car.globalSerial)>0)return Number(car.globalSerial);
+ const n=await claimGlobalCarSerial(car.model);
+ if(n>0){car.globalSerial=n;if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave()}
+ return n;
+}
+async function migrateGlobalCarSerials(){
+ if(!supabaseClient||!tgUser?.id)return;
+ let changed=false;
+ for(const car of cars){
+  if(car.model==='Mercedes-Benz 300E Hammer AMG'||Number(car.globalSerial)>0)continue;
+  const n=await claimGlobalCarSerial(car.model);
+  if(n>0){car.globalSerial=n;changed=true}
+ }
+ if(changed){update();renderGarage();if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave();if(typeof syncPublicProfile==='function')syncPublicProfile()}
 }
 async function claimHammerSerial(){
  try{
@@ -4969,7 +5015,7 @@ function buildSaveData(){
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
-   redeemedPromoCodes:[...redeemedPromoCodes]
+   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed
  };
 }
 function saveFingerprint(data){
@@ -4990,7 +5036,7 @@ function applySaveData(d){
  if(Number.isFinite(d.garageCap))garageCap=Math.max(1,d.garageCap);
  pendingCasePrize=null;pendingCasePrizes=[];
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
- if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String));
+ if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String)); collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
  isRolling=false;caseRolling=false;upgradeRolling=false;
  const fast=$('fastCaseRoll');if(fast)fast.checked=fastCaseRoll;
  update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();renderUpgrades();
@@ -5232,7 +5278,7 @@ function profileCarPublic(c){
    'Porsche 911 GT3 RS':'images/gt3rs.png'
   }[profileCarLabel(c)]||'')),
   limitedSerial:Number(c?.limitedSerial||0)||null,
-  limitedTotal:Number(c?.limitedTotal||0)||null,
+  limitedTotal:Number(c?.limitedTotal||0)||null, vehicleSerial:Number(c?.globalSerial||0)||null,
   value:Number(carRubValue(c)||0),
   baseValue:Number(carBaseValue(c)||0),
   rarity:(cr?.name||''),
@@ -5246,12 +5292,14 @@ function profileCarPublic(c){
 }
 function profilePlatePublic(p){return {name:String(p?.n||p?.num||'Номер'),region:String(p?.r||p?.reg||''),value:Number(p?.v||0),rarity:String(p?.rarity?.name||p?.rarity||'')}}
 function profileHammerSerialHtml(x){
- if(!x||(x.model||x.name)!=='Mercedes-Benz 300E Hammer AMG')return '';
- const n=Number(x.limitedSerial||0);
- if(n>0){
-  return '<div class="hammerSerialLine">Серийный номер: <b>'+String(n).padStart(2,'0')+' of '+Number(x.limitedTotal||54)+'</b></div>';
+ if(!x)return '';
+ if((x.model||x.name)==='Mercedes-Benz 300E Hammer AMG'){
+  const n=Number(x.limitedSerial||0);
+  if(n>0)return '<div class="hammerSerialLine">Серийный номер: <b>'+String(n).padStart(2,'0')+' of '+Number(x.limitedTotal||54)+'</b></div>';
+  return '<div class="hammerSerialLine">Серийный номер: <b class="hammerSerialPending">'+hammerSerialStatus()+'</b></div>';
  }
- return '<div class="hammerSerialLine">Серийный номер: <b class="hammerSerialPending">'+hammerSerialStatus()+'</b></div>';
+ const n=Number(x.vehicleSerial||0);
+ return '<div class="hammerSerialLine">Серийный номер: <b>'+(n>0?'#'+String(n).padStart(4,'0'):'—')+'</b></div>';
 }
 function profileShowItems(target,items,type){
  const el=$(target);if(!el)return;
@@ -5444,4 +5492,38 @@ initChat();
 })();
 </script>
 
+
+<!--
+v0.1.46 SUPABASE SETUP — run once in SQL Editor:
+
+create table if not exists public.car_serials (
+  model text not null,
+  serial_no bigint not null,
+  telegram_id text not null,
+  claimed_at timestamptz not null default now(),
+  primary key (model, serial_no)
+);
+alter table public.car_serials enable row level security;
+drop policy if exists "car serials readable" on public.car_serials;
+create policy "car serials readable" on public.car_serials for select to anon, authenticated using (true);
+
+create or replace function public.claim_car_serial(p_telegram_id text, p_model text)
+returns bigint
+language plpgsql
+security definer
+set search_path=public
+as $$
+declare v_serial bigint;
+begin
+  perform pg_advisory_xact_lock(hashtext(coalesce(p_model,'')));
+  select coalesce(max(serial_no),0)+1 into v_serial
+  from public.car_serials where model=p_model;
+  insert into public.car_serials(model,serial_no,telegram_id)
+  values(p_model,v_serial,coalesce(nullif(p_telegram_id,''),'unknown'));
+  return v_serial;
+end;
+$$;
+revoke all on function public.claim_car_serial(text,text) from public;
+grant execute on function public.claim_car_serial(text,text) to anon, authenticated;
+-->
 </body></html>
