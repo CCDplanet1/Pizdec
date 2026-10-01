@@ -3552,7 +3552,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <h2 class="statsTitle">Улучшения</h2>
 <div class="settingsCard">
   <div class="settingRow">
-    <div><h3>Хранилище номеров</h3><p>Сейчас: <b id="storageCapText">10 мест</b>. Каждое улучшение добавляет +5 мест.</p></div>
+    <div><h3>Хранилище номеров</h3><p>Сейчас: <b id="storageCapText">10 мест</b>. Каждое улучшение добавляет +50 мест. Максимум — 700.</p></div>
     <button class="buy" id="upgradeStorageBtn" onclick="upgradeStorage()">+50 мест · 5 000 000 ₽</button>
   </div>
 </div>
@@ -3916,7 +3916,11 @@ function update(){
  if($('storageCapacityLabel'))$('storageCapacityLabel').textContent=inv.length+' / '+storageCap;
  if($('storageCapText'))$('storageCapText').textContent=storageCap+' мест';
  if($('garageCapText'))$('garageCapText').textContent=garageCap+' '+(garageCap===1?'место':'мест');
- if($('upgradeStorageBtn'))$('upgradeStorageBtn').disabled=bal<1000000;
+ if($('upgradeStorageBtn')){
+ const maxed=storageCap>=700;
+ $('upgradeStorageBtn').disabled=maxed||bal<5000000;
+ $('upgradeStorageBtn').textContent=maxed?'Максимум · 700 мест':'+50 мест · 5 000 000 ₽';
+}
  if($('upgradeGarageBtn'))$('upgradeGarageBtn').disabled=bal<1500000;
  if(inv.length>=storageCap){
    $('plateButton').disabled=true;
@@ -5200,9 +5204,16 @@ function sellCasePrize(){
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function upgradeStorage(){
- const cost=5000000;
+ const cost=5000000,MAX_STORAGE_CAP=700;
+ if(storageCap>=MAX_STORAGE_CAP){
+   storageCap=MAX_STORAGE_CAP;
+   alert('Хранилище уже улучшено до максимума — 700 мест.');
+   update();renderStore();renderUpgrades();
+   return;
+ }
  if(bal<cost){alert('Недостаточно денег. Нужно 5 000 000 ₽.');return}
- bal-=cost;spent+=cost;storageCap+=50;
+ bal-=cost;spent+=cost;
+ storageCap=Math.min(MAX_STORAGE_CAP,storageCap+50);
  update();renderStore();renderUpgrades();
 }
 function upgradeGarage(){
@@ -5382,11 +5393,11 @@ async function processAdminCarGrants(){
  }catch(e){console.warn('Admin car grants error',e)}
 }
 
-const SAVE_SCHEMA=1;
-const SAVE_PREFIX='nr_save_v1';
+const SAVE_SCHEMA=2;
+const SAVE_PREFIX='nr_save_v2';
 const SAVE_MANIFEST=SAVE_PREFIX+'_manifest';
 const SAVE_CHUNK_SIZE=3500;
-const LOCAL_SAVE_KEY='nr-local-save-v1';
+const LOCAL_SAVE_KEY='nr-local-save-v2';
 let saveSystemReady=false,saveBusy=false,lastSavedFingerprint='',saveQueued=false;
 
 function buildSaveData(){
