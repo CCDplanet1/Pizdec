@@ -3870,7 +3870,7 @@ function legendaryNumberValue(p,region){
  return Math.round(result/100)*100;
 }
 function evaluate(d,a,b,c,r,chosenRegion=''){
- // Шансы: легендарный 0,05%; мифический 0,1% при ручном 77/97,
+ // Шансы: легендарный 0,05%; мифический 0,1% на специальных выбранных регионах,
  // 0% при другом ручном регионе, 0,01% при случайном регионе.
  const mythicChance=chosenRegion?(['77','97','99','78','98','777'].includes(String(chosenRegion))?.001:0):.0001;
  const legendaryChance=.0005,epicChance=.0025;
@@ -3944,6 +3944,14 @@ async function majesticRollAnimation(){
  }
 }
 
+function isMythicFbRegion(region){
+ return ['77','97','99','777','78','98'].includes(String(region||''));
+}
+function generateLegendaryFullBlat(region){
+ const digits=['111','222','333','444','555','666','777','888','999'];
+ const LTR=L[rnd(L.length)],d=digits[rnd(digits.length)];
+ return {plateText:LTR+d+LTR+LTR,desc:'Фулл-блат · '+d+' '+String(region)};
+}
 function generateMythicPlate(chosenRegion){
  const requested=String(chosenRegion||''),allowed=['77','99','97','777','98','78'];
  const repeatDigits=['111','222','333','444','555','666','777','888','999'];
@@ -4043,25 +4051,21 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
    plateText=a+d+b+c;
    e.v=epicNumberValue(plateText,r);
  }else if(e.rank==='legendary'){
-   // Легендарные цифровые серии: только 001/005/007.
-   const legendarySeries=['ХАМ','ВОР','ЕКХ'];
-   const lt=rnd(4);
-   if(lt===0){
-     const LL=L[rnd(L.length)];
-     plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001';
-   }else if(lt===1){
-     const ls=legendarySeries[rnd(legendarySeries.length)];
-     plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls;
-   }else if(lt===2){
-     const LL=L[rnd(L.length)];
-     plateText=LL+'007'+LL+LL;if(!chosen)r='77';e.desc='Легендарный формат · 007 '+r;
-   }else{
-     const LL=L[rnd(L.length)];
-     plateText=LL+'009'+LL+LL;if(!chosen)r='99';e.desc='Легендарный формат · 009 '+r;
-   }
-   e.v=legendaryNumberValue(plateText,r);
+ // На обычных регионах фулл-блаты 111/222/.../999 относятся к легендарной редкости.
+ // На 77/97/99/777/78/98 они остаются мифическими и здесь не генерируются.
+ if(!isMythicFbRegion(r)&&Math.random()<0.70){
+  const fb=generateLegendaryFullBlat(r);
+  plateText=fb.plateText;e.desc=fb.desc;
+ }else{
+  const legendarySeries=['ХАМ','ВОР','ЕКХ'];
+  const lt=rnd(4);
+  if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001'}
+  else if(lt===1){const ls=legendarySeries[rnd(legendarySeries.length)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
+  else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
+  else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;e.desc='Легендарный формат · 009 '+r}
  }
- if(e.rank==='mythic'){
+ e.v=legendaryNumberValue(plateText,r);
+} if(e.rank==='mythic'){
  const mythic=generateMythicPlate(chosen);
  plateText=mythic.plateText;r=mythic.r;e.desc=mythic.desc;
  e.v=mythicNumberValue(plateText,r);
@@ -4075,13 +4079,17 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
  plateText=mythic.plateText;r=mythic.r;e.desc=mythic.desc;
  e.v=mythicNumberValue(plateText,r);
 }else if(e.rank==='legendary'){
-     const lt=rnd(4);
-     if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001';if(!chosen)r=REG[rnd(REG.length)]}
-     else if(lt===1){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls;if(!chosen)r=REG[rnd(REG.length)]}
-     else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;if(!chosen)r='77';e.desc='Легендарный формат · 007 '+r}
-     else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;if(!chosen)r='99';e.desc='Легендарный формат · 009 '+r}
-     e.v=legendaryNumberValue(plateText,r);
-   }else if(e.rank==='epic'){
+ if(!isMythicFbRegion(r)&&Math.random()<0.70){
+  const fb=generateLegendaryFullBlat(r);plateText=fb.plateText;e.desc=fb.desc;
+ }else{
+  const lt=rnd(4);
+  if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001'}
+  else if(lt===1){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
+  else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
+  else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;e.desc='Легендарный формат · 009 '+r}
+ }
+ e.v=legendaryNumberValue(plateText,r);
+ }else if(e.rank==='epic'){
      const ed=['002','003','004','005','006','007','008','009'][rnd(8)],EL=L[rnd(L.length)];
      plateText=EL+ed+EL+EL;
      if(!chosen)r=REG[rnd(REG.length)];
