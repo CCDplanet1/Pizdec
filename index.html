@@ -4520,11 +4520,6 @@ function carVisual(m,cls='carImage'){
  'Bugatti Divo':'images/divo.png',
  'Lamborghini Countach 800-4':'images/count800.png',
  'Lamborghini Countach':'images/count.png',
-       'Jeep Grand Cherokee SRT8 Wk2':'images2/srt8.png',
-       'Mercedes-Benz AMG GT63 II':'images2/amggt63.png',
-       'Ford Mustang GT \'66':'images2/mustang66.png',
-       'Ford GT40 MkII':'images2/fordgt40.png',
-       'Cadillac CT5-V':'images2/ct5.png',
        'BMW Z8':'images2/z8.png',
        'BMW X5M F85':'images/x5f85.png',
        'McLaren P1':'images/p1.png',
@@ -4569,7 +4564,6 @@ function carVisual(m,cls='carImage'){
        'Porsche Gemballa Marsien':'images/gemballa.png',
        'BMW M5 G90':'images/g90.png',
        'Mercedes-Benz G63 AMG III':'images/g63amg.png',
-       'Ford GT':'images2/fordgt.png',
        'Ferrari F430':'images/f430.png',
        'Nissan GT-R GTT Draco':'images/draco.png',
        'DeLorean DMC-12':'images/dmc12.png',
@@ -4607,8 +4601,15 @@ function carVisual(m,cls='carImage'){
        'Ferrari LaFerrari':'images/laferrari.png',
        'Koenigsegg Jesko Absolut':'images/jesko.png',
        'Porsche 918 Spyder':'images/918.png',
-       'Rolls Royce Cullinan':'images/cullinan.png'
- };
+       'Rolls Royce Cullinan':'images/cullinan.png',
+       'Cadillac CT5-V':'images/ct5.png',
+       'Ford GT':'images/fordgt.png',
+       'Ford GT40 MkII':'images/fordgt40.png',
+       'Ford Mustang GT \'66':'images/mustang66.png',
+       'Mercedes-Benz AMG GT63 II':'images/amggt63.png',
+       'Jeep Grand Cherokee SRT8 Wk2':'images/srt8.png',
+       'Porsche 911 Carrera 4S':'images/911.png'
+};
  const image=imageByName[carName]||m.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
  return `<div class="carIcon">🚘</div>`;
