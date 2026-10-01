@@ -4054,10 +4054,10 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
      plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls;
    }else if(lt===2){
      const LL=L[rnd(L.length)];
-     plateText=LL+'007'+LL+LL;r='77';e.desc='Легендарный формат · 007 77';
+     plateText=LL+'007'+LL+LL;if(!chosen)r='77';e.desc='Легендарный формат · 007 '+r;
    }else{
      const LL=L[rnd(L.length)];
-     plateText=LL+'009'+LL+LL;r='99';e.desc='Легендарный формат · 009 99';
+     plateText=LL+'009'+LL+LL;if(!chosen)r='99';e.desc='Легендарный формат · 009 '+r;
    }
    e.v=legendaryNumberValue(plateText,r);
  }
@@ -4068,6 +4068,7 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
 } // Полный номер (буквы/цифры + регион), который лежит в хранилище ИЛИ установлен на машине, повторно выпасть не может.
  // Для редких фиксированных комбинаций меняем буквы/регион, пока найдём свободную.
  let duplicateTries=0;
+ if(chosen)r=String(chosen);
  while(plateInStorage(plateText,r)&&duplicateTries++<2000){
    if(e.rank==='mythic'){
  const mythic=generateMythicPlate(chosen);
@@ -4077,8 +4078,8 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
      const lt=rnd(4);
      if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001';if(!chosen)r=REG[rnd(REG.length)]}
      else if(lt===1){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls;if(!chosen)r=REG[rnd(REG.length)]}
-     else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;r='77';e.desc='Легендарный формат · 007 77'}
-     else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;r='99';e.desc='Легендарный формат · 009 99'}
+     else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;if(!chosen)r='77';e.desc='Легендарный формат · 007 '+r}
+     else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;if(!chosen)r='99';e.desc='Легендарный формат · 009 '+r}
      e.v=legendaryNumberValue(plateText,r);
    }else if(e.rank==='epic'){
      const ed=['002','003','004','005','006','007','008','009'][rnd(8)],EL=L[rnd(L.length)];
@@ -4096,6 +4097,9 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
      plateText=a+d+b+c;if(!chosen)r=REG[rnd(REG.length)];
    }
  }
+
+ // v0.1.44: hard lock — when player selected a region, no rarity may replace it.
+ if(chosen)r=String(chosen);
 
  if(plateInStorage(plateText,r)){
    bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
@@ -4841,7 +4845,12 @@ if(savedTheme==='dark'){document.body.classList.add('dark');darkToggle.checked=t
 darkToggle.onchange=()=>{document.body.classList.toggle('dark',darkToggle.checked);try{localStorage.setItem('nr-theme',darkToggle.checked?'dark':'light')}catch(e){}};
 
 const regionChoice=$('regionChoice');
-REG.forEach(r=>{let o=document.createElement('option');o.value=r;o.textContent='Регион '+r+' · +'+money(['77','97'].includes(r)?SPECIAL_REGION_FEE:REGION_FEE);regionChoice.appendChild(o)});
+[...REG].sort((a,b)=>Number(a)-Number(b)).forEach(r=>{
+ let o=document.createElement('option');
+ o.value=r;
+ o.textContent='Регион '+r+' · +'+money(['77','97','99','78','98','777'].includes(String(r))?SPECIAL_REGION_FEE:REGION_FEE);
+ regionChoice.appendChild(o);
+});
 regionChoice.onchange=()=>{
  const rv=regionChoice.value,rf=rv?(['77','97'].includes(rv)?SPECIAL_REGION_FEE:REGION_FEE):0;
  $('regionFee').textContent=rv?'Выбран регион '+rv+' · прокрут '+money(COST+rf):'Регион выпадет случайно';
