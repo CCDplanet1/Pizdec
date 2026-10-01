@@ -3450,6 +3450,35 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .deletedRewardPlate #deletedRewardPlateMount,
 #deletedRewardPlateMount{display:flex;align-items:center;justify-content:center;width:100%}
 .deletedRewardPlate{transform:none!important}
+</style><style>
+/* v0.1.42 — Android / Telegram WebView scrolling fix */
+html{
+ height:auto!important;min-height:100%!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior-y:auto!important;
+}
+body{
+ position:static!important;height:auto!important;min-height:100vh!important;max-height:none!important;
+ overflow-x:hidden!important;overflow-y:visible!important;
+ touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;
+ overscroll-behavior-y:auto!important;
+}
+main,.wrap,.container,.page{
+ height:auto!important;max-height:none!important;
+ overflow-y:visible!important;touch-action:pan-y!important;
+}
+.page.active{display:block!important;overflow:visible!important}
+button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
+#containerGrid,.dealerGrid,.garageGrid,.storageGrid,.collectionGrid,
+.caseOpeningStage,.caseResult,.caseCard{touch-action:pan-y!important}
+.caseRouletteWrap,.caseRoulette{touch-action:pan-y!important}
+.caseTrack{touch-action:none!important}
+@media(max-width:900px){
+ html,body{width:100%!important;overflow-x:hidden!important}
+ body{overflow-y:visible!important}
+ .page{min-height:0!important;padding-bottom:90px!important}
+ #containersPage{overflow:visible!important;touch-action:pan-y!important}
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
@@ -4622,13 +4651,17 @@ async function migrateLegacyHammerSerials(){
  }
 }
 
+function mobileCaseTap(id,count=1){
+ if(caseRolling)return;
+ return count===5?openFiveContainers(id):openContainer(id);
+}
 function renderContainers(){
  const root=$('containerGrid');if(!root)return;
  root.innerHTML=CASE_DEFS.map(c=>{
    const pool=casePool(c),price=casePrice(c),min=pool.length?Math.min(...pool.map(carRubValue)):0,max=pool.length?Math.max(...pool.map(carRubValue)):0;
    const exclusives=c.id==='legendary'?'<br>':'';
-   return `<div class="caseCard ${c.cls}"><div class="caseIcon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onclick="openContainer('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price?'disabled':''}>Открыть контейнер</button>
-   <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onclick="openFiveContainers('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
+   return `<div class="caseCard ${c.cls}"><div class="caseIcon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price?'disabled':''}>Открыть контейнер</button>
+   <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||pendingCasePrize||pendingCasePrizes.length||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
 }
 function rouletteItem(m){
