@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.03</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.06</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5438,6 +5438,36 @@ async function redeemPromoCode(){
   }
 
  if(!code){promoMessage('Введите промокод.');return}
+
+if(code==='CARPACK'){
+ const use1='CARPACK#1',use2='CARPACK#2';
+ const used=(redeemedPromoCodes.has(use1)?1:0)+(redeemedPromoCodes.has(use2)?1:0);
+ if(used>=2){promoMessage('Этот промокод уже был активирован 2 раза.');return}
+ if(cars.length+5>garageCap){promoMessage('Для промокода нужно минимум 5 свободных мест в гараже.');return}
+ const rewards=[
+  CARS.find(x=>x.name==='Mercedes-Benz 300SL'),
+  CARS.find(x=>x.name==='Mercedes-Benz G63 6x6'),
+  CARS.find(x=>x.name==='Mercedes-Benz CLK GTR'),
+  MYTHIC_F50,
+  UPGRADE_F40
+ ];
+ if(rewards.some(x=>!x)){promoMessage('Одна из наград временно недоступна.');return}
+ for(const reward of rewards){
+  const rp=randomPlateForCar();
+  cars.push({id:++carSeq,model:reward.name,image:reward.image||null,icon:reward.icon||'🚘',
+   price:reward.price,currency:reward.currency,rub:reward.rub||reward.price,
+   forcedRarity:reward.forcedRarity||null,limited:!!reward.limited,caseExclusive:reward.caseExclusive||null,
+   plate:rp.p,region:rp.r,custom:false,promoCode:'carpack'});
+ }
+ redeemedPromoCodes.add(used===0?use1:use2);
+ const input=$('promoCodeInput');if(input)input.value='';
+ promoMessage('Промокод активирован! Mercedes-Benz 300SL, Mercedes-Benz G63 6x6, Mercedes-Benz CLK GTR, Ferrari F50 и Ferrari F40 добавлены в гараж. Осталось активаций: '+(1-used)+'.',true);
+ update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();
+ if(typeof scheduleGameSave==='function')scheduleGameSave();
+ if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+ if(typeof syncPublicProfile==='function')syncPublicProfile();
+ return;
+}
 if(['FERRARI40','FERRARI50','MERC300SL','G636X6','MYTH78','MYTH98','MYTH77'].includes(code)){
  if(redeemedPromoCodes.has(code)){promoMessage('Этот промокод уже был активирован.');return}
  if(code==='MYTH78'||code==='MYTH98'||code==='MYTH77'){
