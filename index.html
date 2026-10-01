@@ -4701,13 +4701,13 @@ function carVisual(m,cls='carImage'){
        'BMW X5M E70':'images2/x5e70.png',
        'BMW X5M F95':'images2/x5f95.png',
        'ЗАЗ 968':'images2/zaz968.png',
-       'DeLorean DMC-12 BTTF':'images2/dmc12bttf.png',
+       'DeLorean DMC-12 BTTF':'images2/dmc12dttf.png',
        'Dodge Charger R/T':'images2/chargerrt.png',
        'Mercedes-Benz S63 W221':'images2/s63w211.png',
-       'Mitsubishi Lancer Evolution IX':'images2/evolutuion9.png',
-       'Mitsubishi Lancer Evolution VI':'images2/evolutiob6.png',
-       '2180 "Веста"':'images2/2180vesta.png',
-       'Ford Transit':'images2/tranzit.png'
+       'Ford Transit':'images2/tranzit.png',
+       'ВАЗ 2180 "Веста"':'images2/2180vesta.png',
+       'Mitsubishi Lancer Evolution IX':'images2/evolution9.png',
+       'Mitsubishi Lancer Evolution VI':'images2/evolution6.png'
 };
  const image=imageByName[carName]||m.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
