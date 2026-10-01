@@ -3495,6 +3495,13 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 .garageSortWrap label{font-size:12px;color:var(--muted);font-weight:800}
 .garageSortWrap select{min-width:210px;padding:9px 11px;border-radius:10px;border:1px solid #303b49;background:#121a23;color:var(--text)}
 @media(max-width:700px){.garageSortWrap{width:100%;margin-top:8px}.garageSortWrap select{width:100%;min-width:0}}
+</style><style>
+.upCarVisual{width:96px;min-width:96px;height:70px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.upCarImage{display:block;max-width:94px;max-height:66px;width:auto;height:auto;object-fit:contain}
+.caseItem .ci{height:58px!important;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:0!important}
+.caseCarImage{display:block;max-width:112px;max-height:55px;width:auto;height:auto;object-fit:contain}
+.caseItem .ci .carIcon{font-size:31px}
+@media(max-width:700px){.upCarVisual{width:78px;min-width:78px}.upCarImage{max-width:76px}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
@@ -4413,11 +4420,11 @@ function upgraderSourceCard(src){
    return `<div class="upItemCard"><div class="upPlateHolder">${upgraderPlateHTML(p)}</div><div class="upItemMeta"><span>${p.name||p.desc||'ГРЗ'}</span><b>${money(src.value)}</b></div></div>`;
  }
  const c=src.obj;
- return `<div class="upItemCard upCarCard ${carGlowClass(c)}"><div class="carEmoji">${c.icon||'🚘'}</div><div><strong>${c.model||c.name}</strong><small>${c.plate?`${c.plate} ${c.region||''}`:'Автомобиль из гаража'}</small><small>${money(src.value)}</small></div></div>`;
+ return `<div class="upItemCard upCarCard ${carGlowClass(c)}"><div class="upCarVisual">${carVisual(c,'upCarImage')}</div><div><strong>${c.model||c.name}</strong><small>${c.plate?`${c.plate} ${c.region||''}`:'Автомобиль из гаража'}</small><small>${money(src.value)}</small></div></div>`;
 }
 function upgraderTargetCard(target){
  if(!target)return '<small>Нет более дорогой цели</small>';
- return `<div class="upItemCard upCarCard ${carGlowClass(target)}"><div class="carEmoji">🚘</div><div><strong>${target.name}</strong><small>Целевая машина</small><small>${money(carRubValue(target))}</small></div></div>`;
+ return `<div class="upItemCard upCarCard ${carGlowClass(target)}"><div class="upCarVisual">${carVisual(target,'upCarImage')}</div><div><strong>${target.name}</strong><small>Целевая машина</small><small>${money(carRubValue(target))}</small></div></div>`;
 }
 
 function renderUpgrader(){
@@ -4512,7 +4519,28 @@ function carVisual(m,cls='carImage'){
  'Mercedes-Benz CLK GTR':'images/clk.png',
  'Bugatti Divo':'images/divo.png',
  'Lamborghini Countach 800-4':'images/count800.png',
- 'Lamborghini Countach':'images/count.png'
+ 'Lamborghini Countach':'images/count.png',
+       'Alfa Romeo Giulia':'images/alfa.png',
+       'Aston Martin Valkyrie':'images/valkyrie.png',
+       'Aston Martin Vantage':'images/vantage.png',
+       'Audi R8':'images/r8.png',
+       'Audi RS e-tron GT':'images/etron.png',
+       'Audi RS3 8Y':'images/audirs3.png',
+       'Audi RS4 B9':'images/audirs4.png',
+       'Audi RS6 C7':'images/rs6c7.png',
+       'Audi RS6 C8':'images/rs6c8.png',
+       'Audi RS7':'images/rs7c7.png',
+       'Audi RS7 C8':'images/rs7c8.png',
+       'Audi RSQ8':'images/rsq8.png',
+       'Audi S5':'images/audis5.png',
+       'Audi S8':'images/audis8.png',
+       'Bentley Continental GT':'images/continentalgt.png',
+       'Bentley Flying Spur':'images/flyingspur.png',
+       'Bugatti Veyron 16.4':'images/veyron.png',
+       'Ferrari LaFerrari':'images/laferrari.png',
+       'Koenigsegg Jesko Absolut':'images/jesko.png',
+       'Porsche 918 Spyder':'images/918.png',
+       'Rolls Royce Cullinan':'images/cullinan.png'
  };
  const image=imageByName[carName]||m.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
@@ -4795,9 +4823,7 @@ function renderContainers(){
    <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
 }
-function rouletteItem(m){
- return `<div class="caseItem ${carGlowClass(m)}"><div class="ci">🚘</div><b>${m.name}</b><small>${money(carRubValue(m))}</small></div>`;
-}
+function rouletteItem(m){return `<div class="caseItem ${carGlowClass(m)}"><div class="ci">${carVisual(m,'caseCarImage')}</div><b>${m.name}</b><small>${money(carRubValue(m))}</small></div>`;}
 function hideCaseOpening(){
  const wrap=$('caseRouletteWrap'),result=$('caseResult');
  if(wrap)wrap.style.display='none';
