@@ -3504,7 +3504,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 @media(max-width:700px){.upCarVisual{width:78px;min-width:78px}.upCarImage{max-width:76px}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -3563,8 +3563,24 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
   </div>
 </div>
 </section>
+
+<section class="page" id="lotteryPage">
+ <h2 class="statsTitle">🎟️ Скретч-лотерея</h2>
+ <div class="settingsCard" style="max-width:680px;margin:0 auto;text-align:center">
+  <h3 style="margin-top:0">Билет · 500 000 ₽ за стирание</h3>
+  <p style="color:var(--muted)">Просто стирай билет. Lamborghini Murciélago — шанс 1%.</p>
+  <div id="lotteryTicket" style="margin-top:18px">
+   <div style="font-weight:800;margin-bottom:10px">Сотри билет мышкой или пальцем</div>
+   <div id="scratchWrap" style="position:relative;width:min(100%,460px);height:210px;margin:0 auto;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--card)">
+    <div id="lotteryPrize" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px"></div>
+    <canvas id="scratchCanvas" width="920" height="420" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair"></canvas>
+   </div>
+   <div id="lotteryStatus" style="margin-top:12px;color:var(--muted)">Начни стирать билет · стоимость 500 000 ₽.</div>
+  </div>
+ </div>
+</section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.93</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.1.95</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4273,6 +4289,7 @@ function mercedesCollectionModels(){
 function hasCarModel(model){return cars.some(c=>(c.model||c.name)===model&&!c.locked)}
 let collectionHammerClaimed=false;
 function renderMercedesCollection(){
+ updateCollectionTabVisibility();
  const grid=$('mercCollectionGrid');if(!grid)return;
  const models=mercedesCollectionModels(),owned=models.filter(hasCarModel).length,progress=$('mercCollectionProgress'),status=$('mercCollectionStatus'),btn=$('mercCollectionClaim');
  progress.textContent=owned+' / '+models.length;
@@ -4284,13 +4301,28 @@ function renderMercedesCollection(){
 }
 async function claimMercedesCollection(){
  const models=mercedesCollectionModels();if(!models.every(hasCarModel))return;
- if(cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG'))return;
- if(cars.length>=garageCap){alert('Нужно свободное место в гараже.');return}
+ if(collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG'))return;
+ // Reward is added after ingredients are consumed, so a full garage is fine.
  const serial=await claimHammerSerial();if(!serial){alert('Не удалось получить серийный номер Hammer.');return}
+ const consumeIds=[];
+ for(const model of models){
+  const car=cars.find(c=>(c.model||c.name)===model&&!c.locked&&!consumeIds.includes(c.id));
+  if(!car)return;consumeIds.push(car.id);
+ }
+ cars=cars.filter(c=>!consumeIds.includes(c.id));
  const rp=randomPlateForCar();
  cars.push({id:++carSeq,model:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54,limitedSerial:serial,limitedTotal:54,plate:rp.p,region:rp.r,custom:false,collectionReward:true});
- update();renderGarage();renderMercedesCollection();
+ collectionHammerClaimed=true;
+ update();renderGarage();renderMercedesCollection();updateCollectionTabVisibility();
  if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave();if(typeof syncPublicProfile==='function')syncPublicProfile();
+}
+function updateCollectionTabVisibility(){
+ const tab=document.querySelector('.tab[data-page="collectionPage"]');
+ if(tab)tab.style.display=collectionHammerClaimed?'none':'';
+ const page=$('collectionPage');
+ if(collectionHammerClaimed&&page&&page.classList.contains('on')){
+  page.classList.remove('on');const garage=$('garagePage');if(garage)garage.classList.add('on');
+ }
 }
 function renderGarage(){
  if(cars.some(c=>c.model!=='Mercedes-Benz 300E Hammer AMG'&&!Number(c.globalSerial)))setTimeout(()=>migrateGlobalCarSerials(),0);
@@ -5095,7 +5127,69 @@ async function animateFiveCaseWinners(winners,pool){
  roulette.classList.add('caseRouletteGlow');
  await sleep(fast?500:850);
  roulette.classList.remove('caseRouletteGlow');
-}function resetCaseOpenState(){
+}
+const LOTTERY_PRICE=500000;
+let lotteryActive=false,lotteryRevealed=false,lotteryPrizeData=null,lotteryDrawing=false,lotteryLast=null,lotteryPaid=false;
+
+function lotteryRollPrize(){
+ if(Math.random()<.01){return {type:'car',car:CARS.find(x=>x.name==='Lamborghini Murciélago')};}
+ const r=Math.random();let amount=100000;
+ if(r<.05)amount=5000000;else if(r<.15)amount=1500000;else if(r<.35)amount=750000;else if(r<.65)amount=400000;
+ return {type:'money',amount};
+}
+function prepareLotteryTicket(){
+ const canvas=$('scratchCanvas');if(!canvas)return;
+ lotteryActive=true;lotteryRevealed=false;lotteryPrizeData=null;lotteryPaid=false;
+ $('lotteryPrize').innerHTML='<div style="font-size:48px">🎁</div><strong>Приз скрыт</strong>';
+ $('lotteryStatus').textContent='Начни стирать билет · стоимость 500 000 ₽.';
+ initScratchTicket();
+}
+function startLotteryOnFirstScratch(){
+ if(lotteryPaid)return true;
+ if(bal<LOTTERY_PRICE){alert('Недостаточно денег. Билет стоит 500 000 ₽.');return false}
+ bal-=LOTTERY_PRICE;spent+=LOTTERY_PRICE;lotteryPaid=true;lotteryPrizeData=lotteryRollPrize();update();
+ const prize=$('lotteryPrize');
+ if(lotteryPrizeData.type==='car'){
+  const m=lotteryPrizeData.car;prize.innerHTML=`${carVisual(m,'caseResultImage')}<strong style="font-size:20px;margin-top:8px">${m.name}</strong><small>Главный приз!</small>`;
+ }else prize.innerHTML=`<div style="font-size:48px">💰</div><strong style="font-size:25px">${money(lotteryPrizeData.amount)}</strong><small>Денежный приз</small>`;
+ $('lotteryStatus').textContent='Сотри не менее 55% билета.';
+ return true;
+}
+function initScratchTicket(){
+ const canvas=$('scratchCanvas'),ctx=canvas.getContext('2d');
+ canvas.style.opacity='1';canvas.style.pointerEvents='auto';
+ ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle='#aeb5bd';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle='#f4f6f8';ctx.font='bold 52px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('СОТРИ БИЛЕТ',canvas.width/2,canvas.height/2);
+ ctx.globalCompositeOperation='destination-out';lotteryDrawing=false;lotteryLast=null;
+ const pos=e=>{const r=canvas.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:(p.clientX-r.left)*canvas.width/r.width,y:(p.clientY-r.top)*canvas.height/r.height}};
+ const draw=e=>{if(!lotteryDrawing||lotteryRevealed)return;e.preventDefault();if(!startLotteryOnFirstScratch()){lotteryDrawing=false;return}const p=pos(e);ctx.lineWidth=72;ctx.lineCap='round';ctx.beginPath();if(lotteryLast)ctx.moveTo(lotteryLast.x,lotteryLast.y);else ctx.moveTo(p.x,p.y);ctx.lineTo(p.x,p.y);ctx.stroke();lotteryLast=p;checkScratchProgress()};
+ canvas.onpointerdown=e=>{lotteryDrawing=true;lotteryLast=null;draw(e)};
+ canvas.onpointermove=draw;canvas.onpointerup=canvas.onpointercancel=()=>{lotteryDrawing=false;lotteryLast=null;checkScratchProgress()};
+}
+function checkScratchProgress(){
+ if(lotteryRevealed||!lotteryPaid)return;
+ const canvas=$('scratchCanvas'),ctx=canvas.getContext('2d'),data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+ let clear=0,samples=0;for(let i=3;i<data.length;i+=16){samples++;if(data[i]<40)clear++}
+ if(samples&&clear/samples>=.55)revealLotteryPrize();
+}
+function revealLotteryPrize(){
+ if(lotteryRevealed||!lotteryPrizeData)return;
+ lotteryRevealed=true;lotteryActive=false;
+ const canvas=$('scratchCanvas'),ctx=canvas.getContext('2d');
+ // At 55% the whole protective layer disappears.
+ ctx.globalCompositeOperation='destination-out';ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.pointerEvents='none';
+ if(lotteryPrizeData.type==='money'){bal+=lotteryPrizeData.amount;earned+=lotteryPrizeData.amount;$('lotteryStatus').innerHTML=`Выигрыш: <b>${money(lotteryPrizeData.amount)}</b>`;}
+ else{
+  const m=lotteryPrizeData.car;
+  if(cars.length>=garageCap){bal+=carRubValue(m);earned+=carRubValue(m);$('lotteryStatus').innerHTML=`Гараж заполнен. ${m.name} продан за <b>${money(carRubValue(m))}</b>.`;}
+  else{const rp=randomPlateForCar();cars.unshift({id:++carSeq,model:m.name,image:m.image||null,price:m.price,currency:m.currency,rub:m.rub||m.price,icon:m.icon||'🚘',forcedRarity:m.forcedRarity||null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null});$('lotteryStatus').innerHTML=`Главный приз: <b>${m.name}</b> добавлен в гараж!`;}
+ }
+ update();renderGarage();renderDealer();
+ setTimeout(prepareLotteryTicket,2200);
+}
+
+function resetCaseOpenState(){
  caseRolling=false;
  const roulette=$('caseRoulette');
  if(roulette){roulette.classList.remove('running');roulette.classList.remove('caseRouletteGlow')}
@@ -5922,6 +6016,8 @@ initChat();
   retryHammerSerial();
  },4000);
 })();
+
+setTimeout(()=>{try{prepareLotteryTicket();updateCollectionTabVisibility()}catch(e){console.warn(e)}},300);
 </script>
 
 
