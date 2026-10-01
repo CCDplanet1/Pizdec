@@ -4561,7 +4561,7 @@ function carSerialText(car){
  if(!car)return '';
  if(car.model==='Mercedes-Benz 300E Hammer AMG'){const hs=hammerSerialText(car);return hs||hammerSerialStatus()}
  const raw=Number(car.globalSerial||0);
- return raw>0?'#'+String(raw).padStart(4,'0'):'получение...';
+ return raw>0?'#'+String(raw).padStart(4,'0'):(window.__globalSerialError?'ошибка Supabase':'получение...');
 }
 function carSerialLineHtml(car){
  if(!car)return '';
@@ -4573,18 +4573,40 @@ function hammerFallbackWinner(pool){
  return weightedCaseCar(safe);
 }
 
+async function globalSerialDb(){
+ if(!window.supabase||typeof window.supabase.createClient!=='function')throw new Error('Supabase SDK не загружен');
+ if(typeof chatDb!=='undefined'&&chatDb&&typeof chatDb.rpc==='function')return chatDb;
+ if(typeof CHAT_SUPABASE_URL==='undefined'||typeof CHAT_SUPABASE_KEY==='undefined')throw new Error('Нет настроек Supabase');
+ return window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{
+  auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+ });
+}
+function globalSerialTelegramId(){
+ try{
+  const u=(typeof chatUser==='function')?chatUser():null;
+  if(u?.telegram_id||u?.id)return String(u.telegram_id||u.id);
+ }catch(_){}
+ const tg=window.Telegram?.WebApp?.initDataUnsafe?.user;
+ return String(tg?.id||'unknown');
+}
 async function claimGlobalCarSerial(model){
  try{
-  if(!supabaseClient||!tgUser?.id)return null;
-  const {data,error}=await supabaseClient.rpc('claim_car_serial',{
-   p_telegram_id:String(tgUser.id),
+  const db=await globalSerialDb();
+  const telegramId=globalSerialTelegramId();
+  const {data,error}=await db.rpc('claim_car_serial',{
+   p_telegram_id:telegramId,
    p_model:String(model||'Unknown')
   });
-  if(error)throw error;
-  const n=Number(Array.isArray(data)?data[0]?.serial_no:data);
-  return Number.isFinite(n)&&n>0?n:null;
+  if(error)throw new Error(error.message||String(error));
+  let raw=data;
+  if(Array.isArray(data))raw=data.length?(data[0]?.serial_no??data[0]):null;
+  else if(data&&typeof data==='object')raw=data.serial_no??data.value??null;
+  const n=Number(raw);
+  if(Number.isInteger(n)&&n>0){window.__globalSerialError='';return n}
+  throw new Error('Supabase не вернул серийный номер');
  }catch(e){
-  console.warn('Global car serial error',e);
+  window.__globalSerialError=String(e?.message||e||'Ошибка Supabase');
+  console.error('Global car serial claim failed:',e);
   return null;
  }
 }
@@ -4592,18 +4614,35 @@ async function ensureGlobalCarSerial(car){
  if(!car||car.model==='Mercedes-Benz 300E Hammer AMG')return car?.limitedSerial||null;
  if(Number(car.globalSerial)>0)return Number(car.globalSerial);
  const n=await claimGlobalCarSerial(car.model);
- if(n>0){car.globalSerial=n;if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave()}
+ if(n>0){
+  car.globalSerial=n;
+  if(typeof scheduleGameSave==='function')scheduleGameSave();
+  if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+  if(typeof syncPublicProfile==='function')syncPublicProfile();
+ }
  return n;
 }
+let globalSerialMigrationRunning=false;
 async function migrateGlobalCarSerials(){
- if(!supabaseClient||!tgUser?.id)return;
+ if(globalSerialMigrationRunning)return;
+ const missing=(Array.isArray(cars)?cars:[]).filter(c=>c&&c.model!=='Mercedes-Benz 300E Hammer AMG'&&!Number(c.globalSerial||0));
+ if(!missing.length)return;
+ globalSerialMigrationRunning=true;
  let changed=false;
- for(const car of cars){
-  if(car.model==='Mercedes-Benz 300E Hammer AMG'||Number(car.globalSerial)>0)continue;
-  const n=await claimGlobalCarSerial(car.model);
-  if(n>0){car.globalSerial=n;changed=true}
+ try{
+  for(const car of missing){
+   const n=await claimGlobalCarSerial(car.model);
+   if(n>0){car.globalSerial=n;changed=true}
+  }
+ }finally{
+  globalSerialMigrationRunning=false;
  }
- if(changed){update();renderGarage();if(typeof scheduleGameSave==='function')scheduleGameSave();if(typeof scheduleCloudSave==='function')scheduleCloudSave();if(typeof syncPublicProfile==='function')syncPublicProfile()}
+ if(changed){
+  update();renderGarage();
+  if(typeof scheduleGameSave==='function')scheduleGameSave();
+  if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+  if(typeof syncPublicProfile==='function')syncPublicProfile();
+ }
 }
 async function claimHammerSerial(){
  try{
