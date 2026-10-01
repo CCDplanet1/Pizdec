@@ -5337,21 +5337,48 @@ async function processAdminCarGrants(){
   for(const g of grants){
    if(cars.length>=garageCap)break;
    const model=String(g.model||'').trim(),base=CARS.find(x=>x.name===model);if(!base)continue;
-   const serial=Number(g.serial_no||0)||0;let globalSerial=0;
-   if(model!=='Mercedes-Benz 300E Hammer AMG'&&!serial){
+   const requested=Number(g.serial_no||0)||0;
+   let globalSerial=0,limitedSerial=0;
+
+   if(model==='Mercedes-Benz 300E Hammer AMG'){
+    if(requested<1||requested>54)continue;
+    // Reserve/transfer the exact Hammer VIN to this Telegram account.
+    const hr=await chatDb.rpc('admin_claim_hammer_serial',{p_telegram_id:tid,p_serial:requested});
+    if(hr.error){console.warn('Hammer grant reserve failed',hr.error);continue}
+    limitedSerial=requested;
+   }else if(requested>0){
+    // Reserve/transfer the exact ordinary global serial.
+    const sr=await chatDb.rpc('admin_claim_car_serial',{p_telegram_id:tid,p_model:model,p_serial:requested});
+    if(sr.error){console.warn('Exact serial grant reserve failed',sr.error);continue}
+    globalSerial=requested;
+   }else{
     const r=await chatDb.rpc('claim_car_serial',{p_telegram_id:tid,p_model:model});
     if(r.error){console.warn('Grant serial claim failed',r.error);continue}
     globalSerial=Number(Array.isArray(r.data)?(r.data[0]?.serial_no??r.data[0]):(r.data?.serial_no??r.data))||0;
-   }else if(model!=='Mercedes-Benz 300E Hammer AMG')globalSerial=serial;
-   if(model==='Mercedes-Benz 300E Hammer AMG'&&(serial<1||serial>54))continue;
-   const rp=randomPlateForCar(),car={id:++carSeq,model,icon:base.icon||'🚘',image:base.image||'',price:base.price,currency:base.currency,rub:base.rub||base.price,plate:rp.p,region:rp.r,custom:false,forcedRarity:base.forcedRarity||undefined};
-   if(model==='Mercedes-Benz 300E Hammer AMG')Object.assign(car,{globalLimited:true,globalLimit:54,limitedSerial:serial,limitedTotal:54});
-   else if(globalSerial)car.globalSerial=globalSerial;
+    if(!globalSerial)continue;
+   }
+
+   const rp=randomPlateForCar(),car={
+    id:++carSeq,model,icon:base.icon||'🚘',image:base.image||'',
+    price:base.price,currency:base.currency,rub:base.rub||base.price,
+    plate:rp.p,region:rp.r,custom:false,forcedRarity:base.forcedRarity||undefined
+   };
+   if(model==='Mercedes-Benz 300E Hammer AMG'){
+    Object.assign(car,{globalLimited:true,globalLimit:54,limitedSerial,limitedTotal:54});
+   }else{
+    car.globalSerial=globalSerial;
+   }
+
    cars.push(car);
-   const mark=await chatDb.from('car_grants').update({claimed:true,claimed_at:new Date().toISOString()}).eq('id',g.id).eq('claimed',false);
-   if(mark.error){cars.pop();carSeq--;continue} changed=true;
+   // Persist the real game save before consuming the queue item.
+   await saveGame(true);
+   const mark=await chatDb.from('car_grants')
+     .update({claimed:true,claimed_at:new Date().toISOString()})
+     .eq('id',g.id).eq('claimed',false);
+   if(mark.error){console.warn('Grant mark failed',mark.error);continue}
+   changed=true;
   }
-  if(changed){update();renderGarage();renderDealer();renderUpgrader();renderContainers();await saveGame(true)}
+  if(changed){update();renderGarage();renderDealer();renderUpgrader();renderContainers()}
  }catch(e){console.warn('Admin car grants error',e)}
 }
 
@@ -5891,5 +5918,38 @@ end;
 $$;
 revoke all on function public.claim_car_serial(text,text) from public;
 grant execute on function public.claim_car_serial(text,text) to anon, authenticated;
+-->
+
+<!-- v0.1.82 exact admin VIN grant RPCs (run once in Supabase SQL Editor)
+
+create or replace function public.admin_claim_car_serial(
+  p_telegram_id text, p_model text, p_serial bigint
+) returns bigint
+language plpgsql security definer set search_path=public as $$
+begin
+  if p_serial is null or p_serial < 1 then raise exception 'Invalid serial'; end if;
+  perform pg_advisory_xact_lock(hashtext(coalesce(p_model,'')));
+  delete from public.car_serials where model=p_model and serial_no=p_serial;
+  insert into public.car_serials(model,serial_no,telegram_id)
+  values(p_model,p_serial,coalesce(nullif(p_telegram_id,''),'unknown'));
+  return p_serial;
+end; $$;
+revoke all on function public.admin_claim_car_serial(text,text,bigint) from public;
+grant execute on function public.admin_claim_car_serial(text,text,bigint) to anon, authenticated;
+
+create or replace function public.admin_claim_hammer_serial(
+  p_telegram_id text, p_serial bigint
+) returns bigint
+language plpgsql security definer set search_path=public as $$
+begin
+  if p_serial is null or p_serial < 1 or p_serial > 54 then raise exception 'Invalid Hammer serial'; end if;
+  perform pg_advisory_xact_lock(hashtext('hammer_editions'));
+  delete from public.hammer_editions where serial_no=p_serial;
+  insert into public.hammer_editions(serial_no,telegram_id)
+  values(p_serial,coalesce(nullif(p_telegram_id,''),'unknown'));
+  return p_serial;
+end; $$;
+revoke all on function public.admin_claim_hammer_serial(text,bigint) from public;
+grant execute on function public.admin_claim_hammer_serial(text,bigint) to anon, authenticated;
 -->
 </body></html>
