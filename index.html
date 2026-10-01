@@ -3929,7 +3929,7 @@ function update(){
 let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).reduce((s,x)=>s+x.v,0);$('balance').textContent=money(bal);$('badge').textContent=inv.length;$('count').textContent=inv.length+' номеров';$('total').textContent=money(sellableTotal);$('sellAll').disabled=!inv.some(x=>!x.locked);$('sRolls').textContent=rolls;$('sSpent').textContent=money(spent);$('sEarned').textContent=money(earned);$('sBalance').textContent=money(bal);$('sStored').textContent=inv.length;$('sCollection').textContent=money(total);$('plateButton').disabled=inv.length>=storageCap;$('garageBadge').textContent=cars.length;$('garageCount').textContent=`${cars.length}/${garageCap}`;renderDealerButtons();const rc=$('regionChoice');if(rc){const need=COST+(rc.value?REGION_FEE:0);refreshRollButton();}if(bal<COST)$('msg').textContent=inv.length?'Не хватает денег — продай номер из хранилища':'Недостаточно денег'
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);
  if(typeof renderContainers==='function'&&!caseRolling)setTimeout(renderContainers,0);
-}
+ if(typeof scheduleFullInventorySync==='function')scheduleFullInventorySync(); }
 
 
 function refreshRollButton(){
@@ -5135,6 +5135,41 @@ if($('fastCaseRoll'))$('fastCaseRoll').onchange=e=>{fastCaseRoll=e.target.checke
 update();render();renderDealer();renderGarage();
 
 
+
+async function recoverInventoryFromSupabaseIfNeeded(){
+ if(!chatDb)return false;
+ const me=profileMe();
+ if(!me.telegram_id)return false;
+ try{
+   const r=await chatDb.from('player_profiles')
+     .select('garage_cars,storage_plates')
+     .eq('telegram_id',String(me.telegram_id))
+     .maybeSingle();
+   if(r.error||!r.data)return false;
+   const cloudCars=Array.isArray(r.data.garage_cars)?r.data.garage_cars:[];
+   const cloudPlates=Array.isArray(r.data.storage_plates)?r.data.storage_plates:[];
+   let restored=false;
+   if((!Array.isArray(cars)||cars.length===0)&&cloudCars.length){
+     cars=cloudCars;
+     carSeq=Math.max(carSeq||0,...cars.map(c=>Number(c.id)||0));
+     restored=true;
+   }
+   if((!Array.isArray(inv)||inv.length===0)&&cloudPlates.length){
+     inv=cloudPlates;
+     seq=Math.max(seq||0,...inv.map(x=>Number(x.id)||0));
+     restored=true;
+   }
+   if(restored){
+     update();render();renderStore();renderDealer();renderGarage();renderUpgrader();
+     if(typeof cloudSave==='function')setTimeout(()=>cloudSave(),250);
+   }
+   return restored;
+ }catch(e){
+   console.warn('Supabase inventory recovery error',e);
+   return false;
+ }
+}
+
 /* ===== v0.0.39 Telegram Cloud Save =====
    CloudStorage values are chunked because Telegram limits one value to 4096 chars.
    localStorage is a backup/fallback for browser testing.
@@ -5266,7 +5301,8 @@ function applySaveData(d){
  if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String)); collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
  isRolling=false;caseRolling=false;upgradeRolling=false;
  const fast=$('fastCaseRoll');if(fast)fast.checked=fastCaseRoll;
- update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();renderUpgrades();
+ update();render();renderStore();renderDealer();renderGarage();
+setTimeout(()=>recoverInventoryFromSupabaseIfNeeded(),1800);renderUpgrader();renderContainers();renderUpgrades();
  refreshPendingCasePrize();
  return true;
 }
@@ -5443,7 +5479,7 @@ if($('chatInput'))$('chatInput').addEventListener('input',e=>{const c=$('chatCou
 
 /* ===== v0.0.42 Profiles =====
  Supabase table expected: player_profiles(telegram_id text primary key, username text,
- display_name text, showcase_cars jsonb, showcase_plates jsonb, updated_at timestamptz)
+ display_name text, showcase_cars jsonb, showcase_plates jsonb, garage_cars jsonb, storage_plates jsonb, updated_at timestamptz)
 */
 const PROFILE_LOCAL_KEY='nr-player-profile-v1';
 let profileLocal={display_name:'',showcase_cars:[],showcase_plates:[]};
@@ -5569,6 +5605,14 @@ function profilePickerCounts(){
  const a=document.querySelectorAll('[data-profile-car]:checked').length;
  if($('profileCarsCount'))$('profileCarsCount').textContent=`(${a}/3)`;
 }
+let fullInventorySyncTimer=null;
+function scheduleFullInventorySync(){
+ if(!chatDb)return;
+ clearTimeout(fullInventorySyncTimer);
+ fullInventorySyncTimer=setTimeout(()=>{
+   profileSync().catch(e=>console.warn('Supabase inventory backup error',e));
+ },900);
+}
 async function profileSync(){
  if(!chatDb)return;
  const me=profileMe();if(!me.telegram_id)return;
@@ -5577,7 +5621,16 @@ async function profileSync(){
   return live?{id:String(live.id),public:profileCarPublic(live)}:x;
  });
  profileSaveLocal();
- const payload={telegram_id:me.telegram_id,username:me.username||null,display_name:me.display_name,showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),showcase_plates:[],updated_at:new Date().toISOString()};
+ const payload={
+ telegram_id:me.telegram_id,
+ username:me.username||null,
+ display_name:me.display_name,
+ showcase_cars:(profileLocal.showcase_cars||[]).map(x=>x.public),
+ showcase_plates:[],
+ garage_cars:Array.isArray(cars)?cars:[],
+ storage_plates:Array.isArray(inv)?inv:[],
+ updated_at:new Date().toISOString()
+};
  const {error}=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
  if(error)console.warn('Profile sync error',error);
 }
