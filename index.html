@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.01</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.03</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5400,6 +5400,32 @@ function promoMessage(text,ok=false){
  const el=$('promoCodeResult');if(!el)return;
  el.textContent=text;el.className='promoResult '+(ok?'ok':'bad');
 }
+
+function promoAddCar(model,code){
+ const reward=CARS.find(x=>x.name===model);if(!reward)return false;
+ if(cars.length>=garageCap)return false;
+ const rp=randomPlateForCar();
+ cars.push({id:++carSeq,model:reward.name,image:reward.image||null,icon:reward.icon||'🚘',
+  price:reward.price,currency:reward.currency,rub:reward.rub||reward.price,
+  forcedRarity:reward.forcedRarity||null,limited:!!reward.limited,caseExclusive:reward.caseExclusive||null,
+  plate:rp.p,region:rp.r,custom:false,promoCode:String(code||'').toLowerCase()});
+ return true;
+}
+function promoMythicPlate(region,extraTaken){
+ const reg=String(region),taken=extraTaken||new Set();let g,p,r,tries=0,key='';
+ do{
+  g=generateMythicPlate(reg);p=g.plateText||g.p||'';r=String(g.r||reg);key=p+'|'+r;tries++;
+ }while((plateInStorage(p,r)||taken.has(key))&&tries<3000);
+ taken.add(key);
+ return {id:++seq,p,r,v:mythicNumberValue(p,r),desc:g.desc||('Мифический номер · '+r),rank:'mythic',rarity:'Мифический'};
+}
+function promoFinish(code,message){
+ redeemedPromoCodes.add(code);const input=$('promoCodeInput');if(input)input.value='';
+ promoMessage(message,true);update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();
+ if(typeof scheduleGameSave==='function')scheduleGameSave();
+ if(typeof scheduleCloudSave==='function')scheduleCloudSave();
+ if(typeof syncPublicProfile==='function')syncPublicProfile();
+}
 async function redeemPromoCode(){
  const input=$('promoCodeInput');if(!input)return;
  const code=String(input.value||'').trim().toUpperCase();
@@ -5412,6 +5438,20 @@ async function redeemPromoCode(){
   }
 
  if(!code){promoMessage('Введите промокод.');return}
+if(['FERRARI40','FERRARI50','MERC300SL','G636X6','MYTH78','MYTH98','MYTH77'].includes(code)){
+ if(redeemedPromoCodes.has(code)){promoMessage('Этот промокод уже был активирован.');return}
+ if(code==='MYTH78'||code==='MYTH98'||code==='MYTH77'){
+  if(inv.length+10>storageCap){promoMessage('В хранилище нужно минимум 10 свободных мест.');return}
+  const region=code.slice(4),taken=new Set();for(let i=0;i<10;i++)inv.unshift(promoMythicPlate(region,taken));
+  promoFinish(code,'Промокод активирован! 10 случайных мифических номеров · регион '+region+' добавлены в хранилище.');return;
+ }
+ const rewards={FERRARI40:'Ferrari F40',FERRARI50:'Ferrari F50',MERC300SL:'Mercedes-Benz 300SL',G636X6:'Mercedes-Benz G63 6x6'};
+ const model=rewards[code];
+ if(cars.length>=garageCap){promoMessage('В гараже нет свободного места.');return}
+ if(!promoAddCar(model,code)){promoMessage('Награда временно недоступна.');return}
+ promoFinish(code,'Промокод активирован! '+model+' добавлен в гараж.');return;
+}
+
 
  if(code==='INDEX124'){
   if(redeemedPromoCodes.has(code)){
@@ -5703,16 +5743,6 @@ let chatDb=null,chatChannel=null,chatLastSend=0,chatLoaded=false;
 function chatConfigured(){return CHAT_SUPABASE_URL.startsWith('https://')&&!CHAT_SUPABASE_URL.includes('PASTE_')&&CHAT_SUPABASE_KEY&&!CHAT_SUPABASE_KEY.includes('PASTE_')}
 function chatEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-const LEGACY_GUEST_ID_MAP={
- 'guest_mupz8pjd_x9k4chal':'guest_munsk23y_9np31f31',
- 'guest_mupznv8y_hcix2863':'guest_muohd7xy_hmzexct2'
-};
-function migrateGuestId(id){
- const oldId=LEGACY_GUEST_ID_MAP[String(id||'')];
- if(!oldId)return String(id||'');
- try{localStorage.setItem('nr-guest-id',oldId)}catch(e){}
- return oldId;
-}
 function chatUser(){
  const u=window.Telegram?.WebApp?.initDataUnsafe?.user;
  let guestId='';
@@ -5722,7 +5752,7 @@ function chatUser(){
    if(!guestId){guestId='guest_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem('nr-guest-id',guestId)}
   }catch(e){guestId='guest_local'}
  }
- if(!u?.id&&guestId)guestId=migrateGuestId(guestId); const fallback=u?(u.first_name||u.username||'Игрок'):('Игрок '+guestId.slice(-5));
+ const fallback=u?(u.first_name||u.username||'Игрок'):('Игрок '+guestId.slice(-5));
  let savedName='';
  try{
   const p=JSON.parse(localStorage.getItem('nr-player-profile-v1')||'{}');
