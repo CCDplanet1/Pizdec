@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.33 ===== */
+/* ===== Auction Dark Theme v0.2.35 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.33 ===== */
+/* ===== Auction UX v0.2.35 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.33: -25% ===== */
+/* ===== Auction plate size v0.2.35: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.33: exactly 10% smaller than normal */
+/* Auction plate size v0.2.35: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3495,6 +3495,12 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .garageSearchBar input,.plateSearchBar input{min-width:0;padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:var(--panel,#fff);color:var(--text);outline:none}
 .garageSearchBar button,.plateSearchBar button{padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:var(--panel,#fff);color:var(--text);font-weight:800;cursor:pointer}
 @media(max-width:700px){.garageSearchBar,.plateSearchBar{grid-template-columns:1fr}}
+
+.bulkRollBox{max-width:680px;margin:16px auto 0;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel,#fff)}
+.bulkRollTitle{font-weight:900;margin-bottom:10px}
+.bulkRollBtn{border:1px solid var(--line);border-radius:11px;padding:10px;background:var(--panel,#fff);color:var(--text);font-weight:850;cursor:pointer}
+.bulkRollBtn{width:100%;margin-top:10px}.bulkRollPrice{font-size:12px;color:var(--muted);margin-top:8px}
+
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3701,7 +3707,12 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <span id="regionFee" style="font-size:12px;color:#5f6b7c">Регион выпадет случайно</span>
 </div><button class="plateButton" id="plateButton"><div class="plate ccdPlate normal" id="heroPlate"><div class="plateMain" id="num"><span class="plateLetter first">A</span><span class="plateDigits">777</span><span class="plateLetter last">AA</span></div><div class="plateRegion"><div class="regionNum" id="reg">77</div></div><div class="fx" id="fx"></div></div></button>
 <div class="info"><div><div class="label">РЫНОЧНАЯ СТОИМОСТЬ</div><div class="price" id="value">—</div></div><div><div class="label">РЕДКОСТЬ</div><span class="pill normal" id="rarity">—</span><div class="label" id="desc" style="margin-top:6px">Сделай первый прокрут</div></div><div><div class="label">РЕГИОН</div><div class="regionInfo" id="regionInfo">77</div></div></div>
-<div class="hint">Прокрут — 3 000 ₽ · нажми на сам номер</div><div class="msg" id="msg"></div></div></section>
+<div class="hint">Прокрут — 3 000 ₽ · нажми на сам номер</div>
+<div class="bulkRollBox">
+ <div class="bulkRollTitle">Покупка номеров</div>
+ <div id="bulkRollPrice" class="bulkRollPrice">100 номеров</div>
+ <button id="buy100Numbers" class="bulkRollBtn" onclick="buy100Numbers()">Купить сразу 100 номеров</button>
+</div><div class="msg" id="msg"></div></div></section>
 
 <section class="page" id="storePage"><div class="storeHead"><div><h2>Хранилище</h2><div class="count" id="count">0 номеров</div></div><button class="sellAll" id="sellAll" disabled>Продать все · <span id="total">0 ₽</span></button></div>
 <div class="tools"><button class="filter on" data-filter="all">Все</button><button class="filter" data-filter="normal">Обычные</button><button class="filter" data-filter="rare">Редкие</button><button class="filter" data-filter="epic">Эпические</button><button class="filter" data-filter="legendary">Легендарные</button><button class="filter" data-filter="mythic">Мифические</button><select class="sort" id="sort"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="high">Сначала дорогие</option><option value="low">Сначала дешёвые</option><option value="rarity">По редкости</option></select></div>
@@ -3799,7 +3810,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.33</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.35</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4407,6 +4418,7 @@ function sellCar(carId){ let protectedCar=cars.find(c=>c.id===carId); if(protect
  // сразу обновляем кнопку получения машины.
  if(typeof refreshPendingCasePrize==='function')refreshPendingCasePrize();
  if(typeof prepareLotteryTicket==='function')prepareLotteryTicket();
+ if(typeof refreshAutoRollShop==='function')refreshBulkRollPrice();
 }
 function renderDealerButtons(){
  document.querySelectorAll('[data-buy]').forEach(b=>{
@@ -5376,6 +5388,63 @@ async function animateFiveCaseWinners(winners,pool){
  roulette.classList.remove('caseRouletteGlow');
 }
 const LOTTERY_PRICE=500000;
+function selectedRollUnitPrice(){
+ const chosen=$('regionChoice')?.value||'';
+ const fee=chosen?(['77','97','99','78','98','777'].includes(String(chosen))?SPECIAL_REGION_FEE:REGION_FEE):0;
+ return COST+fee;
+}
+function refreshBulkRollPrice(){
+ const el=$('bulkRollPrice');
+ if(el)el.textContent=`100 номеров · ${money(selectedRollUnitPrice()*100)}`;
+}
+async function buy100Numbers(){
+ const total=selectedRollUnitPrice()*100;
+ if(bal<total){$('msg').textContent='Недостаточно денег для покупки 100 номеров';return}
+ if(storageCap-inv.length<100){$('msg').textContent='В хранилище должно быть минимум 100 свободных мест';return}
+ bal-=total;spent+=total;update();
+ let made=0,attempts=0;
+ $('buy100Numbers').disabled=true;
+ try{
+  while(made<100&&attempts<10000){
+   attempts++;
+   let a=L[rnd(L.length)],b=L[rnd(L.length)],c=L[rnd(L.length)];
+   let d=String(1+rnd(999)).padStart(3,'0');
+   const chosen=$('regionChoice').value,r0=chosen||REG[rnd(REG.length)];
+   let r=String(r0),e=evaluate(d,a,b,c,r,chosen),plateText=a+d+b+c;
+   if(e.rank==='rare'){
+    const rt=rnd(3);
+    if(rt===0){const RL=L[rnd(L.length)],RM=L[rnd(L.length)];a=RL;b=RM;c=RL;plateText=a+d+b+c;e.desc='Редкий · зеркальные буквы'}
+    else if(rt===1){const x=String(1+rnd(9)),y=String(rnd(10));d=x+y+x;plateText=a+d+b+c;e.desc='Редкий · зеркальные цифры'}
+    else{d=String(1+rnd(9))+'00';plateText=a+d+b+c;e.desc='Редкий · формат *00'}
+   }else if(e.rank==='epic'){
+    const ed=['002','003','004','005','006','007','008','009'][rnd(8)],EL=L[rnd(L.length)];
+    plateText=EL+ed+EL+EL;e.desc='Полублат · серия '+ed;e.v=epicNumberValue(plateText,r);
+   }else if(e.rank==='legendary'){
+    if(!isMythicFbRegion(r)&&Math.random()<.70){const fb=generateLegendaryFullBlat(r);plateText=fb.plateText;e.desc=fb.desc}
+    else{const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001'}
+    e.v=legendaryNumberValue(plateText,r);
+   }else if(e.rank==='mythic'){
+    const m=generateMythicPlate(chosen);plateText=m.plateText;r=m.r;e.desc=m.desc;e.v=mythicNumberValue(plateText,r);
+   }
+   if(chosen)r=String(chosen);
+   if(plateInStorage(plateText,r))continue;
+   if(chatDb){
+    const me=chatUser(),claim=await chatDb.rpc('claim_plate_roll',{p_plate:String(plateText),p_region:String(r),p_owner:String(me.telegram_id)});
+    if(claim.error)throw claim.error;
+    if(claim.data!==true)continue;
+   }
+   inv.unshift({id:++seq,p:plateText,r,...e});made++;rolls++;
+  }
+  if(made<100)throw new Error('Не удалось подобрать 100 уникальных номеров');
+  $('msg').textContent='100 номеров добавлены в хранилище';
+  update();render();renderUpgrader();await saveGame(true);
+ }catch(err){
+  const missing=100-made;
+  if(missing>0){const refund=selectedRollUnitPrice()*missing;bal+=refund;spent-=refund}
+  $('msg').textContent='Получено '+made+' из 100. Остаток стоимости возвращён.';
+  update();render();await saveGame(true);
+ }finally{$('buy100Numbers').disabled=false}
+}
 let lotteryActive=false,lotteryRevealed=false,lotteryPrizeData=null,lotteryDrawing=false,lotteryLast=null,lotteryPaid=false,pendingLotteryCar=null;
 
 function lotteryRollPrize(){
