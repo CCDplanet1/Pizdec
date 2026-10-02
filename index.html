@@ -3580,7 +3580,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.06</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.07</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -3735,7 +3735,7 @@ const CARS=[
 {name:'McLaren P1',price:1400000,currency:'$',rub:128800000,icon:'🚘'},
 {name:'McLaren SLR C199',price:400000,currency:'$',rub:36800000,icon:'🚘'},
 {name:'Mercedes-Benz 300SL',price:99000000,currency:'₽',rub:99000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true},
-{name:'Mercedes-Benz AMG GT',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
+{name:'Mercedes-AMG ONE',image:'images3/amgone.png',price:169660000,currency:'₽',rub:169660000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'amg_one'}, {name:'Mercedes-Benz AMG GT',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Mercedes-Benz AMG GT63',price:13500000,currency:'₽',rub:13500000,icon:'🚘'},
 {name:'Mercedes-Benz AMG GT63 II',price:31000000,currency:'₽',rub:31000000,icon:'🚘'},
 {name:'Mercedes-Benz C63 Edition 507',price:2600000,currency:'₽',rub:2600000,icon:'🚘'},
@@ -4782,7 +4782,7 @@ function carGlowClass(m){
 }
 function isLimitedMercedes(m){
  const n=String(m&& (m.name||m.model) ||'');
- return n.startsWith('Mercedes-Benz ')&&m.limited===true;
+ return (n.startsWith('Mercedes-Benz ')||n.startsWith('Mercedes-AMG '))&&m.limited===true;
 }
 function isLimitedFerrari(m){const n=String(m&&(m.name||m.model)||'');return n.startsWith('Ferrari ')&&m.limited===true;}
 function isLimitedBMW(m){
@@ -4795,7 +4795,10 @@ function brandCasePool(prefix){
 }
 function bmwCasePool(){return brandCasePool('BMW ');}
 function ferrariCasePool(){return brandCasePool('Ferrari ');}
-function mercedesCasePool(){return brandCasePool('Mercedes-Benz ');}
+function mercedesCasePool(){
+ return CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&(String(x.name||'').startsWith('Mercedes-Benz ')||String(x.name||'').startsWith('Mercedes-AMG ')))
+  .sort((a,b)=>carRubValue(a)-carRubValue(b));
+}
 function casePool(c){
  if(c.id==='mercedes')return mercedesCasePool();
  if(c.id==='bmw')return bmwCasePool();
