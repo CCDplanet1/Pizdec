@@ -3307,6 +3307,132 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
  cursor:pointer!important;
 }
 
+
+/* ===== Auction v2 ===== */
+#auctionPage{max-width:1180px;margin:0 auto}
+.auctionHero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:24px;padding:24px;margin-bottom:18px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(245,247,251,.96));box-shadow:0 14px 40px rgba(17,24,39,.07)}
+.auctionHero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-130px;background:rgba(0,0,0,.045)}
+.auctionHeroTop{display:flex;align-items:center;justify-content:space-between;gap:14px;position:relative;z-index:1}
+.auctionTitle{font-size:30px;font-weight:900;letter-spacing:-.7px;margin:0}
+.auctionSubtitle{color:var(--muted);margin-top:5px;font-size:14px}
+.auctionRefresh{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 15px;font-weight:800;cursor:pointer}
+.auctionSell{border:1px solid var(--line);border-radius:20px;background:#fff;padding:18px;margin-bottom:18px;box-shadow:0 8px 24px rgba(17,24,39,.045)}
+.auctionSellHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.auctionSellHead h3{margin:0;font-size:17px}
+.auctionSellGrid{display:grid;grid-template-columns:minmax(220px,2fr) 1fr 1fr auto;gap:10px}
+.auctionInput{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:13px;padding:12px 13px;background:#fff;font:inherit;outline:none}
+.auctionInput:focus{border-color:#8d96a5;box-shadow:0 0 0 3px rgba(80,90,110,.08)}
+.auctionHint{font-size:12px;color:var(--muted);margin:11px 2px 0}
+.auctionStats{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 14px}
+.auctionPill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;color:#4b5563}
+#auctionGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.auctionCard{border:1px solid var(--line);border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 8px 25px rgba(17,24,39,.055);transition:.18s transform,.18s box-shadow}
+.auctionCard:hover{transform:translateY(-2px);box-shadow:0 13px 32px rgba(17,24,39,.09)}
+.auctionImage{height:170px;background:linear-gradient(180deg,#f7f8fa,#fff);display:flex;align-items:center;justify-content:center;padding:12px}
+.auctionImage img{width:100%;height:100%;object-fit:contain}
+.auctionImageFallback{font-size:56px}
+.auctionBody{padding:15px}
+.auctionCardTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.auctionCarName{font-weight:900;font-size:17px;line-height:1.2}
+.auctionSeller{font-size:12px;color:var(--muted);margin-top:4px}
+.auctionBadge{white-space:nowrap;font-size:10px;font-weight:900;border-radius:999px;padding:6px 8px;background:#f1f3f6}
+.auctionPriceBox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.auctionPrice{border:1px solid #edf0f3;background:#fafbfc;border-radius:13px;padding:10px}
+.auctionPrice span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.auctionPrice b{font-size:14px}
+.auctionBidder{font-size:11px;color:var(--muted);margin:-6px 0 12px}
+.auctionActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.auctionActions button{border:0;border-radius:12px;padding:11px 9px;font-weight:850;cursor:pointer}
+.auctionBidBtn{background:#eef1f5;color:#20242b}
+.auctionBuyBtn{background:#111827;color:#fff}
+.auctionDangerBtn{background:#f4f4f5;color:#333}
+.auctionAcceptBtn{background:#111827;color:#fff}
+.auctionEmpty{grid-column:1/-1;text-align:center;border:1px dashed var(--line);border-radius:20px;padding:42px;color:var(--muted);background:#fff}
+@media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
+@media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
+
+/* ===== Auction Dark Theme v0.2.10 ===== */
+#auctionPage{
+  color:#f4f6fa;
+  --auction-bg:#0b0d12;
+  --auction-panel:#12151c;
+  --auction-panel2:#171b23;
+  --auction-line:#272d38;
+  --auction-muted:#8f98a8;
+}
+#auctionPage .auctionHero{
+  border-color:var(--auction-line);
+  background:linear-gradient(135deg,#171b23 0%,#0d1016 72%);
+  box-shadow:0 18px 50px rgba(0,0,0,.28);
+}
+#auctionPage .auctionHero:after{
+  background:radial-gradient(circle,rgba(255,255,255,.09),rgba(255,255,255,0) 68%);
+}
+#auctionPage .auctionTitle{color:#fff}
+#auctionPage .auctionSubtitle{color:var(--auction-muted)}
+#auctionPage .auctionRefresh{
+  color:#f5f7fb;background:#1b2029;border-color:#303744;
+}
+#auctionPage .auctionRefresh:hover{background:#232936}
+#auctionPage .auctionSell{
+  background:var(--auction-panel);
+  border-color:var(--auction-line);
+  box-shadow:0 12px 34px rgba(0,0,0,.2);
+}
+#auctionPage .auctionSellHead h3{color:#fff}
+#auctionPage .auctionInput{
+  color:#f4f6fa;background:#0d1016;border-color:#2b313c;
+}
+#auctionPage .auctionInput::placeholder{color:#687284}
+#auctionPage select.auctionInput option{background:#12151c;color:#f4f6fa}
+#auctionPage .auctionInput:focus{
+  border-color:#596477;
+  box-shadow:0 0 0 3px rgba(120,135,160,.12);
+}
+#auctionPage .auctionHint{color:var(--auction-muted)}
+#auctionPage .auctionPill{
+  color:#cbd2dc;background:#171b23;border-color:#2b313c;
+}
+#auctionPage .auctionCard{
+  color:#f4f6fa;background:var(--auction-panel);
+  border-color:var(--auction-line);
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+#auctionPage .auctionCard:hover{
+  box-shadow:0 16px 38px rgba(0,0,0,.34);
+}
+#auctionPage .auctionImage{
+  background:radial-gradient(circle at 50% 45%,#242a35 0%,#151922 52%,#10131a 100%);
+  border-bottom:1px solid #222833;
+}
+#auctionPage .auctionCarName{color:#fff}
+#auctionPage .auctionSeller,#auctionPage .auctionBidder{color:var(--auction-muted)}
+#auctionPage .auctionBadge{
+  color:#d8dee8;background:#202530;border:1px solid #303744;
+}
+#auctionPage .auctionPrice{
+  background:#0d1016;border-color:#252b35;
+}
+#auctionPage .auctionPrice span{color:#788294}
+#auctionPage .auctionPrice b{color:#fff}
+#auctionPage .auctionBidBtn{
+  color:#e9edf4;background:#252b35;border:1px solid #303744;
+}
+#auctionPage .auctionBidBtn:hover:not(:disabled){background:#303744}
+#auctionPage .auctionBuyBtn,#auctionPage .auctionAcceptBtn{
+  color:#0b0d12;background:#f5f7fa;
+}
+#auctionPage .auctionBuyBtn:hover,#auctionPage .auctionAcceptBtn:hover:not(:disabled){
+  background:#dfe4eb;
+}
+#auctionPage .auctionDangerBtn{
+  color:#f1f3f6;background:#252932;border:1px solid #343a46;
+}
+#auctionPage .auctionActions button:disabled{opacity:.38;cursor:not-allowed}
+#auctionPage .auctionEmpty{
+  color:var(--auction-muted);background:#12151c;border-color:#303744;
+}
+#auctionPage .auctionEmpty b{color:#eef1f5}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3504,7 +3630,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 @media(max-width:700px){.upCarVisual{width:78px;min-width:78px}.upCarImage{max-width:76px}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -3532,7 +3658,17 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 
 
 
-<section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
+<section class="page" id="auctionPage">
+<div class="auctionHero"><div class="auctionHeroTop"><div><h2 class="auctionTitle">Аукцион</h2><div class="auctionSubtitle">Покупай редкие машины у игроков или выставляй свои лоты.</div></div><button class="auctionRefresh" onclick="auctionLoad()">↻ Обновить</button></div></div>
+<div class="auctionSell"><div class="auctionSellHead"><h3>Выставить автомобиль</h3><span class="auctionPill">Новый лот</span></div><div class="auctionSellGrid">
+<select id="auctionCarSelect" class="auctionInput"></select>
+<input id="auctionStartPrice" class="auctionInput" type="number" min="1" placeholder="Начальная ставка">
+<input id="auctionBuyoutPrice" class="auctionInput" type="number" min="1" placeholder="Цена выкупа">
+<button class="buy" onclick="auctionCreate()">Выставить</button></div>
+<div class="auctionHint">Каждая новая ставка автоматически увеличивается на 10%. Если следующая ставка достигает цены выкупа, доступен только мгновенный выкуп.</div></div>
+<div class="auctionStats"><span class="auctionPill" id="auctionCountPill">Активных лотов: 0</span><span class="auctionPill">Шаг ставки: +10%</span></div>
+<div id="auctionStatus" style="display:none"></div><div id="auctionGrid"></div>
+</section><section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
 </section> <section class="page" id="upgraderPage">
 <h2 class="statsTitle">Апгрейдер</h2>
 <p style="color:var(--muted);margin-top:-6px">Поставь автомобиль из гаража и попробуй улучшить его до более дорогой машины.</p>
@@ -3580,7 +3716,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.07</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.10</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4416,7 +4552,7 @@ holdRollBtn.addEventListener('pointerdown',e=>{
 window.addEventListener('blur',stopHoldRoll);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopHoldRoll()});$('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='auctionPage')auctionLoad();if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
 
 
 
@@ -5770,6 +5906,31 @@ window.addEventListener('pagehide',flushSave);
 /* ===== v0.0.40 Global Chat (Supabase) =====
    Paste ONLY Project URL and publishable/anon key. NEVER paste service_role.
 */
+
+let auctionRows=[];
+function auctionEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function auctionMoney(n){return Math.round(Number(n)||0).toLocaleString('ru-RU')+' ₽'}
+function auctionRefreshCarSelect(){const e=$('auctionCarSelect');if(e)e.innerHTML=cars.length?cars.map(c=>`<option value="${c.id}">${auctionEsc(c.model)} · ${auctionMoney(carRubValue(c))}</option>`).join(''):'<option>Гараж пуст</option>'}
+async function auctionLoad(){
+ auctionRefreshCarSelect();const box=$('auctionGrid'),st=$('auctionStatus');if(!box)return;if(!chatDb){st.textContent='Supabase не подключён';return}
+ const q=await chatDb.from('auction_listings').select('*').eq('status','active').order('created_at',{ascending:false}).limit(100);
+ if(q.error){st.textContent='Ошибка: '+q.error.message;return}auctionRows=q.data||[];st.textContent='Активных лотов: '+auctionRows.length;
+ box.innerHTML=auctionRows.length?auctionRows.map(a=>{const me=chatUser(),mine=String(a.seller_id)===String(me.telegram_id),c=a.car_json||{},cur=Number(a.current_bid||0),start=Number(a.start_price),buy=Number(a.buyout_price),base=cur||start,next=Math.ceil(base*1.10),rar=(typeof carRarity==='function'?carRarity(c):{label:'Автомобиль'}),serial=c.limitedSerial||c.globalSerial;
+ return `<div class="auctionCard"><div class="auctionImage">${c.image?`<img src="${auctionEsc(c.image)}" alt="">`:`<div class="auctionImageFallback">${auctionEsc(c.icon||'🚘')}</div>`}</div><div class="auctionBody"><div class="auctionCardTop"><div><div class="auctionCarName">${auctionEsc(c.model||'Машина')}</div><div class="auctionSeller">${mine?'Ваш лот':'Продавец: '+auctionEsc(a.seller_name||'Игрок')}${serial?' · №'+auctionEsc(serial):''}</div></div><span class="auctionBadge">${auctionEsc(rar.label||rar.rank||'Авто')}</span></div><div class="auctionPriceBox"><div class="auctionPrice"><span>${cur?'Текущая ставка':'Стартовая ставка'}</span><b>${auctionMoney(cur||start)}</b></div><div class="auctionPrice"><span>Выкуп</span><b>${auctionMoney(buy)}</b></div></div>${cur?`<div class="auctionBidder">Лидер ставки: ${auctionEsc(a.current_bidder_name||'Игрок')}</div>`:`<div class="auctionBidder">Ставок пока нет</div>`}<div class="auctionActions">${mine?`<button class="auctionDangerBtn" onclick="auctionCancel('${a.id}')">Снять лот</button>${cur?`<button class="auctionAcceptBtn" onclick="auctionAccept('${a.id}')">Принять ${auctionMoney(cur)}</button>`:'<button class="auctionAcceptBtn" disabled>Ждём ставку</button>'}`:`<button class="auctionBidBtn" onclick="auctionBid('${a.id}',${next})" ${next>=buy?'disabled':''}>${next<buy?'Ставка '+auctionMoney(next):'Ставки закрыты'}</button><button class="auctionBuyBtn" onclick="auctionBuyout('${a.id}')">Выкупить</button>`}</div></div></div>`}).join(''):'<div class="auctionEmpty"><b>Активных лотов пока нет</b><br><span>Выставь первую машину на аукцион.</span></div>';
+ const pill=$('auctionCountPill');if(pill)pill.textContent='Активных лотов: '+auctionRows.length;
+}
+async function auctionCreate(){
+ if(!chatDb)return alert('Supabase не подключён');const me=chatUser(),id=Number($('auctionCarSelect')?.value),car=cars.find(c=>Number(c.id)===id),start=Math.floor(Number($('auctionStartPrice')?.value)),buy=Math.floor(Number($('auctionBuyoutPrice')?.value));
+ if(!car)return alert('Выбери машину');if(!(start>0&&buy>start))return alert('Цена выкупа должна быть выше стартовой ставки');
+ const q=await chatDb.from('auction_listings').insert({seller_id:me.telegram_id,seller_name:me.display_name,car_json:car,start_price:start,buyout_price:buy,status:'active'}).select('id').single();if(q.error)return alert(q.error.message);
+ cars=cars.filter(c=>Number(c.id)!==id);update();renderGarage();await saveGame(true);await syncPublicProfile();await auctionLoad();
+}
+async function auctionBid(id,amount){if(bal<amount)return alert('Недостаточно денег');const me=chatUser(),q=await chatDb.rpc('auction_place_bid',{p_listing:id,p_bidder:me.telegram_id,p_bidder_name:me.display_name,p_amount:amount});if(q.error)return alert(q.error.message);auctionLoad()}
+async function auctionBuyout(id){const a=auctionRows.find(x=>String(x.id)===String(id));if(!a)return;if(bal<Number(a.buyout_price))return alert('Недостаточно денег');const me=chatUser(),q=await chatDb.rpc('auction_buyout',{p_listing:id,p_buyer:me.telegram_id});if(q.error)return alert(q.error.message);await auctionReload();auctionLoad()}
+async function auctionAccept(id){const me=chatUser(),q=await chatDb.rpc('auction_accept_bid',{p_listing:id,p_seller:me.telegram_id});if(q.error)return alert(q.error.message);await auctionReload();auctionLoad()}
+async function auctionCancel(id){const me=chatUser(),q=await chatDb.rpc('auction_cancel',{p_listing:id,p_seller:me.telegram_id});if(q.error)return alert(q.error.message);await auctionReload();auctionLoad()}
+async function auctionReload(){const x=await readSupabaseGameState();if(x)applySaveData(x);auctionRefreshCarSelect()}
+
 const CHAT_SUPABASE_URL='https://fshzywzxnynzjgleduyq.supabase.co';
 const CHAT_SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaHp5d3p4bnluempnbGVkdXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDM5NDEsImV4cCI6MjEwNjMxOTk0MX0.Tpg8E8T3te17AS-A2hxm1Cq4XkUDHS_GEvmuKyVYddY';
 let chatDb=null,chatChannel=null,chatLastSend=0,chatLoaded=false;
