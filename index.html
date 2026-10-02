@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.28 ===== */
+/* ===== Auction Dark Theme v0.2.30 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.28 ===== */
+/* ===== Auction UX v0.2.30 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.28: -25% ===== */
+/* ===== Auction plate size v0.2.30: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.28: exactly 10% smaller than normal */
+/* Auction plate size v0.2.30: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3799,7 +3799,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.28</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.30</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4641,45 +4641,13 @@ function renderGarage(){
  });box.appendChild(g)
 
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);}
-let holdRollTimer=null,holdRollStarted=false,holdRollStartTimer=null;
-const holdRollBtn=$('plateButton');
-
-function stopHoldRoll(){
- if(holdRollStartTimer){clearTimeout(holdRollStartTimer);holdRollStartTimer=null}
- if(holdRollTimer){clearInterval(holdRollTimer);holdRollTimer=null}
- holdRollStarted=false;
+const plateRollBtn=$('plateButton');
+if(plateRollBtn){
+ plateRollBtn.onclick=()=>{
+  if(!isRolling)roll();
+ };
 }
-
-holdRollBtn.onclick=(e)=>{
- // A completed hold already generated rolls; suppress the synthetic click.
- if(holdRollBtn.dataset.holdConsumed==='1'){
-  holdRollBtn.dataset.holdConsumed='0';
-  return;
- }
- roll();
-};
-
-holdRollBtn.addEventListener('pointerdown',e=>{
- if(e.button!==undefined&&e.button!==0)return;
- stopHoldRoll();
- holdRollBtn.dataset.holdConsumed='0';
- // Short delay distinguishes a normal tap from an intentional hold.
- holdRollStartTimer=setTimeout(()=>{
-  holdRollStarted=true;
-  holdRollBtn.dataset.holdConsumed='1';
-  roll();
-  holdRollTimer=setInterval(()=>roll(),100);
- },250);
-});
-
-['pointerup','pointercancel','pointerleave'].forEach(ev=>{
- holdRollBtn.addEventListener(ev,()=>{
-  if(holdRollStarted)holdRollBtn.dataset.holdConsumed='1';
-  stopHoldRoll();
- });
-});
-window.addEventListener('blur',stopHoldRoll);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)stopHoldRoll()});$('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
+$('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='auctionPage')auctionLoad();if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
 
@@ -6065,7 +6033,7 @@ if(window.Telegram&&Telegram.WebApp){
 loadGame().then(()=>setTimeout(()=>processAdminCarGrants(),1200)); setInterval(()=>processAdminCarGrants(),15000);
 // Detect any gameplay state change without having to alter every game mechanic.
 setInterval(()=>saveGame(false),1200);
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave()});
+
 window.addEventListener('pagehide',flushSave);
 
 
