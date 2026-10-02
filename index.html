@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.11 ===== */
+/* ===== Auction Dark Theme v0.2.12 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3433,6 +3433,23 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
   color:var(--auction-muted);background:#12151c;border-color:#303744;
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
+
+/* ===== Auction UX v0.2.12 ===== */
+#auctionPage .auctionSell{padding:20px}
+#auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
+.auctionField{display:flex;flex-direction:column;gap:6px}
+.auctionFieldLabel{font-size:11px;font-weight:850;letter-spacing:.35px;text-transform:uppercase;color:#8993a4}
+.auctionPriceInputWrap{position:relative}
+.auctionPriceInputWrap .auctionInput{padding-right:34px;font-size:15px;font-weight:800}
+.auctionCurrency{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-weight:900;color:#6f798a;pointer-events:none}
+.auctionPricePreview{min-height:16px;font-size:11px;color:#aab2bf;padding-left:2px}
+.auctionSellButton{min-height:45px;padding-left:18px!important;padding-right:18px!important}
+#auctionPage .miniMain{font-size:clamp(17.6px,3.2vw,28.8px);letter-spacing:-.8px}
+#auctionPage .miniRegion b{font-size:clamp(12.8px,2.4vw,21.6px)}
+#auctionPage .miniRus{font-size:5.6px}
+#auctionPage .miniFlag{width:12px;height:6.4px}
+#auctionPage .miniPlate{transform-origin:left center}
+@media(max-width:720px){#auctionPage .auctionSellGrid{grid-template-columns:1fr}.auctionSellButton{width:100%}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3661,10 +3678,10 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <section class="page" id="auctionPage">
 <div class="auctionHero"><div class="auctionHeroTop"><div><h2 class="auctionTitle">Аукцион</h2><div class="auctionSubtitle">Покупай редкие машины у игроков или выставляй свои лоты.</div></div><button class="auctionRefresh" onclick="auctionLoad()">↻ Обновить</button></div></div>
 <div class="auctionSell"><div class="auctionSellHead"><h3>Выставить автомобиль</h3><span class="auctionPill">Новый лот</span></div><div class="auctionSellGrid">
-<select id="auctionCarSelect" class="auctionInput"></select>
-<input id="auctionStartPrice" class="auctionInput" type="number" min="1" placeholder="Начальная ставка">
-<input id="auctionBuyoutPrice" class="auctionInput" type="number" min="1" placeholder="Цена выкупа">
-<button class="buy" onclick="auctionCreate()">Выставить</button></div>
+<div class="auctionField"><label class="auctionFieldLabel">Автомобиль</label><select id="auctionCarSelect" class="auctionInput"></select><div class="auctionPricePreview" id="auctionCarInfo">Выбери машину из гаража</div></div>
+<div class="auctionField"><label class="auctionFieldLabel">Начальная ставка</label><div class="auctionPriceInputWrap"><input id="auctionStartPrice" class="auctionInput" type="number" min="1" placeholder="1 000 000" oninput="auctionPricePreview()"><span class="auctionCurrency">₽</span></div><div class="auctionPricePreview" id="auctionStartPreview">—</div></div>
+<div class="auctionField"><label class="auctionFieldLabel">Цена выкупа</label><div class="auctionPriceInputWrap"><input id="auctionBuyoutPrice" class="auctionInput" type="number" min="1" placeholder="2 000 000" oninput="auctionPricePreview()"><span class="auctionCurrency">₽</span></div><div class="auctionPricePreview" id="auctionBuyoutPreview">—</div></div>
+<button class="buy auctionSellButton" onclick="auctionCreate()">Выставить</button></div>
 <div class="auctionHint">Каждая новая ставка автоматически увеличивается на 10%. Если следующая ставка достигает цены выкупа, доступен только мгновенный выкуп.</div></div>
 <div class="auctionStats"><span class="auctionPill" id="auctionCountPill">Активных лотов: 0</span><span class="auctionPill">Шаг ставки: +10%</span></div>
 <div id="auctionStatus" style="display:none"></div><div id="auctionGrid"></div>
@@ -3716,7 +3733,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.11</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.12</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5911,9 +5928,16 @@ let auctionRows=[];
 function auctionEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function auctionMoney(n){return Math.round(Number(n)||0).toLocaleString('ru-RU')+' ₽'}
 function auctionCarPlate(c){return {p:(c.installed?.p??c.plate??''),r:String(c.installed?.r??c.region??'')}}
+function auctionPricePreview(){
+ const a=Number($('auctionStartPrice')?.value||0),b=Number($('auctionBuyoutPrice')?.value||0);
+ if($('auctionStartPreview'))$('auctionStartPreview').textContent=a>0?auctionMoney(a):'—';
+ if($('auctionBuyoutPreview'))$('auctionBuyoutPreview').textContent=b>0?auctionMoney(b):'—';
+}
 function auctionRefreshCarSelect(){
  const e=$('auctionCarSelect');if(!e)return;const available=cars.filter(c=>!c.locked);
- e.innerHTML=available.length?available.map(c=>{const n=auctionCarPlate(c),pl=n.p?(' · '+plateFontText(n.p)+' '+n.r):'';return `<option value="${c.id}">${auctionEsc(c.model)}${auctionEsc(pl)} · ${auctionMoney(carRubValue(c))}</option>`}).join(''):'<option value="">Нет доступных машин</option>';
+ e.innerHTML=available.length?available.map(c=>{const n=auctionCarPlate(c),pl=n.p?(' · '+plateFontText(n.p)+' '+n.r):'';return `<option value="${c.id}">${auctionEsc(c.model)}${auctionEsc(pl)}</option>`}).join(''):'<option value="">Нет доступных машин</option>';
+ const refreshInfo=()=>{const c=cars.find(x=>String(x.id)===String(e.value));if($('auctionCarInfo'))$('auctionCarInfo').textContent=c?('Оценка: '+auctionMoney(carRubValue(c))):'Нет доступных машин';};
+ e.onchange=refreshInfo;refreshInfo();auctionPricePreview();
 }
 async function auctionLoad(){
  auctionRefreshCarSelect();const box=$('auctionGrid'),st=$('auctionStatus');if(!box)return;if(!chatDb){st.textContent='Supabase не подключён';return}
@@ -5927,7 +5951,7 @@ async function auctionCreate(){
  if(!chatDb)return alert('Supabase не подключён');const me=chatUser(),id=Number($('auctionCarSelect')?.value),car=cars.find(c=>Number(c.id)===id),start=Math.floor(Number($('auctionStartPrice')?.value)),buy=Math.floor(Number($('auctionBuyoutPrice')?.value));
  if(!car)return alert('Выбери машину');if(car.locked)return alert('Машина на ключике. Сначала сними защиту.');if(!(start>0&&buy>start))return alert('Цена выкупа должна быть выше стартовой ставки');
  const q=await chatDb.from('auction_listings').insert({seller_id:me.telegram_id,seller_name:me.display_name,car_json:car,start_price:start,buyout_price:buy,status:'active'}).select('id').single();if(q.error)return alert(q.error.message);
- cars=cars.filter(c=>Number(c.id)!==id);update();renderGarage();await saveGame(true);await syncPublicProfile();await auctionLoad();
+ cars=cars.filter(c=>Number(c.id)!==id);update();renderGarage();await saveGame(true);await syncPublicProfile();auctionLoad();
 }
 async function auctionBid(id,amount){if(bal<amount)return alert('Недостаточно денег');const me=chatUser(),q=await chatDb.rpc('auction_place_bid',{p_listing:id,p_bidder:me.telegram_id,p_bidder_name:me.display_name,p_amount:amount});if(q.error)return alert(q.error.message);auctionLoad()}
 async function auctionBuyout(id){const a=auctionRows.find(x=>String(x.id)===String(id));if(!a)return;if(bal<Number(a.buyout_price))return alert('Недостаточно денег');const me=chatUser(),q=await chatDb.rpc('auction_buyout',{p_listing:id,p_buyer:me.telegram_id});if(q.error)return alert(q.error.message);await auctionReload();auctionLoad()}
@@ -5944,6 +5968,7 @@ function auctionStartRealtime(){
  }catch(e){console.warn('Auction realtime:',e)}
 }
 
+let auctionPollTimer=setInterval(()=>{if($('auctionPage')?.classList.contains('on')&&chatDb)auctionLoad()},1000);
 const CHAT_SUPABASE_URL='https://fshzywzxnynzjgleduyq.supabase.co';
 const CHAT_SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaHp5d3p4bnluempnbGVkdXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDM5NDEsImV4cCI6MjEwNjMxOTk0MX0.Tpg8E8T3te17AS-A2hxm1Cq4XkUDHS_GEvmuKyVYddY';
 let chatDb=null,chatChannel=null,chatLastSend=0,chatLoaded=false;
@@ -5998,7 +6023,7 @@ async function initChat(){
  if(!chatConfigured()){chatSetStatus('Нужна настройка Supabase');const b=$('chatMessages');if(b)b.innerHTML='<div class="chatEmpty">Чат ещё не подключён. Вставь URL и Publishable Key Supabase в HTML.</div>';return}
  if(!window.supabase){chatSetStatus('Ошибка библиотеки');return}
  try{
-   chatDb=window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+   chatDb=window.supabase.createClient(CHAT_SUPABASE_URL,CHAT_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}); setTimeout(auctionStartRealtime,0);
    const {data,error}=await chatDb.from('chat_messages').select('id,telegram_id,username,display_name,message,created_at').order('created_at',{ascending:false}).limit(100);
    if(error)throw error;
    chatRender((data||[]).reverse());chatSetStatus('🟢 Онлайн');
