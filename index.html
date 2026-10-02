@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.24 ===== */
+/* ===== Auction Dark Theme v0.2.25 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.24 ===== */
+/* ===== Auction UX v0.2.25 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.24: -25% ===== */
+/* ===== Auction plate size v0.2.25: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.24: exactly 10% smaller than normal */
+/* Auction plate size v0.2.25: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3794,12 +3794,12 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
     <div id="lotteryPrize" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px"></div>
     <canvas id="scratchCanvas" width="920" height="420" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair"></canvas>
    </div>
-   <div id="lotteryStatus" style="margin-top:12px;color:var(--muted)">Начни стирать билет · стоимость 500 000 ₽.</div>
+   <div id="lotteryStatus" style="margin-top:12px;color:var(--muted)">Начни стирать билет · стоимость 500 000 ₽.</div><div id="lotteryClaimArea" style="margin-top:12px"></div>
   </div>
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.24</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.25</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4431,6 +4431,7 @@ function sellCar(carId){ let protectedCar=cars.find(c=>c.id===carId); if(protect
  // Если игрок освободил место, пока приз из контейнера ждёт решения,
  // сразу обновляем кнопку получения машины.
  if(typeof refreshPendingCasePrize==='function')refreshPendingCasePrize();
+ if(typeof prepareLotteryTicket==='function')prepareLotteryTicket();
 }
 function renderDealerButtons(){
  document.querySelectorAll('[data-buy]').forEach(b=>{
@@ -5319,7 +5320,11 @@ async function migrateLegacyHammerSerials(){
 
 function mobileCaseTap(id,count=1){
  if(caseRolling)return;
- if(pendingCasePrize||pendingCasePrizes.length){pendingCasePrize=null;pendingCasePrizes=[];hideCaseOpening()}
+ if(pendingCasePrize||pendingCasePrizes.length){pendingCasePrize=null;pendingCasePrizes=[];
+ pendingLotteryCar=null;
+ if(d.pendingLotteryCar&&d.pendingLotteryCar.name){
+   pendingLotteryCar=CARS.find(x=>x.name===String(d.pendingLotteryCar.name))||null;
+ }hideCaseOpening()}
  return count===5?openFiveContainers(id):openContainer(id);
 }
 function renderContainers(){
@@ -5386,7 +5391,7 @@ async function animateFiveCaseWinners(winners,pool){
  roulette.classList.remove('caseRouletteGlow');
 }
 const LOTTERY_PRICE=500000;
-let lotteryActive=false,lotteryRevealed=false,lotteryPrizeData=null,lotteryDrawing=false,lotteryLast=null,lotteryPaid=false;
+let lotteryActive=false,lotteryRevealed=false,lotteryPrizeData=null,lotteryDrawing=false,lotteryLast=null,lotteryPaid=false,pendingLotteryCar=null;
 
 function lotteryRollPrize(){
  if(Math.random()<.01){return {type:'car',car:CARS.find(x=>x.name==='Lamborghini Murciélago')};}
@@ -5394,12 +5399,37 @@ function lotteryRollPrize(){
  if(r<.05)amount=5000000;else if(r<.15)amount=1500000;else if(r<.35)amount=750000;else if(r<.65)amount=400000;
  return {type:'money',amount};
 }
+function renderPendingLotteryCar(){
+ const area=$('lotteryClaimArea');if(!area)return;
+ if(!pendingLotteryCar){area.innerHTML='';return}
+ area.innerHTML=`<button class="buyBtn" onclick="claimLotteryCar()">🚘 Забрать ${pendingLotteryCar.name}</button>`;
+ $('lotteryStatus').innerHTML=cars.length>=garageCap
+   ?`Вы выиграли <b>${pendingLotteryCar.name}</b>. В гараже нет места — освободите или купите слот, затем заберите машину.`
+   :`Вы выиграли <b>${pendingLotteryCar.name}</b>. Заберите машину, чтобы получить следующий билет.`;
+}
+async function claimLotteryCar(){
+ if(!pendingLotteryCar)return;
+ if(cars.length>=garageCap){renderPendingLotteryCar();alert('В гараже нет свободного места.');return}
+ const m=pendingLotteryCar,rp=randomPlateForCar();
+ cars.unshift({id:++carSeq,model:m.name,image:m.image||null,price:m.price,currency:m.currency,rub:m.rub||m.price,icon:m.icon||'🚘',forcedRarity:m.forcedRarity||null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null,lotteryReceivedAt:Date.now()});
+ pendingLotteryCar=null;
+ update();renderGarage();renderDealer();renderPendingLotteryCar();
+ await saveGame(true);
+ prepareLotteryTicket();
+}
 function prepareLotteryTicket(){
  const canvas=$('scratchCanvas');if(!canvas)return;
+ if(pendingLotteryCar){
+  lotteryActive=false;lotteryRevealed=true;lotteryPaid=true;
+  canvas.style.pointerEvents='none';canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  const m=pendingLotteryCar;
+  $('lotteryPrize').innerHTML=`${carVisual(m,'caseResultImage')}<strong style="font-size:20px;margin-top:8px">${m.name}</strong><small>Главный приз!</small>`;
+  renderPendingLotteryCar();return;
+ }
  lotteryActive=true;lotteryRevealed=false;lotteryPrizeData=null;lotteryPaid=false;
  $('lotteryPrize').innerHTML='<div style="font-size:48px">🎁</div><strong>Приз скрыт</strong>';
  $('lotteryStatus').textContent='Начни стирать билет · стоимость 500 000 ₽.';
- initScratchTicket();
+ renderPendingLotteryCar();initScratchTicket();
 }
 function startLotteryOnFirstScratch(){
  if(lotteryPaid)return true;
@@ -5434,16 +5464,16 @@ function revealLotteryPrize(){
  if(lotteryRevealed||!lotteryPrizeData)return;
  lotteryRevealed=true;lotteryActive=false;
  const canvas=$('scratchCanvas'),ctx=canvas.getContext('2d');
- // At 55% the whole protective layer disappears.
  ctx.globalCompositeOperation='destination-out';ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.pointerEvents='none';
- if(lotteryPrizeData.type==='money'){bal+=lotteryPrizeData.amount;earned+=lotteryPrizeData.amount;$('lotteryStatus').innerHTML=`Выигрыш: <b>${money(lotteryPrizeData.amount)}</b>`;}
- else{
-  const m=lotteryPrizeData.car;
-  if(cars.length>=garageCap){bal+=carRubValue(m);earned+=carRubValue(m);$('lotteryStatus').innerHTML=`Гараж заполнен. ${m.name} продан за <b>${money(carRubValue(m))}</b>.`;}
-  else{const rp=randomPlateForCar();cars.unshift({id:++carSeq,model:m.name,image:m.image||null,price:m.price,currency:m.currency,rub:m.rub||m.price,icon:m.icon||'🚘',forcedRarity:m.forcedRarity||null,plate:rp.plate||rp.p||rp,region:rp.region||rp.r||'',installed:null});$('lotteryStatus').innerHTML=`Главный приз: <b>${m.name}</b> добавлен в гараж!`;}
+ if(lotteryPrizeData.type==='money'){
+  bal+=lotteryPrizeData.amount;earned+=lotteryPrizeData.amount;
+  $('lotteryStatus').innerHTML=`Выигрыш: <b>${money(lotteryPrizeData.amount)}</b>`;
+  update();saveGame(true);setTimeout(prepareLotteryTicket,2200);
+ }else{
+  pendingLotteryCar=lotteryPrizeData.car;
+  $('lotteryStatus').innerHTML=`Главный приз: <b>${pendingLotteryCar.name}</b>. Сначала заберите машину.`;
+  update();renderPendingLotteryCar();saveGame(true);
  }
- update();renderGarage();renderDealer();
- setTimeout(prepareLotteryTicket,2200);
 }
 
 function resetCaseOpenState(){
@@ -5864,7 +5894,7 @@ function buildSaveData(){
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
-   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed
+   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null
  };
 }
 function saveFingerprint(data){
@@ -6093,11 +6123,8 @@ async function auctionBid(id,suggested){
   const me=chatUser(),lot=(auctionRows||[]).find(x=>String(x.id)===String(id));
   if(!lot)throw new Error('Лот не найден');
   const current=Number(lot.current_bid||lot.start_price||0),buy=Number(lot.buyout_price||0);
-  const raw=prompt(`Текущая ставка: ${auctionMoney(current)}\nЦена выкупа: ${auctionMoney(buy)}\n\nВведите ставку выше текущей и ниже цены выкупа:`,String(suggested||Math.min(buy-1,Math.ceil(current*1.10))));
-  if(raw===null)return;
-  const amount=Math.floor(Number(String(raw).replace(/\s/g,'').replace(/,/g,'.')));
-  if(!Number.isFinite(amount)||amount<=current){alert('Ставка должна быть выше текущей.');return}
-  if(amount>=buy){alert('Ставка должна быть ниже цены выкупа.');return}
+  const amount=Math.ceil(current*1.10);
+  if(amount>=buy){alert('Следующая ставка достигнет цены выкупа. Доступен только выкуп.');return}
   const q=await chatDb.rpc('auction_place_bid',{p_listing:id,p_bidder:me.telegram_id,p_bidder_name:me.display_name,p_amount:amount});
   if(q.error)throw q.error;
   await auctionReload();await auctionLoad();
