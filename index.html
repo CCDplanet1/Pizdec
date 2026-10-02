@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.30 ===== */
+/* ===== Auction Dark Theme v0.2.32 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.30 ===== */
+/* ===== Auction UX v0.2.32 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.30: -25% ===== */
+/* ===== Auction plate size v0.2.32: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.30: exactly 10% smaller than normal */
+/* Auction plate size v0.2.32: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3799,7 +3799,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.30</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.32</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4171,7 +4171,8 @@ let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).redu
 function refreshRollButton(){
  const btn=$('plateButton');
  if(!btn)return;
- btn.disabled = isRolling || inv.length>=storageCap;
+ btn.disabled = inv.length>=storageCap;
+ btn.classList.toggle('storageFull',inv.length>=storageCap);
 }
 
 const sleep=ms=>new Promise(res=>setTimeout(res,ms));
@@ -4279,7 +4280,7 @@ function plateInStorage(p,r){
 let mobileRollQueue=0;
 async function roll(){
  if(isRolling){
-   if(mobileRollQueue<100)mobileRollQueue++;
+   mobileRollQueue++;
    return;
  }
 
@@ -4287,7 +4288,7 @@ async function roll(){
    $('msg').textContent='Хранилище заполнено — продай номера или улучши вместимость';
    update(); return;
  }
-if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
+if(bal<COST)return update();isRolling=true;
 
  bal-=COST;spent+=COST;rolls++;
  let a=L[rnd(L.length)],b=L[rnd(L.length)],c=L[rnd(L.length)];
@@ -4407,13 +4408,22 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
    burst(x.rank);
    $('msg').textContent=x.rank==='mythic'?'МИФИЧЕСКИЙ НОМЕР!':(x.rank==='legendary'?'ЛЕГЕНДАРНЫЙ НОМЕР!':'ЭПИЧЕСКИЙ НОМЕР!');
    update();render();renderUpgrader();
+   // Для редких крупных выпадений возвращаем блокировку прокрута до конца анимации.
+   $('plateButton').disabled=true;
+   stopPlateHold();
    await sleep(x.rank==='mythic'?4500:(x.rank==='legendary'?4000:3000));
    plate.classList.remove('revealEpic','revealLegendary','revealMythic');
  }else{
    burst(x.rank);
  }
  $('msg').textContent=x.v>=COST?'Номер окупил прокрут · сохранён':'Номер дешевле прокрута · сохранён';
- isRolling=false;if(mobileRollQueue>0){mobileRollQueue--;setTimeout(()=>roll(),0);}
+ isRolling=false;
+ if(x.rank==='epic'||x.rank==='legendary'||x.rank==='mythic'){
+   mobileRollQueue=0;
+ }else if(mobileRollQueue>0){
+   mobileRollQueue--;
+   setTimeout(()=>roll(),0);
+ }
  refreshRollButton();
  update();render();renderUpgrader()}
 function togglePlateLock(id){
@@ -4642,11 +4652,53 @@ function renderGarage(){
 
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);}
 const plateRollBtn=$('plateButton');
-if(plateRollBtn){
- plateRollBtn.onclick=()=>{
-  if(!isRolling)roll();
- };
+let plateHoldTimer=null,plateHoldStarted=false,plateHoldPointer=null;
+
+function plateQueueRoll(){
+ if(inv.length>=storageCap||bal<COST)return;
+ roll();
 }
+
+function stopPlateHold(){
+ if(plateHoldTimer){clearInterval(plateHoldTimer);plateHoldTimer=null}
+ plateHoldPointer=null;
+}
+
+if(plateRollBtn){
+ plateRollBtn.addEventListener('click',e=>{
+   // A normal mouse click always requests one roll, even while another roll is finishing.
+   if(!plateHoldStarted)plateQueueRoll();
+   plateHoldStarted=false;
+ });
+
+ plateRollBtn.addEventListener('pointerdown',e=>{
+   if(e.button!==undefined&&e.button!==0)return;
+   plateHoldPointer=e.pointerId;
+   plateHoldStarted=false;
+   const holdStart=setTimeout(()=>{
+     if(plateHoldPointer!==e.pointerId)return;
+     plateHoldStarted=true;
+     plateQueueRoll();
+     stopPlateHold();
+     plateHoldPointer=e.pointerId;
+     plateHoldTimer=setInterval(plateQueueRoll,100);
+   },250);
+   const cancelStart=()=>{
+     clearTimeout(holdStart);
+     plateRollBtn.removeEventListener('pointerup',cancelStart);
+     plateRollBtn.removeEventListener('pointercancel',cancelStart);
+     plateRollBtn.removeEventListener('pointerleave',cancelStart);
+   };
+   plateRollBtn.addEventListener('pointerup',cancelStart,{once:true});
+   plateRollBtn.addEventListener('pointercancel',cancelStart,{once:true});
+   plateRollBtn.addEventListener('pointerleave',cancelStart,{once:true});
+ });
+
+ ['pointerup','pointercancel','pointerleave'].forEach(ev=>
+   plateRollBtn.addEventListener(ev,stopPlateHold)
+ );
+}
+window.addEventListener('blur',stopPlateHold);
 $('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='auctionPage')auctionLoad();if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
