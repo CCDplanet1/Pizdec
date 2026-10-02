@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.16 ===== */
+/* ===== Auction Dark Theme v0.2.17 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.16 ===== */
+/* ===== Auction UX v0.2.17 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,12 +3454,12 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.16: -25% ===== */
+/* ===== Auction plate size v0.2.17: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
-</style>
+/* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.75);transform-origin:left center;margin-right:-25%;margin-bottom:-6%}</style>
 
 <div class="profileModal" id="profileModal">
  <div class="profileCard">
@@ -3472,7 +3472,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
    <div class="profileEdit"><input id="profileNameInput" maxlength="32" placeholder="Имя игрока"><button id="profileSaveName">Сохранить</button></div>
    <div class="profileSection"><h3>🚘 Машины на показ <span id="profileCarsCount"></span></h3><div class="profilePicker" id="profileCarsPicker"></div></div>
    <button class="profileAction" id="profileSaveShowcase" style="width:100%;margin-top:12px">Сохранить витрину</button>
-   <div class="profileNote">Можно выставить до 3 машин. В общий профиль сохраняются только выбранные автомобили.</div>
+   <div class="profileNote">Можно выставить до 9 машин. Порядок на витрине соответствует порядку выбора.</div>
   </div>
   <div class="profileSection"><h3>🚘 Машины игрока</h3><div class="profileShowcase" id="profileCarsShowcase"></div></div>
  </div>
@@ -3742,7 +3742,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.16</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.17</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5820,7 +5820,7 @@ function applySaveData(d){
  if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String)); collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
  isRolling=false;caseRolling=false;upgradeRolling=false;
  const fast=$('fastCaseRoll');if(fast)fast.checked=fastCaseRoll;
- update();render();if(typeof renderStore==='function')renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();renderUpgrades();
+ update();render();if(typeof renderStore==='function')renderStore();if(typeof renderDealer==='function')renderDealer();if(typeof renderGarage==='function')renderGarage();if(typeof renderUpgrader==='function')renderUpgrader();if(typeof renderContainers==='function')renderContainers();if(typeof renderUpgrades==='function')renderUpgrades();
  refreshPendingCasePrize();
  return true;
 }
@@ -6218,12 +6218,19 @@ function profileShowItems(target,items,type){
   el.innerHTML=items.map(x=>`<div class="profileShowItem"><b>🔢 ${chatEsc(x.name)}${x.region?' · '+chatEsc(x.region):''}</b><span>${chatEsc(x.rarity||'')} · ${money(Number(x.value||0))}</span></div>`).join('');
  }
 }
+let profileCarPickOrder=[];
 function profileRenderPickers(){
  const selectedCars=new Set((profileLocal.showcase_cars||[]).map(x=>String(x.id)));
+ profileCarPickOrder=(profileLocal.showcase_cars||[]).map(x=>String(x.id)).filter(id=>cars.some(c=>String(c.id)===id));
  const cp=$('profileCarsPicker');
  cp.innerHTML=cars.length?cars.map(c=>`<div class="profilePick"><label><input type="checkbox" data-profile-car="${chatEsc(c.id)}" ${selectedCars.has(String(c.id))?'checked':''}><span>🚘 ${chatEsc(profileCarLabel(c))}</span></label><b>${money(carRubValue(c))}</b></div>`).join(''):'<div class="profileEmpty">В гараже пока нет машин</div>';
- const limit=(sel,max)=>{document.querySelectorAll(sel).forEach(x=>x.onchange=()=>{const all=[...document.querySelectorAll(sel)],on=all.filter(y=>y.checked);if(on.length>max){x.checked=false;alert('Можно выбрать максимум '+max+'.')} profilePickerCounts()})};
- limit('[data-profile-car]',9);profilePickerCounts();
+ document.querySelectorAll('[data-profile-car]').forEach(x=>x.onchange=()=>{
+  const id=String(x.dataset.profileCar);
+  if(x.checked){if(!profileCarPickOrder.includes(id))profileCarPickOrder.push(id);if(profileCarPickOrder.length>9){x.checked=false;profileCarPickOrder=profileCarPickOrder.filter(v=>v!==id);alert('Можно выбрать максимум 9.');}}
+  else profileCarPickOrder=profileCarPickOrder.filter(v=>v!==id);
+  profilePickerCounts();
+ });
+ profilePickerCounts();
 }
 function profilePickerCounts(){
  const a=document.querySelectorAll('[data-profile-car]:checked').length;
@@ -6287,8 +6294,7 @@ $('profileSaveName').onclick=async()=>{
  await profileSync();chatSetStatus('Онлайн · '+v,true);alert('Имя сохранено. Новые сообщения будут отправляться с этим именем.');
 };
 $('profileSaveShowcase').onclick=async()=>{
- const carIds=new Set([...document.querySelectorAll('[data-profile-car]:checked')].map(x=>String(x.dataset.profileCar)));
- profileLocal.showcase_cars=cars.filter(c=>carIds.has(String(c.id))).slice(0,9).map(c=>({id:String(c.id),public:profileCarPublic(c)}));
+ const checkedIds=new Set([...document.querySelectorAll('[data-profile-car]:checked')].map(x=>String(x.dataset.profileCar))); profileCarPickOrder=profileCarPickOrder.filter(id=>checkedIds.has(id)); profileLocal.showcase_cars=profileCarPickOrder.slice(0,9).map(id=>cars.find(c=>String(c.id)===id)).filter(Boolean).map(c=>({id:String(c.id),public:profileCarPublic(c)}));
  profileSaveLocal();profileShowItems('profileCarsShowcase',profileLocal.showcase_cars.map(x=>x.public),'car');
  await profileSync();alert('Витрина сохранена.');
 };
