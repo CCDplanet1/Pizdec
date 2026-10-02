@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.26 ===== */
+/* ===== Auction Dark Theme v0.2.28 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.26 ===== */
+/* ===== Auction UX v0.2.28 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.26: -25% ===== */
+/* ===== Auction plate size v0.2.28: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.26: exactly 10% smaller than normal */
+/* Auction plate size v0.2.28: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3799,7 +3799,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.26</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.28</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4374,8 +4374,31 @@ if(bal<COST)return update();isRolling=true;$('plateButton').disabled=true;
 
  if(plateInStorage(plateText,r)){
    bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
-   $('msg').textContent='Все сгенерированные варианты уже есть в хранилище — прокрут возвращён.';
-   refreshRollButton();update();render();return;
+   $('msg').textContent='Этот номер уже занят — генерируем другой.';
+   refreshRollButton();update();render();setTimeout(()=>roll(),0);return;
+ }
+
+ // Глобальная уникальность: номер резервируется в Supabase навсегда.
+ // Учитываются номера других игроков, номера на машинах и номера в аукционе.
+ if(chatDb){
+   try{
+     const me=chatUser();
+     const claim=await chatDb.rpc('claim_plate_roll',{
+       p_plate:String(plateText),
+       p_region:String(r),
+       p_owner:String(me.telegram_id)
+     });
+     if(claim.error)throw claim.error;
+     if(claim.data!==true){
+       bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
+       $('msg').textContent='Такой номер сейчас занят — крутим другой.';
+       refreshRollButton();update();render();setTimeout(()=>roll(),0);return;
+     }
+   }catch(err){
+     bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
+     $('msg').textContent='Не удалось проверить уникальность номера. Прокрут возвращён.';
+     refreshRollButton();update();render();return;
+   }
  }
  let x={id:++seq,p:plateText,r,...e};
  inv.unshift(x);$('num').innerHTML=plateMainHtml(x.p);$('reg').textContent=x.r;$('value').textContent=money(x.v);$('rarity').textContent=x.rarity;$('rarity').className='pill '+x.rank;$('desc').textContent=x.desc;$('regionInfo').textContent=x.r;let plate=$('heroPlate');plate.className='plate ccdPlate '+x.rank;void plate.offsetWidth;
@@ -4397,10 +4420,21 @@ function togglePlateLock(id){
  let x=inv.find(x=>x.id===id);if(!x)return;
  x.locked=!x.locked;update();render();
 }
-function sell(id){
+async function sell(id){
  let i=inv.findIndex(x=>x.id===id);if(i<0)return;
  if(inv[i].locked)return;
- bal+=inv[i].v;earned+=inv[i].v;inv.splice(i,1);update();render();
+ const sold=inv[i];
+ bal+=sold.v;earned+=sold.v;inv.splice(i,1);update();render();
+ if(chatDb){
+   try{
+     const me=chatUser();
+     await chatDb.rpc('release_plate_from_storage',{
+       p_plate:String(sold.p),
+       p_region:String(sold.r),
+       p_owner:String(me.telegram_id)
+     });
+   }catch(e){console.warn('plate release failed',e)}
+ }
 }
 function searchPlateNorm(v){return String(v||'').toUpperCase().replace(/[АВЕКМНОРСТУХ]/g,ch=>({'А':'A','В':'B','Е':'E','К':'K','М':'M','Н':'H','О':'O','Р':'P','С':'C','Т':'T','У':'Y','Х':'X'}[ch]||ch)).replace(/[^A-Z0-9]/g,'')}
 function plateParts(p){const x=searchPlateNorm(p),m=x.match(/^([A-Z])(\d{3})([A-Z]{2})$/);return m?{letters:m[1]+m[3],digits:m[2]}:{letters:x.replace(/\d/g,''),digits:x.replace(/\D/g,'')}}
