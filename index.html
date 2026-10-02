@@ -3495,6 +3495,12 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .garageSearchBar input,.plateSearchBar input{min-width:0;padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:var(--panel,#fff);color:var(--text);outline:none}
 .garageSearchBar button,.plateSearchBar button{padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:var(--panel,#fff);color:var(--text);font-weight:800;cursor:pointer}
 @media(max-width:700px){.garageSearchBar,.plateSearchBar{grid-template-columns:1fr}}
+
+.autoControls{max-width:680px;margin:14px auto 0;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.55);text-align:left}
+.autoToggleRow{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer}.autoToggleRow span{display:flex;flex-direction:column}.autoToggleRow small{color:var(--muted);margin-top:3px}
+.autoToggleRow input{display:none}.autoToggleRow i{width:48px;height:28px;border-radius:999px;background:#c7ccd4;position:relative;transition:.2s;flex:0 0 auto}.autoToggleRow i:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0003;transition:.2s}.autoToggleRow input:checked+i{background:#111}.autoToggleRow input:checked+i:after{transform:translateX(20px)}
+.autoSellTitle{font-weight:850;margin:15px 0 8px}.autoSellGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.autoSellGrid label{font-size:13px;padding:9px 10px;border:1px solid var(--line);border-radius:11px;cursor:pointer}
+@media(max-width:520px){.autoSellGrid{grid-template-columns:repeat(2,1fr)}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3701,7 +3707,19 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <span id="regionFee" style="font-size:12px;color:#5f6b7c">Регион выпадет случайно</span>
 </div><button class="plateButton" id="plateButton"><div class="plate ccdPlate normal" id="heroPlate"><div class="plateMain" id="num"><span class="plateLetter first">A</span><span class="plateDigits">777</span><span class="plateLetter last">AA</span></div><div class="plateRegion"><div class="regionNum" id="reg">77</div></div><div class="fx" id="fx"></div></div></button>
 <div class="info"><div><div class="label">РЫНОЧНАЯ СТОИМОСТЬ</div><div class="price" id="value">—</div></div><div><div class="label">РЕДКОСТЬ</div><span class="pill normal" id="rarity">—</span><div class="label" id="desc" style="margin-top:6px">Сделай первый прокрут</div></div><div><div class="label">РЕГИОН</div><div class="regionInfo" id="regionInfo">77</div></div></div>
-<div class="hint">Прокрут — 3 000 ₽ · нажми на сам номер</div><div class="msg" id="msg"></div></div></section>
+<div class="hint">Прокрут — 3 000 ₽ · нажми на сам номер</div>
+<div class="autoControls">
+ <label class="autoToggleRow"><span><b>Автопрокрут</b><small>Крутит автоматически каждые 100 мс</small></span><input id="autoRollToggle" type="checkbox" onchange="setAutoRoll(this.checked)"><i></i></label>
+ <div class="autoSellTitle">Автопродажа</div>
+ <div class="autoSellGrid">
+  <label><input type="checkbox" data-autosell="normal" onchange="setAutoSell('normal',this.checked)"> Обычные</label>
+  <label><input type="checkbox" data-autosell="uncommon" onchange="setAutoSell('uncommon',this.checked)"> Необычные</label>
+  <label><input type="checkbox" data-autosell="rare" onchange="setAutoSell('rare',this.checked)"> Редкие</label>
+  <label><input type="checkbox" data-autosell="epic" onchange="setAutoSell('epic',this.checked)"> Эпические</label>
+  <label><input type="checkbox" data-autosell="legendary" onchange="setAutoSell('legendary',this.checked)"> Легендарные</label>
+  <label><input type="checkbox" data-autosell="mythic" onchange="setAutoSell('mythic',this.checked)"> Мифические</label>
+ </div>
+</div><div class="msg" id="msg"></div></div></section>
 
 <section class="page" id="storePage"><div class="storeHead"><div><h2>Хранилище</h2><div class="count" id="count">0 номеров</div></div><button class="sellAll" id="sellAll" disabled>Продать все · <span id="total">0 ₽</span></button></div>
 <div class="tools"><button class="filter on" data-filter="all">Все</button><button class="filter" data-filter="normal">Обычные</button><button class="filter" data-filter="rare">Редкие</button><button class="filter" data-filter="epic">Эпические</button><button class="filter" data-filter="legendary">Легендарные</button><button class="filter" data-filter="mythic">Мифические</button><select class="sort" id="sort"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="high">Сначала дорогие</option><option value="low">Сначала дешёвые</option><option value="rarity">По редкости</option></select></div>
@@ -4060,31 +4078,44 @@ const MYTHIC_F50={name:'Ferrari F50',image:'images/f50.png',price:1200000000,cur
 const score={normal:1,uncommon:2,rare:3,epic:4,legendary:5,mythic:6,deleted:7},$=x=>document.getElementById(x),rnd=n=>Math.floor(Math.random()*n),money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
 
 const SPECIAL_PLATE_LETTER_BONUS={
- 'А':1.50,'В':1.00,'Е':0.50,'К':0.50,'М':1.00,'Н':0.40,
- 'О':1.50,'Р':0.80,'С':0.80,'Т':0.90,'У':0.90,'Х':1.50
+ 'А':2.50,'В':2.00,'Е':1.00,'К':1.00,'М':2.00,'Н':0.50,
+ 'О':2.50,'Р':1.00,'С':1.00,'Т':1.50,'У':1.50,'Х':2.50
 };
 const SPECIAL_PLATE_DIGIT_BONUS={
- '111':0.50,'222':0.40,'333':0.30,'444':0.55,'555':0.70,
- '666':0.80,'777':1.00,'888':0.75,'999':0.90,'001':0.50
+ '111':1.00,'222':0.50,'333':0.25,'444':1.25,'555':1.60,
+ '666':2.00,'777':3.25,'888':2.00,'999':2.25,'001':1.50
 };
-function unifiedSpecialPlateValue(p,rank){
+const SPECIAL_PLATE_REGION_MULTIPLIER={
+ '777':0.60,
+ '97':0.90,
+ '99':0.80,
+ '78':0.65,
+ '98':0.70
+};
+function unifiedSpecialPlateValue(p,rank,region){
  const plate=String(p||'').toUpperCase();
  const digits=(plate.match(/\d{3}/)||[''])[0];
  const letters=plate.replace(/\d/g,'').slice(0,3);
  const base=rank==='epic'?5000000:(rank==='legendary'?15000000:50000000);
- let letterBonus=0,digitBonus=SPECIAL_PLATE_DIGIT_BONUS[digits]||0;
+ let letterBonus=0,digitBonus=SPECIAL_PLATE_DIGIT_BONUS[digits]||0,comboBonus=0;
 
- // Бонус за буквы даётся только когда все три буквы одинаковые.
+ // Бонус букв только за три одинаковые буквы.
  if(letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2]){
    letterBonus=SPECIAL_PLATE_LETTER_BONUS[letters[0]]||0;
+   // Дополнительные сочетания считаются от базовой цены.
+   if(letters[0]==='В'&&digits==='888')comboBonus=.50;
+   if(letters[0]==='А'&&digits==='444')comboBonus=.50;
+   // О001ОО стоит ещё на 50% базовой цены дороже остальных комбинаций 001.
+   if(letters[0]==='О'&&digits==='001')comboBonus=.50;
  }
 
- // Оба процента считаются только от изначальной цены и складываются.
- return Math.round(base*(1+letterBonus+digitBonus));
+ // Сначала формируется цена по буквам/цифрам, затем применяется множитель региона.
+ const regionMultiplier=SPECIAL_PLATE_REGION_MULTIPLIER[String(region||'')]||1;
+ return Math.round(base*(1+letterBonus+digitBonus+comboBonus)*regionMultiplier);
 }
-function epicNumberValue(p,region){return unifiedSpecialPlateValue(p,'epic')}
+function epicNumberValue(p,region){return unifiedSpecialPlateValue(p,'epic',region)}
 
-function legendaryNumberValue(p,region){return unifiedSpecialPlateValue(p,'legendary')}
+function legendaryNumberValue(p,region){return unifiedSpecialPlateValue(p,'legendary',region)}
 function evaluate(d,a,b,c,r,chosenRegion=''){
  // Шансы: легендарный 0,05%; мифический 0,1% на специальных выбранных регионах,
  // 0% при другом ручном регионе, 0,01% при случайном регионе.
@@ -4124,6 +4155,51 @@ let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).redu
  if(typeof renderContainers==='function'&&!caseRolling)setTimeout(renderContainers,0);
  }
 
+
+let autoRollEnabled=false,autoRollTimer=null;
+let autoSellRanks={normal:false,uncommon:false,rare:false,epic:false,legendary:false,mythic:false};
+
+function setAutoSell(rank,on){
+ autoSellRanks[rank]=!!on;
+ saveGame(true);
+}
+function syncAutoControls(){
+ const t=$('autoRollToggle');if(t)t.checked=autoRollEnabled;
+ document.querySelectorAll('[data-autosell]').forEach(x=>x.checked=!!autoSellRanks[x.dataset.autosell]);
+}
+function stopAutoRoll(){
+ autoRollEnabled=false;
+ if(autoRollTimer){clearInterval(autoRollTimer);autoRollTimer=null}
+ syncAutoControls();
+}
+function setAutoRoll(on){
+ autoRollEnabled=!!on;
+ if(autoRollTimer){clearInterval(autoRollTimer);autoRollTimer=null}
+ if(autoRollEnabled){
+  autoRollTimer=setInterval(()=>{
+   if(!autoRollEnabled)return;
+   if(inv.length>=storageCap||bal<COST){stopAutoRoll();return}
+   if(!isRolling)roll();
+  },100);
+ }
+ syncAutoControls();
+}
+async function autoSellDroppedPlate(x){
+ if(!x||!autoSellRanks[x.rank])return false;
+ const i=inv.findIndex(v=>v.id===x.id);
+ if(i<0||inv[i].locked)return false;
+ inv.splice(i,1);
+ bal+=x.v;earned+=x.v;
+ if(chatDb){
+  try{
+   const me=chatUser();
+   await chatDb.rpc('release_plate_from_storage',{p_plate:String(x.p),p_region:String(x.r),p_owner:String(me.telegram_id)});
+  }catch(e){console.warn('auto plate release failed',e)}
+ }
+ $('msg').textContent='Автопродажа · '+x.rarity+' · +'+money(x.v);
+ update();render();
+ return true;
+}
 
 function refreshRollButton(){
  const btn=$('plateButton');
@@ -4173,22 +4249,27 @@ function generateLegendaryFullBlat(region){
  const LTR=L[rnd(L.length)],d=digits[rnd(digits.length)];
  return {plateText:LTR+d+LTR+LTR,desc:'Фулл-блат · '+d+' '+String(region)};
 }
+function generateSpecialLegendary005007(region){
+ const d=Math.random()<.5?'005':'007';
+ const LTR=L[rnd(L.length)];
+ return {plateText:LTR+d+LTR+LTR,desc:'Легендарный формат · '+d+' '+String(region)};
+}
 function generateMythicPlate(chosenRegion){
- const requested=String(chosenRegion||''),allowed=['77','99','97','777','98','78'];
- const repeatDigits=['111','222','333','444','555','666','777','888','999'];
+ const requested=String(chosenRegion||''),allowed=['77','97','99','78','98','777'];
+ const repeatDigits=['111','222','333','444','555','666','777','888','999','001'];
  let region=allowed.includes(requested)?requested:allowed[rnd(allowed.length)],plateText,desc;
- if(Math.random()<0.68){
+ if(Math.random()<0.78){
   const md=repeatDigits[rnd(repeatDigits.length)],ML=L[rnd(L.length)];
   plateText=ML+md+ML+ML;desc='Мифический · фулл-блат '+md+' '+region;
- }else if(region==='97'&&Math.random()<.5){
-  let md;if(Math.random()<.5)md='001';else{const z=String(1+rnd(9));md=z+z+z}
+ }else if(region==='97'){
+  const md=Math.random()<.5?'001':'777';
   plateText='А'+md+'МР';desc='Мифический · АМР97';
  }else{
   const ML=L[rnd(L.length)];plateText=ML+'777'+ML+ML;desc='Мифический · 777 '+region;
  }
  return {plateText,r:region,desc};
 }
-function mythicNumberValue(p,region){return unifiedSpecialPlateValue(p,'mythic')}
+function mythicNumberValue(p,region){return unifiedSpecialPlateValue(p,'mythic',region)}
 function plateInStorage(p,r){
  const key=plateFontText(p);
  const region=String(r||'');
@@ -4246,17 +4327,18 @@ if(bal<COST)return update();isRolling=true;
    plateText=a+d+b+c;
    e.v=epicNumberValue(plateText,r);
  }else if(e.rank==='legendary'){
- // На обычных регионах фулл-блаты 111/222/.../999 относятся к легендарной редкости.
- // На 77/97/99/777/78/98 они остаются мифическими и здесь не генерируются.
- if(!isMythicFbRegion(r)&&Math.random()<0.70){
+ // На 77/97/99/98/78/777 добавлены легендарные форматы 005 и 007.
+ if(isMythicFbRegion(r)){
+  const sp=generateSpecialLegendary005007(r);
+  plateText=sp.plateText;e.desc=sp.desc;
+ }else if(Math.random()<0.70){
   const fb=generateLegendaryFullBlat(r);
   plateText=fb.plateText;e.desc=fb.desc;
  }else{
   const legendarySeries=['ХАМ','ВОР','ЕКХ'];
-  const lt=rnd(4);
-  if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001'}
-  else if(lt===1){const ls=legendarySeries[rnd(legendarySeries.length)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
-  else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
+  const lt=rnd(3);
+  if(lt===0){const ls=legendarySeries[rnd(legendarySeries.length)];plateText=ls[0]+'007'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls+' 007'}
+  else if(lt===1){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
   else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;e.desc='Легендарный формат · 009 '+r}
  }
  e.v=legendaryNumberValue(plateText,r);
@@ -4274,13 +4356,14 @@ if(bal<COST)return update();isRolling=true;
  plateText=mythic.plateText;r=mythic.r;e.desc=mythic.desc;
  e.v=mythicNumberValue(plateText,r);
 }else if(e.rank==='legendary'){
- if(!isMythicFbRegion(r)&&Math.random()<0.70){
+ if(isMythicFbRegion(r)){
+  const sp=generateSpecialLegendary005007(r);plateText=sp.plateText;e.desc=sp.desc;
+ }else if(Math.random()<0.70){
   const fb=generateLegendaryFullBlat(r);plateText=fb.plateText;e.desc=fb.desc;
  }else{
-  const lt=rnd(4);
-  if(lt===0){const LL=L[rnd(L.length)];plateText=LL+'001'+LL+LL;e.desc='Фулл-блат · 001'}
-  else if(lt===1){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'001'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
-  else if(lt===2){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
+  const lt=rnd(3);
+  if(lt===0){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'007'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls+' 007'}
+  else if(lt===1){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
   else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;e.desc='Легендарный формат · 009 '+r}
  }
  e.v=legendaryNumberValue(plateText,r);
@@ -4341,13 +4424,14 @@ if(bal<COST)return update();isRolling=true;
    update();render();renderUpgrader();
    // Для редких крупных выпадений возвращаем блокировку прокрута до конца анимации.
    $('plateButton').disabled=true;
-   stopPlateHold();
    await sleep(x.rank==='mythic'?4500:(x.rank==='legendary'?4000:3000));
    plate.classList.remove('revealEpic','revealLegendary','revealMythic');
+   await autoSellDroppedPlate(x);
  }else{
    burst(x.rank);
+   await autoSellDroppedPlate(x);
  }
- $('msg').textContent=x.v>=COST?'Номер окупил прокрут · сохранён':'Номер дешевле прокрута · сохранён';
+ if(!autoSellRanks[x.rank])$('msg').textContent=x.v>=COST?'Номер окупил прокрут · сохранён':'Номер дешевле прокрута · сохранён';
  isRolling=false;
  if(x.rank==='epic'||x.rank==='legendary'||x.rank==='mythic'){
    mobileRollQueue=0;
@@ -4583,53 +4667,7 @@ function renderGarage(){
 
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);}
 const plateRollBtn=$('plateButton');
-let plateHoldTimer=null,plateHoldStarted=false,plateHoldPointer=null;
-
-function plateQueueRoll(){
- if(inv.length>=storageCap||bal<COST)return;
- roll();
-}
-
-function stopPlateHold(){
- if(plateHoldTimer){clearInterval(plateHoldTimer);plateHoldTimer=null}
- plateHoldPointer=null;
-}
-
-if(plateRollBtn){
- plateRollBtn.addEventListener('click',e=>{
-   // A normal mouse click always requests one roll, even while another roll is finishing.
-   if(!plateHoldStarted)plateQueueRoll();
-   plateHoldStarted=false;
- });
-
- plateRollBtn.addEventListener('pointerdown',e=>{
-   if(e.button!==undefined&&e.button!==0)return;
-   plateHoldPointer=e.pointerId;
-   plateHoldStarted=false;
-   const holdStart=setTimeout(()=>{
-     if(plateHoldPointer!==e.pointerId)return;
-     plateHoldStarted=true;
-     plateQueueRoll();
-     stopPlateHold();
-     plateHoldPointer=e.pointerId;
-     plateHoldTimer=setInterval(plateQueueRoll,100);
-   },250);
-   const cancelStart=()=>{
-     clearTimeout(holdStart);
-     plateRollBtn.removeEventListener('pointerup',cancelStart);
-     plateRollBtn.removeEventListener('pointercancel',cancelStart);
-     plateRollBtn.removeEventListener('pointerleave',cancelStart);
-   };
-   plateRollBtn.addEventListener('pointerup',cancelStart,{once:true});
-   plateRollBtn.addEventListener('pointercancel',cancelStart,{once:true});
-   plateRollBtn.addEventListener('pointerleave',cancelStart,{once:true});
- });
-
- ['pointerup','pointercancel','pointerleave'].forEach(ev=>
-   plateRollBtn.addEventListener(ev,stopPlateHold)
- );
-}
-window.addEventListener('blur',stopPlateHold);
+plateRollBtn.onclick=()=>{if(!isRolling)roll()};
 $('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='auctionPage')auctionLoad();if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
@@ -5306,6 +5344,8 @@ async function migrateLegacyHammerSerials(){
 function mobileCaseTap(id,count=1){
  if(caseRolling)return;
  if(pendingCasePrize||pendingCasePrizes.length){pendingCasePrize=null;pendingCasePrizes=[];
+ autoSellRanks=Object.assign({normal:false,uncommon:false,rare:false,epic:false,legendary:false,mythic:false},d.autoSellRanks||{});
+ syncAutoControls();
  pendingLotteryCar=null;
  if(d.pendingLotteryCar&&d.pendingLotteryCar.name){
    pendingLotteryCar=CARS.find(x=>x.name===String(d.pendingLotteryCar.name))||null;
@@ -5879,7 +5919,7 @@ function buildSaveData(){
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
-   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null
+   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null,autoSellRanks
  };
 }
 function saveFingerprint(data){
