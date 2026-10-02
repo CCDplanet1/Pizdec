@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.20 ===== */
+/* ===== Auction Dark Theme v0.2.21 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.20 ===== */
+/* ===== Auction UX v0.2.21 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.20: -25% ===== */
+/* ===== Auction plate size v0.2.21: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.20: exactly 10% smaller than normal */
+/* Auction plate size v0.2.21: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3478,6 +3478,16 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .auctionTab{border:0;border-radius:10px;padding:10px 18px;background:transparent;color:#8f98a8;font-weight:850;cursor:pointer}
 .auctionTab.active{background:#f5f7fa;color:#0b0d12}
 #auctionPage .miniPlate{transform:scale(.75)!important;transform-origin:left center!important;margin-right:-25%!important;margin-bottom:-6%!important}
+
+.auctionSearchBar{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) auto;gap:10px;margin:0 0 16px}
+.auctionSearchField{display:flex;align-items:center;gap:9px;background:#0d1016;border:1px solid #272d38;border-radius:12px;padding:0 12px}
+.auctionSearchField span{opacity:.65}.auctionSearchField input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f4f6fa;padding:12px 0;font:inherit;font-size:13px}
+.auctionSearchField input::placeholder{color:#697385}
+.auctionSearchClear{border:1px solid #303744;background:#171b23;color:#cbd2dc;border-radius:12px;padding:0 15px;font-weight:800;cursor:pointer}
+.auctionSerialBadge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 8px;border-radius:8px;background:#0d1016;border:1px solid #303744;color:#dbe1e9;font-size:11px;font-weight:900;letter-spacing:.2px}
+.auctionSerialBadge span{color:#788294;font-weight:750}
+#auctionPage .miniPlate{transform:scale(.75)!important;transform-origin:left center!important;margin-right:-25%!important;margin-bottom:-6%!important}
+@media(max-width:650px){.auctionSearchBar{grid-template-columns:1fr}.auctionSearchClear{min-height:42px}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3716,6 +3726,11 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <button id="auctionTabAll" class="auctionTab active" onclick="auctionSetTab('all')">Аукцион</button>
 <button id="auctionTabMine" class="auctionTab" onclick="auctionSetTab('mine')">Мои лоты</button>
 </div>
+<div class="auctionSearchBar">
+<div class="auctionSearchField"><span>🚘</span><input id="auctionCarSearch" type="text" placeholder="Поиск по машине..." oninput="auctionRenderRows()"></div>
+<div class="auctionSearchField"><span>▣</span><input id="auctionPlateSearch" type="text" placeholder="Поиск по номеру..." oninput="auctionRenderRows()"></div>
+<button class="auctionSearchClear" onclick="auctionClearSearch()">Сбросить</button>
+</div>
 <div id="auctionAllPane"><div id="auctionStatus" style="display:none"></div><div id="auctionGrid"></div></div>
 <div id="auctionMinePane" style="display:none"><div class="auctionMyHead"><div><h3>Мои лоты</h3><div>Выставленные вами машины, ваши ставки и выигранные автомобили</div></div></div><div id="auctionMyGrid"></div></div>
 </section><section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
@@ -3766,7 +3781,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.20</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.21</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -5994,7 +6009,7 @@ function auctionCardHtml(a,myMode=false){
  const actions=won?`<button class="auctionBuyBtn" onclick="auctionClaim('${a.id}')">Забрать машину</button>`:
  myMode?'':mine?`<button class="auctionDangerBtn" onclick="auctionCancel('${a.id}')">Снять лот</button><button class="auctionAcceptBtn" disabled>${cur?'Есть ставка':'Ждём ставку'}</button>`:
  `<button class="auctionBidBtn" onclick="auctionBid('${a.id}',${next})" ${next>=buy?'disabled':''}>${next<buy?'Ставка '+auctionMoney(next):'Ставки закрыты'}</button><button class="auctionBuyBtn" onclick="auctionBuyout('${a.id}')">Выкупить</button>`;
- return `<div class="auctionCard"><div class="auctionImage">${carVisual(c,'auctionMappedImage')}</div><div class="auctionBody"><div class="auctionCardTop"><div><div class="auctionCarName">${auctionEsc(c.model||'Машина')}</div>${(()=>{const n=auctionCarPlate(c);return n.p?`<div style="margin-top:9px;max-width:190px">${plateHtml(n.p,n.r,'normal')}</div>`:''})()}<div class="auctionSeller">${mine?'Ваш лот':'Продавец: '+auctionEsc(a.seller_name||'Игрок')}${serial?' · №'+auctionEsc(serial):''}</div></div><span class="auctionBadge">${auctionEsc(rar.label||rar.rank||'Авто')}</span></div><div class="auctionPriceBox"><div class="auctionPrice"><span>${cur?'Текущая ставка':'Стартовая ставка'}</span><b>${auctionMoney(cur||start)}</b></div><div class="auctionPrice"><span>Выкуп</span><b>${auctionMoney(buy)}</b></div></div>${cur?`<div class="auctionBidder">Лидер ставки: ${auctionEsc(a.current_bidder_name||'Игрок')}</div>`:`<div class="auctionBidder">Ставок пока нет</div>`}<div class="auctionTimer ${won?'auctionWin':''}">${won?'Вы выиграли · можно забрать':'До конца: '+auctionTimeLeft(a.ends_at)}</div>${actions?`<div class="auctionActions">${actions}</div>`:''}</div></div>`;
+ return `<div class="auctionCard"><div class="auctionImage">${carVisual(c,'auctionMappedImage')}</div><div class="auctionBody"><div class="auctionCardTop"><div><div class="auctionCarName">${auctionEsc(c.model||'Машина')}</div>${(()=>{const n=auctionCarPlate(c);return n.p?`<div style="margin-top:9px;max-width:190px">${plateHtml(n.p,n.r,'normal')}</div>`:''})()}<div class="auctionSeller">${mine?'Ваш лот':'Продавец: '+auctionEsc(a.seller_name||'Игрок')}</div>${serial?`<div class="auctionSerialBadge"><span>СЕРИЙНЫЙ №</span>${auctionEsc(String(serial))}</div>`:''}</div><span class="auctionBadge">${auctionEsc(rar.label||rar.rank||'Авто')}</span></div><div class="auctionPriceBox"><div class="auctionPrice"><span>${cur?'Текущая ставка':'Стартовая ставка'}</span><b>${auctionMoney(cur||start)}</b></div><div class="auctionPrice"><span>Выкуп</span><b>${auctionMoney(buy)}</b></div></div>${cur?`<div class="auctionBidder">Лидер ставки: ${auctionEsc(a.current_bidder_name||'Игрок')}</div>`:`<div class="auctionBidder">Ставок пока нет</div>`}<div class="auctionTimer ${won?'auctionWin':''}">${won?'Вы выиграли · можно забрать':'До конца: '+auctionTimeLeft(a.ends_at)}</div>${actions?`<div class="auctionActions">${actions}</div>`:''}</div></div>`;
 }
 let auctionCurrentTab='all';
 function auctionSetTab(tab){
@@ -6006,19 +6021,37 @@ function auctionSetTab(tab){
  $('auctionTabMine')?.classList.toggle('active',auctionCurrentTab==='mine');
  auctionLoad();
 }
+let auctionMineRows=[];
+function auctionNormSearch(v){return String(v||'').toUpperCase().replace(/[АВЕКМНОРСТУХ]/g,ch=>({'А':'A','В':'B','Е':'E','К':'K','М':'M','Н':'H','О':'O','Р':'P','С':'C','Т':'T','У':'Y','Х':'X'}[ch]||ch)).replace(/[^A-Z0-9]/g,'')}
+function auctionFilteredRows(rows){
+ const carQ=String($('auctionCarSearch')?.value||'').trim().toLowerCase();
+ const plateQ=auctionNormSearch($('auctionPlateSearch')?.value||'');
+ return (rows||[]).filter(a=>{
+  const c=a.car_json||{},n=auctionCarPlate(c);
+  const carOk=!carQ||String(c.model||'').toLowerCase().includes(carQ);
+  const plateHay=auctionNormSearch(String(n.p||'')+String(n.r||''));
+  return carOk&&(!plateQ||plateHay.includes(plateQ));
+ });
+}
+function auctionRenderRows(){
+ const box=$('auctionGrid'),my=$('auctionMyGrid');if(!box)return;
+ const rows=auctionFilteredRows(auctionRows),mine=auctionFilteredRows(auctionMineRows);
+ box.innerHTML=rows.length?rows.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Ничего не найдено</b><br><span>Измени параметры поиска.</span></div>';
+ if(my)my.innerHTML=mine.length?mine.map(a=>auctionCardHtml(a,true)).join(''):'<div class="auctionEmpty"><b>Ничего не найдено</b><br><span>Здесь пока нет подходящих лотов.</span></div>';
+}
+function auctionClearSearch(){if($('auctionCarSearch'))$('auctionCarSearch').value='';if($('auctionPlateSearch'))$('auctionPlateSearch').value='';auctionRenderRows()}
 async function auctionLoad(){
  auctionRefreshCarSelect();const box=$('auctionGrid'),my=$('auctionMyGrid'),st=$('auctionStatus');if(!box)return;if(!chatDb){st.textContent='Supabase не подключён';return}
  try{await chatDb.rpc('auction_finalize_expired');}catch(e){}
  const q=await chatDb.rpc('auction_get_active');
  if(q.error){st.textContent='Ошибка: '+q.error.message;return}
  auctionRows=q.data||[];st.textContent='Активных лотов: '+auctionRows.length;
- box.innerHTML=auctionRows.length?auctionRows.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Активных лотов пока нет</b><br><span>Выставь первую машину на аукцион.</span></div>';
  const pill=$('auctionCountPill');if(pill)pill.textContent='Активных лотов: '+auctionRows.length;
  if(my){
   const me=chatUser(),mq=await chatDb.rpc('auction_get_mine',{p_player:String(me.telegram_id)});
-  const rows=mq.error?[]:(mq.data||[]);
-  my.innerHTML=rows.length?rows.map(a=>auctionCardHtml(a,true)).join(''):'<div class="auctionEmpty"><b>Здесь пока пусто</b><br><span>Поставьте ставку на автомобиль — он появится здесь.</span></div>';
+  auctionMineRows=mq.error?[]:(mq.data||[]);
  }
+ auctionRenderRows();
 }
 async function auctionCreate(){
  if(!chatDb)return alert('Supabase не подключён');const me=chatUser(),id=Number($('auctionCarSelect')?.value),car=cars.find(c=>Number(c.id)===id),start=Math.floor(Number($('auctionStartPrice')?.value)),buy=Math.floor(Number($('auctionBuyoutPrice')?.value));
