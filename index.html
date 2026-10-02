@@ -3351,7 +3351,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:900px){#auctionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.auctionSellGrid{grid-template-columns:1fr 1fr}.auctionSellGrid select{grid-column:1/-1}}
 @media(max-width:620px){.auctionHero{padding:18px}.auctionTitle{font-size:25px}.auctionHeroTop{align-items:flex-start}.auctionSellGrid{grid-template-columns:1fr}.auctionSellGrid select{grid-column:auto}#auctionGrid{grid-template-columns:1fr}.auctionPriceBox{grid-template-columns:1fr 1fr}}
 
-/* ===== Auction Dark Theme v0.2.32 ===== */
+/* ===== Auction Dark Theme v0.2.33 ===== */
 #auctionPage{
   color:#f4f6fa;
   --auction-bg:#0b0d12;
@@ -3434,7 +3434,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 }
 #auctionPage .auctionEmpty b{color:#eef1f5}
 
-/* ===== Auction UX v0.2.32 ===== */
+/* ===== Auction UX v0.2.33 ===== */
 #auctionPage .auctionSell{padding:20px}
 #auctionPage .auctionSellGrid{grid-template-columns:minmax(250px,2fr) minmax(165px,1fr) minmax(165px,1fr) auto;align-items:end}
 .auctionField{display:flex;flex-direction:column;gap:6px}
@@ -3454,13 +3454,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #auctionPage .auctionMappedImage{display:block;width:100%;height:100%;max-height:170px;object-fit:contain;object-position:center;user-select:none;-webkit-user-drag:none}
 #auctionPage .auctionImage .carIcon{width:100%;height:100%;align-items:center;justify-content:center;font-size:56px}
 
-/* ===== Auction plate size v0.2.32: -25% ===== */
+/* ===== Auction plate size v0.2.33: -25% ===== */
 #auctionPage .miniMain{font-size:clamp(16.5px,3vw,27px);letter-spacing:-.75px}
 #auctionPage .miniRegion b{font-size:clamp(12px,2.25vw,20.25px)}
 #auctionPage .miniRus{font-size:5.25px}
 #auctionPage .miniFlag{width:11.25px;height:6px}
 /* Auction plate exact -25% */#auctionPage .miniPlate{transform:scale(.90);transform-origin:left center;margin-right:-10%;margin-bottom:-2%}
-/* Auction plate size v0.2.32: exactly 10% smaller than normal */
+/* Auction plate size v0.2.33: exactly 10% smaller than normal */
 #auctionPage .miniMain{font-size:clamp(22px,4vw,36px);letter-spacing:-1px}
 #auctionPage .miniRegion b{font-size:clamp(16px,3vw,27px)}
 #auctionPage .miniRus{font-size:7px}
@@ -3799,7 +3799,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.32</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.33</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
 <h3 style="margin-top:0">Промокод</h3>
@@ -4059,75 +4059,32 @@ const UPGRADE_COUNTACH_800={name:'Lamborghini Countach 800-4',image:'images/coun
 const MYTHIC_F50={name:'Ferrari F50',image:'images/f50.png',price:1200000000,currency:'₽',rub:1200000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'f50'};
 const score={normal:1,uncommon:2,rare:3,epic:4,legendary:5,mythic:6,deleted:7},$=x=>document.getElementById(x),rnd=n=>Math.floor(Math.random()*n),money=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
 
-function epicNumberValue(p,region){
+const SPECIAL_PLATE_LETTER_BONUS={
+ 'А':1.50,'В':1.00,'Е':0.50,'К':0.50,'М':1.00,'Н':0.40,
+ 'О':1.50,'Р':0.80,'С':0.80,'Т':0.90,'У':0.90,'Х':1.50
+};
+const SPECIAL_PLATE_DIGIT_BONUS={
+ '111':0.50,'222':0.40,'333':0.30,'444':0.55,'555':0.70,
+ '666':0.80,'777':1.00,'888':0.75,'999':0.90,'001':0.50
+};
+function unifiedSpecialPlateValue(p,rank){
  const plate=String(p||'').toUpperCase();
- const digits=(plate.match(/\d{3}/)||['000'])[0];
+ const digits=(plate.match(/\d{3}/)||[''])[0];
  const letters=plate.replace(/\d/g,'').slice(0,3);
- const reg=String(region||'');
+ const base=rank==='epic'?5000000:(rank==='legendary'?15000000:50000000);
+ let letterBonus=0,digitBonus=SPECIAL_PLATE_DIGIT_BONUS[digits]||0;
 
- // Модель цены полублата по примеру из присланного экрана:
- // база + ценность цифр + ценность букв, затем комбо/регион/код/класс.
- let base=100,combo=1;
+ // Бонус за буквы даётся только когда все три буквы одинаковые.
+ if(letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2]){
+   letterBonus=SPECIAL_PLATE_LETTER_BONUS[letters[0]]||0;
+ }
 
- // Цифры
- if(digits[0]===digits[1]&&digits[1]===digits[2]){base+=21000;combo+=.50}
- else if(digits[0]===digits[1]||digits[1]===digits[2]||digits[0]===digits[2]){base+=7000;combo+=.25}
- if(digits[0]===digits[2]&&digits[0]!==digits[1]){base+=6000;combo+=.20}
- if(['001','007'].includes(digits)){base+=12000;combo+=.25}
- if(['100','200','300','400','500','600','700','800','900'].includes(digits)){base+=8000;combo+=.20}
-
- // Буквы
- if(letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2]){base+=24000;combo+=.50}
- else if(letters.length===3&&(letters[0]===letters[1]||letters[0]===letters[2]||letters[1]===letters[2])){base+=9000;combo+=.25}
- if(letters.length===3&&letters[0]===letters[2]&&letters[0]!==letters[1]){base+=12000;combo+=.30}
-
- // Совпадение цифр с ЛЮБЫМ регионом, не только 77.
- if((reg.length===2&&digits.slice(-2)===reg)||(reg.length===3&&digits===reg)){base+=13000;combo+=.25}
-
- const regionMult=5.00,codeMult=1.00,classMult=5.00;
- return Math.max(995500,Math.round((base*combo*regionMult*codeMult*classMult)/50)*50);
+ // Оба процента считаются только от изначальной цены и складываются.
+ return Math.round(base*(1+letterBonus+digitBonus));
 }
+function epicNumberValue(p,region){return unifiedSpecialPlateValue(p,'epic')}
 
-function legendaryNumberValue(p,region){
- const plate=String(p||'').toUpperCase();
- const digits=(plate.match(/\d{3}/)||['000'])[0];
- const letters=plate.replace(/\d/g,'').slice(0,3);
- const reg=String(region||'');
-
- let base=100;
- let combo=1;
-
- // Цифровые комбинации
- if(digits[0]===digits[1]||digits[1]===digits[2]||digits[0]===digits[2]){base+=7000;combo+=0.38}
- if(digits[0]===digits[1]&&digits[1]===digits[2]){base+=25000;combo+=1.20}
- if(digits==='001'||digits==='007'){base+=30000;combo+=.65}
- if(['100','200','300','400','500','600','700','800','900'].includes(digits)){base+=10000;combo+=.35}
-
- // Буквенные комбинации
- if(letters.length===3&&letters[0]===letters[2]){base+=12000;combo+=.55} // палиндром
- if(letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2]){base+=30000;combo+=1.15}
-
- // Цифры совпадают с регионом: для любого выбранного региона.
- // Для 2-значного региона сравниваем последние две цифры номера,
- // для 3-значного — всю цифровую часть.
- if((reg.length===2&&digits.slice(-2)===reg)||(reg.length===3&&digits===reg)){base+=13000;combo+=.45}
-
- // Особые серии, включая пример ФСК/ФСБ-подобных комбинаций.
- const specialSeries=['ФСК','ФСБ','АМР','ХАМ','ВОР','ЕКХ','ККХ','ХКХ','ООО','МММ','ААА','ВВВ','ССС','РРР'];
- if(specialSeries.includes(letters)){base+=50000;combo+=1.00}
- if(letters==='АМР'&&reg==='97'){base+=100000;combo+=1.50}
-
- // Дополнительный престиж "круглых"/зеркальных комбинаций
- if(digits[0]===digits[2])combo+=.25;
-
- const regionMult=5.00;
- const codeMult=1.00;
- const classMult=50.00;
- let result=Math.round(((base*combo*regionMult*codeMult*classMult)/10)/100)*100;
- if(['ААА','ООО','ХХХ'].includes(letters))result*=5;
- else if(['ВВВ','ТТТ','МММ','УУУ'].includes(letters))result*=2.5;
- return Math.round(result/100)*100;
-}
+function legendaryNumberValue(p,region){return unifiedSpecialPlateValue(p,'legendary')}
 function evaluate(d,a,b,c,r,chosenRegion=''){
  // Шансы: легендарный 0,05%; мифический 0,1% на специальных выбранных регионах,
  // 0% при другом ручном регионе, 0,01% при случайном регионе.
@@ -4231,33 +4188,7 @@ function generateMythicPlate(chosenRegion){
  }
  return {plateText,r:region,desc};
 }
-function mythicNumberValue(plateText,region){
- const p=String(plateText||'').toUpperCase();
- const reg=String(region||'');
- const letters=p.replace(/\d/g,'').slice(0,3);
- const digits=(p.match(/\d{3}/)||['000'])[0];
-
- // 777 78/98: ААА, ООО и ХХХ = 80 млн; остальные одинаковые буквы дешевле.
- if((reg==='78'||reg==='98')&&digits==='777'&&letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2]){
-  if(['ААА','ООО','ХХХ'].includes(letters))return 80000000;
-  const base77=Math.max(35000000,Math.min(75000000,legendaryNumberValue(p,'77')*5));
-  return Math.round(base77/100)*100;
- }
-
- // 777 97 = стоимость такого же номера на 77 регионе -15%.
- if(reg==='97'&&digits==='777'){
-  const value77=Math.max(50000000,legendaryNumberValue(p,'77')*5);
-  return Math.round((value77*.85)/100)*100;
- }
-
- // 777 99 = стоимость такого же номера на 77 регионе -20%.
- if(reg==='99'&&digits==='777'){
-  const value77=Math.max(50000000,legendaryNumberValue(p,'77')*5);
-  return Math.round((value77*.80)/100)*100;
- }
-
- return Math.max(50000000,legendaryNumberValue(p,reg)*5);
-}
+function mythicNumberValue(p,region){return unifiedSpecialPlateValue(p,'mythic')}
 function plateInStorage(p,r){
  const key=plateFontText(p);
  const region=String(r||'');
