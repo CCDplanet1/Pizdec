@@ -3497,10 +3497,13 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:700px){.garageSearchBar,.plateSearchBar{grid-template-columns:1fr}}
 
 .autoControls{max-width:680px;margin:14px auto 0;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.55);text-align:left}
-.autoToggleRow{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer}.autoToggleRow span{display:flex;flex-direction:column}.autoToggleRow small{color:var(--muted);margin-top:3px}
-.autoToggleRow input{display:none}.autoToggleRow i{width:48px;height:28px;border-radius:999px;background:#c7ccd4;position:relative;transition:.2s;flex:0 0 auto}.autoToggleRow i:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0003;transition:.2s}.autoToggleRow input:checked+i{background:#111}.autoToggleRow input:checked+i:after{transform:translateX(20px)}
 .autoSellTitle{font-weight:850;margin:15px 0 8px}.autoSellGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.autoSellGrid label{font-size:13px;padding:9px 10px;border:1px solid var(--line);border-radius:11px;cursor:pointer}
 @media(max-width:520px){.autoSellGrid{grid-template-columns:repeat(2,1fr)}}
+
+.autoSellUpgradeCard{overflow:hidden}.autoSellUpgradeHead{display:flex;align-items:center;justify-content:space-between;gap:18px}.autoSellUpgradeHead h3{margin:0 0 5px}.autoSellUpgradeHead p{margin:0;color:var(--muted)}
+.autoSellLevelTrack{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:18px 0 12px}.autoSellLevelDot{height:7px;border-radius:999px;background:var(--line)}.autoSellLevelDot.on{background:var(--text)}
+.autoSellUpgradeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.autoSellChoice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel,#fff);font-size:13px;font-weight:750}.autoSellChoice.locked{opacity:.45}.autoSellChoice input{width:17px;height:17px}
+@media(max-width:700px){.autoSellUpgradeHead{align-items:flex-start;flex-direction:column}.autoSellUpgradeHead .buy{width:100%}.autoSellUpgradeGrid{grid-template-columns:repeat(2,1fr)}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3707,19 +3710,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <span id="regionFee" style="font-size:12px;color:#5f6b7c">Регион выпадет случайно</span>
 </div><button class="plateButton" id="plateButton"><div class="plate ccdPlate normal" id="heroPlate"><div class="plateMain" id="num"><span class="plateLetter first">A</span><span class="plateDigits">777</span><span class="plateLetter last">AA</span></div><div class="plateRegion"><div class="regionNum" id="reg">77</div></div><div class="fx" id="fx"></div></div></button>
 <div class="info"><div><div class="label">РЫНОЧНАЯ СТОИМОСТЬ</div><div class="price" id="value">—</div></div><div><div class="label">РЕДКОСТЬ</div><span class="pill normal" id="rarity">—</span><div class="label" id="desc" style="margin-top:6px">Сделай первый прокрут</div></div><div><div class="label">РЕГИОН</div><div class="regionInfo" id="regionInfo">77</div></div></div>
-<div class="hint">Прокрут — 3 000 ₽ · нажми на сам номер</div>
-<div class="autoControls">
- <label class="autoToggleRow"><span><b>Автопрокрут</b><small>Крутит автоматически каждые 100 мс</small></span><input id="autoRollToggle" type="checkbox" onchange="setAutoRoll(this.checked)"><i></i></label>
- <div class="autoSellTitle">Автопродажа</div>
- <div class="autoSellGrid">
-  <label><input type="checkbox" data-autosell="normal" onchange="setAutoSell('normal',this.checked)"> Обычные</label>
-  <label><input type="checkbox" data-autosell="uncommon" onchange="setAutoSell('uncommon',this.checked)"> Необычные</label>
-  <label><input type="checkbox" data-autosell="rare" onchange="setAutoSell('rare',this.checked)"> Редкие</label>
-  <label><input type="checkbox" data-autosell="epic" onchange="setAutoSell('epic',this.checked)"> Эпические</label>
-  <label><input type="checkbox" data-autosell="legendary" onchange="setAutoSell('legendary',this.checked)"> Легендарные</label>
-  <label><input type="checkbox" data-autosell="mythic" onchange="setAutoSell('mythic',this.checked)"> Мифические</label>
- </div>
-</div><div class="msg" id="msg"></div></div></section>
+<div class="hint">Прокрут — 3 000 ₽ · нажми на сам номер</div><div class="msg" id="msg"></div></div></section>
 
 <section class="page" id="storePage"><div class="storeHead"><div><h2>Хранилище</h2><div class="count" id="count">0 номеров</div></div><button class="sellAll" id="sellAll" disabled>Продать все · <span id="total">0 ₽</span></button></div>
 <div class="tools"><button class="filter on" data-filter="all">Все</button><button class="filter" data-filter="normal">Обычные</button><button class="filter" data-filter="rare">Редкие</button><button class="filter" data-filter="epic">Эпические</button><button class="filter" data-filter="legendary">Легендарные</button><button class="filter" data-filter="mythic">Мифические</button><select class="sort" id="sort"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="high">Сначала дорогие</option><option value="low">Сначала дешёвые</option><option value="rarity">По редкости</option></select></div>
@@ -3798,6 +3789,17 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
     <div><h3>Вместимость гаража</h3><p>Сейчас: <b id="garageCapText">1 место</b>. Каждое улучшение добавляет +1 место.</p></div>
     <button class="buy" id="upgradeGarageBtn" onclick="upgradeGarage()">+1 место · 1 500 000 ₽</button>
   </div>
+</div>
+<div class="settingsCard autoSellUpgradeCard">
+  <div class="autoSellUpgradeHead">
+    <div>
+      <h3>Автопродажа номеров</h3>
+      <p>Уровень <b id="autoSellLevelText">0/6</b>. Каждый уровень открывает следующую редкость для автопродажи.</p>
+    </div>
+    <button class="buy" id="upgradeAutoSellBtn" onclick="upgradeAutoSell()">Открыть 1 уровень · 25 000 000 ₽</button>
+  </div>
+  <div class="autoSellLevelTrack" id="autoSellLevelTrack"></div>
+  <div class="autoSellUpgradeGrid" id="autoSellUpgradeGrid"></div>
 </div>
 </section>
 
@@ -4156,34 +4158,48 @@ let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).redu
  }
 
 
-let autoRollEnabled=false,autoRollTimer=null;
+let autoSellLevel=0;
 let autoSellRanks={normal:false,uncommon:false,rare:false,epic:false,legendary:false,mythic:false};
 
+const AUTOSELL_LEVELS=[
+ {rank:'normal',name:'Обычные'},
+ {rank:'uncommon',name:'Необычные'},
+ {rank:'rare',name:'Редкие'},
+ {rank:'epic',name:'Эпические'},
+ {rank:'legendary',name:'Легендарные'},
+ {rank:'mythic',name:'Мифические'}
+];
+function autoSellUpgradePrice(){
+ return Math.round(25000000*Math.pow(1.5,autoSellLevel));
+}
 function setAutoSell(rank,on){
+ const idx=AUTOSELL_LEVELS.findIndex(x=>x.rank===rank);
+ if(idx<0||idx>=autoSellLevel)return;
  autoSellRanks[rank]=!!on;
+ renderAutoSellUpgrade();
  saveGame(true);
 }
-function syncAutoControls(){
- const t=$('autoRollToggle');if(t)t.checked=autoRollEnabled;
- document.querySelectorAll('[data-autosell]').forEach(x=>x.checked=!!autoSellRanks[x.dataset.autosell]);
-}
-function stopAutoRoll(){
- autoRollEnabled=false;
- if(autoRollTimer){clearInterval(autoRollTimer);autoRollTimer=null}
- syncAutoControls();
-}
-function setAutoRoll(on){
- autoRollEnabled=!!on;
- if(autoRollTimer){clearInterval(autoRollTimer);autoRollTimer=null}
- if(autoRollEnabled){
-  autoRollTimer=setInterval(()=>{
-   if(!autoRollEnabled)return;
-   if(inv.length>=storageCap||bal<COST){stopAutoRoll();return}
-   if(!isRolling)roll();
-  },100);
+function renderAutoSellUpgrade(){
+ const levelText=$('autoSellLevelText'),btn=$('upgradeAutoSellBtn'),track=$('autoSellLevelTrack'),grid=$('autoSellUpgradeGrid');
+ if(levelText)levelText.textContent=`${autoSellLevel}/6`;
+ if(btn){
+  if(autoSellLevel>=6){btn.textContent='Максимальный уровень';btn.disabled=true}
+  else{btn.textContent=`Открыть ${autoSellLevel+1} уровень · ${money(autoSellUpgradePrice())}`;btn.disabled=false}
  }
- syncAutoControls();
+ if(track)track.innerHTML=AUTOSELL_LEVELS.map((_,i)=>`<i class="autoSellLevelDot ${i<autoSellLevel?'on':''}"></i>`).join('');
+ if(grid)grid.innerHTML=AUTOSELL_LEVELS.map((x,i)=>{
+   const open=i<autoSellLevel;
+   return `<label class="autoSellChoice ${open?'':'locked'}"><span>${i+1}. ${x.name}</span><input type="checkbox" ${open&&autoSellRanks[x.rank]?'checked':''} ${open?'':'disabled'} onchange="setAutoSell('${x.rank}',this.checked)"></label>`;
+ }).join('');
 }
+function upgradeAutoSell(){
+ if(autoSellLevel>=6)return;
+ const price=autoSellUpgradePrice();
+ if(bal<price){if(typeof toast==='function')toast('Недостаточно денег');return}
+ bal-=price;spent+=price;autoSellLevel++;
+ renderAutoSellUpgrade();update();saveGame(true);
+}
+function syncAutoControls(){renderAutoSellUpgrade()}
 async function autoSellDroppedPlate(x){
  if(!x||!autoSellRanks[x.rank])return false;
  const i=inv.findIndex(v=>v.id===x.id);
@@ -4424,6 +4440,7 @@ if(bal<COST)return update();isRolling=true;
    update();render();renderUpgrader();
    // Для редких крупных выпадений возвращаем блокировку прокрута до конца анимации.
    $('plateButton').disabled=true;
+   stopPlateHold();
    await sleep(x.rank==='mythic'?4500:(x.rank==='legendary'?4000:3000));
    plate.classList.remove('revealEpic','revealLegendary','revealMythic');
    await autoSellDroppedPlate(x);
@@ -4667,7 +4684,29 @@ function renderGarage(){
 
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);}
 const plateRollBtn=$('plateButton');
-plateRollBtn.onclick=()=>{if(!isRolling)roll()};
+let plateHoldTimer=null,plateHoldStartTimer=null,plateHoldActive=false;
+function stopPlateHold(){
+ if(plateHoldStartTimer){clearTimeout(plateHoldStartTimer);plateHoldStartTimer=null}
+ if(plateHoldTimer){clearInterval(plateHoldTimer);plateHoldTimer=null}
+ plateHoldActive=false;
+}
+function requestPlateRoll(){if(inv.length<storageCap&&bal>=COST)roll()}
+if(plateRollBtn){
+ plateRollBtn.addEventListener('click',()=>{if(!plateHoldActive)requestPlateRoll()});
+ plateRollBtn.addEventListener('pointerdown',e=>{
+  if(e.button!==undefined&&e.button!==0)return;
+  plateHoldStartTimer=setTimeout(()=>{
+   plateHoldActive=true;
+   requestPlateRoll();
+   plateHoldTimer=setInterval(requestPlateRoll,100);
+  },250);
+ });
+ ['pointerup','pointercancel','pointerleave'].forEach(ev=>plateRollBtn.addEventListener(ev,()=>{
+   const wasHold=plateHoldActive;stopPlateHold();
+   if(wasHold)setTimeout(()=>{plateHoldActive=false},0);
+ }));
+}
+window.addEventListener('blur',stopPlateHold);
 $('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='auctionPage')auctionLoad();if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
@@ -5344,7 +5383,9 @@ async function migrateLegacyHammerSerials(){
 function mobileCaseTap(id,count=1){
  if(caseRolling)return;
  if(pendingCasePrize||pendingCasePrizes.length){pendingCasePrize=null;pendingCasePrizes=[];
+ autoSellLevel=Math.max(0,Math.min(6,Number(d.autoSellLevel||0)));
  autoSellRanks=Object.assign({normal:false,uncommon:false,rare:false,epic:false,legendary:false,mythic:false},d.autoSellRanks||{});
+ AUTOSELL_LEVELS.forEach((x,i)=>{if(i>=autoSellLevel)autoSellRanks[x.rank]=false});
  syncAutoControls();
  pendingLotteryCar=null;
  if(d.pendingLotteryCar&&d.pendingLotteryCar.name){
@@ -5919,7 +5960,7 @@ function buildSaveData(){
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
-   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null,autoSellRanks
+   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null,autoSellRanks,autoSellLevel
  };
 }
 function saveFingerprint(data){
