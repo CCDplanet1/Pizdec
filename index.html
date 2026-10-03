@@ -3500,16 +3500,17 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .autoSellTitle{font-weight:850;margin:15px 0 8px}.autoSellGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.autoSellGrid label{font-size:13px;padding:9px 10px;border:1px solid var(--line);border-radius:11px;cursor:pointer}
 @media(max-width:520px){.autoSellGrid{grid-template-columns:repeat(2,1fr)}}
 
-.autoSellUpgradeCard{overflow:hidden}.autoSellUpgradeHead{display:flex;align-items:center;justify-content:space-between;gap:18px}.autoSellUpgradeHead h3{margin:0 0 5px}.autoSellUpgradeHead p{margin:0;color:var(--muted)}
-.autoSellLevelTrack{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:18px 0 12px}.autoSellLevelDot{height:7px;border-radius:999px;background:var(--line)}.autoSellLevelDot.on{background:var(--text)}
-.autoSellUpgradeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.autoSellChoice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel,#fff);font-size:13px;font-weight:750}.autoSellChoice.locked{opacity:.45}.autoSellChoice input{width:17px;height:17px}
-@media(max-width:700px){.autoSellUpgradeHead{align-items:flex-start;flex-direction:column}.autoSellUpgradeHead .buy{width:100%}.autoSellUpgradeGrid{grid-template-columns:repeat(2,1fr)}}
 
 .levelCard{max-width:760px;margin:14px auto 20px;padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--panel,#fff)}
 .levelTop{display:flex;align-items:center;justify-content:space-between;gap:18px}.levelTop>div:first-child{display:flex;flex-direction:column}.levelTop small,.diamondStat small{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.08em}.levelTop b{font-size:34px;line-height:1.05}
 .diamondStat{display:flex;align-items:center;gap:10px}.diamondStat img{width:34px;height:34px;object-fit:contain}.diamondStat span{display:flex;flex-direction:column}.diamondStat b{font-size:22px}
 .levelProgress{height:12px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:16px}.levelProgress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5a8cff,#9d66ff);border-radius:inherit;transition:width .25s}
 .levelMeta{display:flex;justify-content:space-between;gap:12px;margin-top:7px;color:var(--muted);font-size:12px}.levelReward{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}.levelReward img{width:16px;height:16px;vertical-align:-3px}
+
+#lotteryPrize.lotteryMurcielagoGold{background:radial-gradient(circle at 50% 42%,#fff2a6 0%,#ffd23f 28%,#b87300 68%,#5b3500 100%);box-shadow:inset 0 0 45px #fff3a8,0 0 28px #ffc400,0 0 70px #ffae00;animation:lotteryGoldPulse 1.2s ease-in-out infinite alternate}
+#lotteryPrize.lotteryMurcielagoGold .caseResultImage{filter:drop-shadow(0 0 14px #fff0a0) drop-shadow(0 0 30px #ffb300)}
+#lotteryPrize.lotteryMurcielagoGold strong,#lotteryPrize.lotteryMurcielagoGold small{color:#3b2400;text-shadow:0 0 12px #ffe67a}
+@keyframes lotteryGoldPulse{from{box-shadow:inset 0 0 35px #ffe985,0 0 20px #ffc400,0 0 48px #ffae00}to{box-shadow:inset 0 0 58px #fff8c9,0 0 38px #ffd84d,0 0 90px #ff9d00}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3802,17 +3803,6 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
     <div><h3>Вместимость гаража</h3><p>Сейчас: <b id="garageCapText">1 место</b>. Каждое улучшение добавляет +1 место.</p></div>
     <button class="buy" id="upgradeGarageBtn" onclick="upgradeGarage()">+1 место · 1 500 000 ₽</button>
   </div>
-</div>
-<div class="settingsCard autoSellUpgradeCard">
-  <div class="autoSellUpgradeHead">
-    <div>
-      <h3>Автопродажа номеров</h3>
-      <p>Уровень <b id="autoSellLevelText">0/6</b>. Каждый уровень открывает следующую редкость для автопродажи.</p>
-    </div>
-    <button class="buy" id="upgradeAutoSellBtn" onclick="upgradeAutoSell()">Открыть 1 уровень · 25 000 000 ₽</button>
-  </div>
-  <div class="autoSellLevelTrack" id="autoSellLevelTrack"></div>
-  <div class="autoSellUpgradeGrid" id="autoSellUpgradeGrid"></div>
 </div>
 </section>
 
@@ -4230,64 +4220,8 @@ let total=inv.reduce((s,x)=>s+x.v,0),sellableTotal=inv.filter(x=>!x.locked).redu
  }
 
 
-let autoSellLevel=0;
-let autoSellRanks={normal:false,uncommon:false,rare:false,epic:false,legendary:false,mythic:false};
 
-const AUTOSELL_LEVELS=[
- {rank:'normal',name:'Обычные'},
- {rank:'uncommon',name:'Необычные'},
- {rank:'rare',name:'Редкие'},
- {rank:'epic',name:'Эпические'},
- {rank:'legendary',name:'Легендарные'},
- {rank:'mythic',name:'Мифические'}
-];
-function autoSellUpgradePrice(){
- return Math.round(25000000*Math.pow(1.5,autoSellLevel));
-}
-function setAutoSell(rank,on){
- const idx=AUTOSELL_LEVELS.findIndex(x=>x.rank===rank);
- if(idx<0||idx>=autoSellLevel)return;
- autoSellRanks[rank]=!!on;
- renderAutoSellUpgrade();
- saveGame(true);
-}
-function renderAutoSellUpgrade(){
- const levelText=$('autoSellLevelText'),btn=$('upgradeAutoSellBtn'),track=$('autoSellLevelTrack'),grid=$('autoSellUpgradeGrid');
- if(levelText)levelText.textContent=`${autoSellLevel}/6`;
- if(btn){
-  if(autoSellLevel>=6){btn.textContent='Максимальный уровень';btn.disabled=true}
-  else{btn.textContent=`Открыть ${autoSellLevel+1} уровень · ${money(autoSellUpgradePrice())}`;btn.disabled=false}
- }
- if(track)track.innerHTML=AUTOSELL_LEVELS.map((_,i)=>`<i class="autoSellLevelDot ${i<autoSellLevel?'on':''}"></i>`).join('');
- if(grid)grid.innerHTML=AUTOSELL_LEVELS.map((x,i)=>{
-   const open=i<autoSellLevel;
-   return `<label class="autoSellChoice ${open?'':'locked'}"><span>${i+1}. ${x.name}</span><input type="checkbox" ${open&&autoSellRanks[x.rank]?'checked':''} ${open?'':'disabled'} onchange="setAutoSell('${x.rank}',this.checked)"></label>`;
- }).join('');
-}
-function upgradeAutoSell(){
- if(autoSellLevel>=6)return;
- const price=autoSellUpgradePrice();
- if(bal<price){if(typeof toast==='function')toast('Недостаточно денег');return}
- bal-=price;spent+=price;autoSellLevel++;
- renderAutoSellUpgrade();update();saveGame(true);
-}
-function syncAutoControls(){renderAutoSellUpgrade()}
-async function autoSellDroppedPlate(x){
- if(!x||!autoSellRanks[x.rank])return false;
- const i=inv.findIndex(v=>v.id===x.id);
- if(i<0||inv[i].locked)return false;
- inv.splice(i,1);
- bal+=x.v;earned+=x.v;
- if(chatDb){
-  try{
-   const me=chatUser();
-   await chatDb.rpc('release_plate_from_storage',{p_plate:String(x.p),p_region:String(x.r),p_owner:String(me.telegram_id)});
-  }catch(e){console.warn('auto plate release failed',e)}
- }
- $('msg').textContent='Автопродажа · '+x.rarity+' · +'+money(x.v);
- update();render();
- return true;
-}
+
 
 function refreshRollButton(){
  const btn=$('plateButton');
@@ -4516,12 +4450,10 @@ if(bal<COST)return update();isRolling=true;
    stopPlateHold();
    await sleep(x.rank==='mythic'?4500:(x.rank==='legendary'?4000:3000));
    plate.classList.remove('revealEpic','revealLegendary','revealMythic');
-   await autoSellDroppedPlate(x);
  }else{
    burst(x.rank);
-   await autoSellDroppedPlate(x);
  }
- if(!autoSellRanks[x.rank])$('msg').textContent=x.v>=COST?'Номер окупил прокрут · сохранён':'Номер дешевле прокрута · сохранён';
+ $('msg').textContent=x.v>=COST?'Номер окупил прокрут · сохранён':'Номер дешевле прокрута · сохранён';
  isRolling=false;
  if(x.rank==='epic'||x.rank==='legendary'||x.rank==='mythic'){
    mobileRollQueue=0;
@@ -5490,10 +5422,6 @@ async function migrateLegacyHammerSerials(){
 function mobileCaseTap(id,count=1){
  if(caseRolling)return;
  if(pendingCasePrize||pendingCasePrizes.length){pendingCasePrize=null;pendingCasePrizes=[];
- autoSellLevel=Math.max(0,Math.min(6,Number(d.autoSellLevel||0)));
- autoSellRanks=Object.assign({normal:false,uncommon:false,rare:false,epic:false,legendary:false,mythic:false},d.autoSellRanks||{});
- AUTOSELL_LEVELS.forEach((x,i)=>{if(i>=autoSellLevel)autoSellRanks[x.rank]=false});
- syncAutoControls();
  pendingLotteryCar=null;
  if(d.pendingLotteryCar&&d.pendingLotteryCar.name){
    pendingLotteryCar=CARS.find(x=>x.name===String(d.pendingLotteryCar.name))||null;
@@ -5600,7 +5528,7 @@ function prepareLotteryTicket(){
   renderPendingLotteryCar();return;
  }
  lotteryActive=true;lotteryRevealed=false;lotteryPrizeData=null;lotteryPaid=false;
- $('lotteryPrize').innerHTML='<div style="font-size:48px">🎁</div><strong>Приз скрыт</strong>';
+ $('lotteryPrize').classList.remove('lotteryMurcielagoGold');$('lotteryPrize').innerHTML='<div style="font-size:48px">🎁</div><strong>Приз скрыт</strong>';
  $('lotteryStatus').textContent='Начни стирать билет · стоимость 500 000 ₽.';
  renderPendingLotteryCar();initScratchTicket();
 }
@@ -5610,7 +5538,7 @@ function startLotteryOnFirstScratch(){
  bal-=LOTTERY_PRICE;spent+=LOTTERY_PRICE;lotteryPaid=true;lotteryPrizeData=lotteryRollPrize();update();
  const prize=$('lotteryPrize');
  if(lotteryPrizeData.type==='car'){
-  const m=lotteryPrizeData.car;prize.innerHTML=`${carVisual(m,'caseResultImage')}<strong style="font-size:20px;margin-top:8px">${m.name}</strong><small>Главный приз!</small>`;
+  const m=lotteryPrizeData.car;if(String(m.name||m.model||'')==='Lamborghini Murciélago')prize.classList.add('lotteryMurcielagoGold');else prize.classList.remove('lotteryMurcielagoGold');prize.innerHTML=`${carVisual(m,'caseResultImage')}<strong style="font-size:20px;margin-top:8px">${m.name}</strong><small>Главный приз!</small>`;
  }else prize.innerHTML=`<div style="font-size:48px">💰</div><strong style="font-size:25px">${money(lotteryPrizeData.amount)}</strong><small>Денежный приз</small>`;
  $('lotteryStatus').textContent='Сотри не менее 55% билета.';
  return true;
@@ -6066,7 +5994,7 @@ function buildSaveData(){
    bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,playerLevel,playerXp,diamonds,storageUpgradesUsed,
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
-   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null,autoSellRanks,autoSellLevel
+   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null
  };
 }
 function saveFingerprint(data){
