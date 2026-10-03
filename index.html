@@ -3822,7 +3822,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.33</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.34</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5890,6 +5890,8 @@ const SAVE_PREFIX='nr_save_v2';
 const SAVE_MANIFEST=SAVE_PREFIX+'_manifest';
 const SAVE_CHUNK_SIZE=3500;
 const LOCAL_SAVE_KEY='nr-local-save-v2';
+const ONE_TIME_WIPE_ID='wipe_2026_10_03_01';
+const ONE_TIME_WIPE_MARKER='nr-wipe-applied-'+ONE_TIME_WIPE_ID;
 let saveSystemReady=false,saveBusy=false,lastSavedFingerprint='',saveQueued=false;
 
 function buildSaveData(){
@@ -6023,9 +6025,43 @@ async function writeSupabaseGameState(data){
  const r=await chatDb.from('player_profiles').upsert(payload,{onConflict:'telegram_id'});
  if(r.error){console.warn('Supabase save error:',r.error);return false}return true;
 }
+
+function oneTimeWipeAlreadyApplied(){
+ try{return localStorage.getItem(ONE_TIME_WIPE_MARKER)==='1'}catch(e){return false}
+}
+function markOneTimeWipeApplied(){
+ try{localStorage.setItem(ONE_TIME_WIPE_MARKER,'1')}catch(e){}
+}
+async function clearOldClientSaveOnce(){
+ if(oneTimeWipeAlreadyApplied())return false;
+
+ // Mark first so a reload/crash cannot create an endless wipe loop.
+ markOneTimeWipeApplied();
+
+ // Remove the browser backup, but keep identity/profile/theme keys.
+ try{localStorage.removeItem(LOCAL_SAVE_KEY)}catch(e){}
+
+ // Remove Telegram CloudStorage copy used by the old client.
+ if(cloudAvailable()){
+   try{
+     let count=0;
+     try{
+       const manifest=JSON.parse(await cloudGet(SAVE_MANIFEST)||'{}');
+       count=Math.max(0,Math.min(1023,Number(manifest.chunks)||0));
+     }catch(e){}
+     const keys=[SAVE_MANIFEST];
+     for(let n=0;n<count;n++)keys.push(SAVE_PREFIX+'_chunk_'+n);
+     await cloudRemove(keys);
+   }catch(e){console.warn('One-time cloud wipe error:',e)}
+ }
+ return true;
+}
 async function loadGame(){
+ const wipedNow=await clearOldClientSaveOnce();
  let raw='',source='new',ss=null;
- try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
+ if(!wipedNow){
+  try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
+ }
  if(ss&&!ss.__legacyProfile){raw=JSON.stringify(ss);source='supabase'}
  else{
   try{if(cloudAvailable()){raw=await readCloudSave();if(raw)source='cloud'}}catch(e){console.warn('Cloud load error:',e)}
