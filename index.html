@@ -3507,8 +3507,8 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @keyframes lotteryGoldPulse{from{box-shadow:inset 0 0 35px #ffe985,0 0 20px #ffc400,0 0 48px #ffae00}to{box-shadow:inset 0 0 58px #fff8c9,0 0 38px #ffd84d,0 0 90px #ff9d00}}
 
 .promoCard{display:flex;flex-direction:column;gap:14px}.promoInfo h3{margin:0 0 5px}.promoInfo p{margin:0;color:var(--muted)}
-.promoRow{display:flex;gap:9px}.promoRow input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel,#fff);color:var(--text);font:inherit;outline:none}.promoRow input:focus{border-color:var(--text)}
-.promoMessage{min-height:18px;font-size:13px;color:var(--muted)}
+.promoRow{display:flex;flex-direction:column;gap:9px}.promoRow input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel,#fff);color:var(--text);font:inherit;outline:none}.promoRow input:focus{border-color:var(--text)}
+.promoRow .buy{width:100%}.promoMessage{min-height:18px;font-size:13px;color:var(--muted)}
 @media(max-width:520px){.promoRow{flex-direction:column}.promoRow .buy{width:100%}}
 </style>
 
@@ -3804,17 +3804,6 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
   </div>
 </div>
 
-<div class="settingsCard promoCard">
-  <div class="promoInfo">
-    <h3>Промокоды</h3>
-    <p>Введи действующий промокод, чтобы получить награду.</p>
-  </div>
-  <div class="promoRow">
-    <input id="promoCodeInput" type="text" placeholder="Введите промокод" autocomplete="off">
-    <button class="buy" onclick="redeemPromoCode()">Активировать</button>
-  </div>
-  <div class="promoMessage" id="promoMessage"></div>
-</div>
 </section>
 
 <section class="page" id="lotteryPage">
@@ -3835,6 +3824,17 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
 <div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.33</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
+<div class="settingsCard promoCard">
+  <div class="promoInfo">
+    <h3>Промокоды</h3>
+    <p>Введи действующий одноразовый промокод, чтобы получить машину, номер, деньги или другую награду.</p>
+  </div>
+  <div class="promoRow">
+    <input id="promoCodeInput" type="text" placeholder="Введите промокод" autocomplete="off">
+    <button class="buy" onclick="redeemPromoCode()">Активировать</button>
+  </div>
+  <div class="promoMessage" id="promoMessage"></div>
+</div>
 <div class="settingsCard"><h3 style="margin-top:0">Шансы выпадения</h3>
 <p style="color:var(--muted);font-size:13px;margin-top:-4px">Это точные шансы, которые используются при каждом прокруте.</p>
 <div style="display:grid;gap:9px;margin-top:15px">
@@ -5763,7 +5763,15 @@ update();render();renderDealer();renderGarage();
    localStorage is a backup/fallback for browser testing.
 */
 
+
 let redeemedPromoCodes=new Set();
+
+const PROMO_CODES={
+ 'diamond':{type:'diamonds',amount:100,label:'100 кристаллов'},
+ '911':{type:'car',car:'Porsche 911 GT3 RS'},
+ 'w124':{type:'car',car:'Mercedes-Benz 300E Hammer AMG'},
+ 'v888vv88':{type:'plate',plate:'В888ВВ',region:'88'}
+};
 
 function promoMessage(text,ok=false){
  const el=$('promoMessage');
@@ -5771,7 +5779,15 @@ function promoMessage(text,ok=false){
  el.textContent=text;
  el.style.color=ok?'#2a9d55':'';
 }
-function redeemPromoCode(){
+
+function findPromoCar(name){
+ return CARS.find(x=>x.name===name)
+   || (typeof MYTHIC_CARRERA_GT!=='undefined'&&MYTHIC_CARRERA_GT.name===name?MYTHIC_CARRERA_GT:null)
+   || (typeof MYTHIC_F50!=='undefined'&&MYTHIC_F50.name===name?MYTHIC_F50:null)
+   || (typeof UPGRADE_W124!=='undefined'&&UPGRADE_W124.name===name?UPGRADE_W124:null);
+}
+
+async function redeemPromoCode(){
  const input=$('promoCodeInput');
  const raw=String(input?.value||'').trim();
  if(!raw){promoMessage('Введите промокод.');return}
@@ -5781,16 +5797,38 @@ function redeemPromoCode(){
    promoMessage('Этот промокод уже был активирован.');
    return;
  }
- if(key==='diamond'){
-   diamonds+=100;
-   redeemedPromoCodes.add(key);
-   if(input)input.value='';
-   promoMessage('Промокод активирован! +100 кристаллов.',true);
-   update();
-   saveGame(true);
-   return;
+
+ const promo=PROMO_CODES[key];
+ if(!promo){promoMessage('Промокод не найден.');return}
+
+ if(promo.type==='diamonds'){
+   diamonds+=promo.amount;
+ }else if(promo.type==='car'){
+   if(cars.length>=garageCap){promoMessage('В гараже нет свободного места.');return}
+   const m=findPromoCar(promo.car);
+   if(!m){promoMessage('Машина для этого промокода временно недоступна.');return}
+   cars.unshift({...m,id:++carSeq,obtainedAt:Date.now(),promoCode:key});
+ }else if(promo.type==='plate'){
+   if(inv.length>=storageCap){promoMessage('В хранилище номеров нет свободного места.');return}
+   const plateText=promo.plate,region=String(promo.region);
+   if(typeof plateInStorage==='function'&&plateInStorage(plateText,region)){
+     promoMessage('Такой номер уже есть в хранилище.');return;
+   }
+   if(chatDb){
+     const me=chatUser();
+     const claim=await chatDb.rpc('claim_plate_roll',{p_plate:plateText,p_region:region,p_owner:String(me.telegram_id)});
+     if(claim.error){promoMessage(claim.error.message||'Не удалось выдать номер.');return}
+     if(claim.data!==true){promoMessage('Этот номер уже занят другим игроком.');return}
+   }
+   const e=evaluate(plateText.match(/\d{3}/)?.[0]||'888',plateText[0],plateText[4],plateText[5],region,region);
+   inv.unshift({id:++seq,p:plateText,r:region,...e});
  }
- promoMessage('Промокод не найден.');
+
+ redeemedPromoCodes.add(key);
+ if(input)input.value='';
+ promoMessage('Промокод активирован!',true);
+ update();render();renderGarage();
+ await saveGame(true);
 }
 async function processAdminCarGrants(){
  if(!chatDb||!saveSystemReady)return;
