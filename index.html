@@ -3855,7 +3855,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.49</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.50</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -4163,6 +4163,16 @@ function unifiedSpecialPlateValue(p,rank,region){
  const regionKey=String(region||'');
  const regionMultiplier=SPECIAL_PLATE_REGION_MULTIPLIER[regionKey]||1;
  let value=base*(1+letterBonus+digitBonus+comboBonus)*regionMultiplier;
+
+ const threeSameLetters=letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2];
+ const boostedLegendaryFormat=rank==='legendary'&&threeSameLetters&&['001','005','007','009'].includes(digits);
+ if(boostedLegendaryFormat&&['77','97','99','98','78','777'].includes(regionKey)){
+   value*=1.5;
+ }
+ if(boostedLegendaryFormat&&((digits==='007'&&regionKey==='77')||(digits==='009'&&regionKey==='99'))){
+   value*=1.5;
+ }
+
  if((rank==='epic'||rank==='legendary')&&!SPECIAL_PRICE_PROTECTED_REGIONS.has(regionKey)){
    value/=2.5;
  }
@@ -4365,7 +4375,6 @@ function currentPlateDefinition(item){
 
  // Current mythic formats.
  if(
-   (sameLetters&&digits==='001'&&specialRegions.has(region)) ||
    (sameLetters&&digits==='777'&&region==='77') ||
    (sameLetters&&digits==='999'&&region==='99') ||
    (p.startsWith('А')&&p.endsWith('МР')&&region==='97'&&sameDigits)
@@ -4374,9 +4383,9 @@ function currentPlateDefinition(item){
  }
  // Current legendary formats.
  else if(
+   (sameLetters&&['001','005','007','009'].includes(digits)) ||
    (['005','007'].includes(digits)&&specialRegions.has(region)) ||
-   ['ХАМ','ВОР','ЕКХ'].includes(a+b+c) ||
-   (sameLetters&&['007','009'].includes(digits))
+   ['ХАМ','ВОР','ЕКХ'].includes(a+b+c)
  ){
    rank='legendary';rarity='Легендарный';desc='Коллекционный номер';
  }
@@ -4485,7 +4494,7 @@ if(bal<COST)return update();isRolling=true;
    else{d=String(1+rnd(9))+'00';plateText=a+d+b+c;e.desc='Редкий · формат *00'}
  }else if(e.rank==='epic'){
    // Эпические цифровые серии: только 002/003/004/006/008/009.
-   const epicDigits=['002','003','004','005','006','007','008','009'];
+   const epicDigits=['002','003','004','006','008'];
    d=epicDigits[rnd(epicDigits.length)];
    // Эпик сохраняет красивую буквенную комбинацию: три одинаковые буквы.
    const EL=L[rnd(L.length)];
@@ -4494,7 +4503,7 @@ if(bal<COST)return update();isRolling=true;
    plateText=a+d+b+c;
    e.v=epicNumberValue(plateText,r);
  }else if(e.rank==='legendary'){
- // На 77/97/99/98/78/777 добавлены легендарные форматы 005 и 007.
+ // Легендарные форматы: три одинаковые буквы + 001/005/007/009; специальные серии сохранены.
  if(isMythicFbRegion(r)){
   const sp=generateSpecialLegendary005007(r);
   plateText=sp.plateText;e.desc=sp.desc;
@@ -4503,10 +4512,9 @@ if(bal<COST)return update();isRolling=true;
   plateText=fb.plateText;e.desc=fb.desc;
  }else{
   const legendarySeries=['ХАМ','ВОР','ЕКХ'];
-  const lt=rnd(3);
+  const lt=rnd(2);
   if(lt===0){const ls=legendarySeries[rnd(legendarySeries.length)];plateText=ls[0]+'007'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls+' 007'}
-  else if(lt===1){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
-  else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;e.desc='Легендарный формат · 009 '+r}
+  else{const LL=L[rnd(L.length)],ld=['001','005','007','009'][rnd(4)];plateText=LL+ld+LL+LL;e.desc='Легендарный формат · '+ld+' '+r}
  }
  e.v=legendaryNumberValue(plateText,r);
 } if(e.rank==='mythic'){
@@ -4528,14 +4536,13 @@ if(bal<COST)return update();isRolling=true;
  }else if(Math.random()<0.70){
   const fb=generateLegendaryFullBlat(r);plateText=fb.plateText;e.desc=fb.desc;
  }else{
-  const lt=rnd(3);
+  const lt=rnd(2);
   if(lt===0){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)];plateText=ls[0]+'007'+ls[1]+ls[2];e.desc='Легендарная серия · '+ls+' 007'}
-  else if(lt===1){const LL=L[rnd(L.length)];plateText=LL+'007'+LL+LL;e.desc='Легендарный формат · 007 '+r}
-  else{const LL=L[rnd(L.length)];plateText=LL+'009'+LL+LL;e.desc='Легендарный формат · 009 '+r}
+  else{const LL=L[rnd(L.length)],ld=['001','005','007','009'][rnd(4)];plateText=LL+ld+LL+LL;e.desc='Легендарный формат · '+ld+' '+r}
  }
  e.v=legendaryNumberValue(plateText,r);
  }else if(e.rank==='epic'){
-     const ed=['002','003','004','005','006','007','008','009'][rnd(8)],EL=L[rnd(L.length)];
+     const epicRerollDigits=['002','003','004','006','008'],ed=epicRerollDigits[rnd(epicRerollDigits.length)],EL=L[rnd(L.length)];
      plateText=EL+ed+EL+EL;
      if(!chosen)r=REG[rnd(REG.length)];
      e.desc='Полублат · серия '+ed;e.v=epicNumberValue(plateText,r);
