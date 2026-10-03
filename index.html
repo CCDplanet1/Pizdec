@@ -3855,7 +3855,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.44</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.48</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -3932,7 +3932,7 @@ const CARS=[
 {name:'BMW 7-series G12',price:12000000,currency:'₽',rub:12000000,icon:'🚘'},
 {name:'BMW 750i E38',price:1000000,currency:'₽',rub:1000000,icon:'🚘'},
 {name:'BMW 850 CSI',price:250000000,currency:'₽',rub:250000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true,limited:true},
-{name:'BMW M1 E26',price:12000000,currency:'₽',rub:12000000,icon:'🚘',forcedRarity:'normal',dealerHidden:true,limited:true},
+{name:'BMW M1 E26',price:12000000,currency:'₽',rub:12000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true,limited:true},
 {name:'BMW M2 F87',price:4000000,currency:'₽',rub:4000000,icon:'🚘'},
 {name:'BMW M2 G87',price:8900000,currency:'₽',rub:8900000,icon:'🚘'},
 {name:'BMW M3 2022',price:12500000,currency:'₽',rub:12500000,icon:'🚘'},
@@ -4345,6 +4345,97 @@ function generateMythicPlate(chosenRegion){
  return {plateText,r:region,desc};
 }
 function mythicNumberValue(p,region){return unifiedSpecialPlateValue(p,'mythic',region)}
+
+function currentPlateDefinition(item){
+ if(!item)return null;
+ const p=plateFontText(item.p||item.plate||'').toUpperCase();
+ const region=String(item.r??item.region??'');
+ const m=p.match(/^([АВЕКМНОРСТУХ])(\d{3})([АВЕКМНОРСТУ])([АВЕКМНОРСТУ])$/);
+ if(!m)return null;
+
+ const a=m[1],digits=m[2],b=m[3],c=m[4];
+ const sameLetters=a===b&&b===c;
+ const chars=[a,b,c],digitChars=digits.split('');
+ const sameDigits=digitChars[0]===digitChars[1]&&digitChars[1]===digitChars[2];
+ const mirroredLetters=a===c;
+ const mirroredDigits=digitChars[0]===digitChars[2];
+ const specialRegions=new Set(['77','97','99','98','78','777']);
+
+ let rank='normal',rarity='Обычный',desc='Обычный номер';
+
+ // Current mythic formats.
+ if(
+   (sameLetters&&digits==='001'&&specialRegions.has(region)) ||
+   (sameLetters&&digits==='777'&&region==='77') ||
+   (sameLetters&&digits==='999'&&region==='99') ||
+   (p.startsWith('А')&&p.endsWith('МР')&&region==='97'&&sameDigits)
+ ){
+   rank='mythic';rarity='Мифический';desc='Мифический номер';
+ }
+ // Current legendary formats.
+ else if(
+   (['005','007'].includes(digits)&&specialRegions.has(region)) ||
+   ['ХАМ','ВОР','ЕКХ'].includes(a+b+c) ||
+   (sameLetters&&['007','009'].includes(digits))
+ ){
+   rank='legendary';rarity='Легендарный';desc='Коллекционный номер';
+ }
+ // Current epic formats.
+ else if(sameLetters&&['002','003','004','005','006','007','008','009'].includes(digits)){
+   rank='epic';rarity='Эпический';desc='Полублат';
+ }
+ // Existing lower-rarity rules.
+ else if(mirroredLetters||mirroredDigits||digits.endsWith('00')){
+   rank='rare';rarity='Редкий';desc='Красивый номер';
+ }
+ else if(
+   new Set(chars).size<=2 ||
+   new Set(digitChars).size<=2
+ ){
+   rank='uncommon';rarity='Необычный';desc='Интересная комбинация';
+ }
+
+ let v=Number(item.v||0);
+ if(rank==='epic'||rank==='legendary'||rank==='mythic'){
+   v=unifiedSpecialPlateValue(p,rank,region);
+ }else{
+   // Lower rarities use their current configured ranges. Existing exact value is
+   // preserved unless it is outside the current rarity's allowed range.
+   const ranges={
+     normal:[100,950],
+     uncommon:[1155,12000],
+     rare:[66120,420000]
+   };
+   const [min,max]=ranges[rank];
+   if(!Number.isFinite(v)||v<min||v>max)v=min;
+ }
+
+ return {rank,rarity,desc,v};
+}
+function syncPlateWithCurrentRules(item){
+ if(!item)return item;
+ const cur=currentPlateDefinition(item);
+ if(!cur)return item;
+ item.rank=cur.rank;
+ item.rarity=cur.rarity;
+ item.desc=cur.desc;
+ item.v=cur.v;
+ return item;
+}
+function syncOwnedPlatesWithCurrentRules(){
+ if(Array.isArray(inv))inv.forEach(syncPlateWithCurrentRules);
+ if(Array.isArray(cars)){
+   cars.forEach(car=>{
+     if(car?.installed){
+       syncPlateWithCurrentRules(car.installed);
+       car.oldValue=car.installed.v;
+       car.oldRank=car.installed.rank;
+       car.oldRarity=car.installed.rarity;
+     }
+   });
+ }
+}
+
 function plateInStorage(p,r){
  const key=plateFontText(p);
  const region=String(r||'');
@@ -4601,7 +4692,7 @@ function plateHtml(p,r,rank='normal'){return `<div class="miniPlate ccdPlate ${r
 function returnInstalledPlate(car){
  if(!car.custom)return;
  let x=car.installed;
- if(x)inv.unshift(x);
+ if(x){syncPlateWithCurrentRules(x);inv.unshift(x);}
  else inv.unshift({id:++seq,p:car.plate,r:car.region,v:car.oldValue||1000,desc:'Снятый с автомобиля',rank:car.oldRank||'normal',rarity:car.oldRarity||'Обычный'});
  car.installed=null;
  car.custom=false;
@@ -4907,11 +4998,15 @@ const CASE_DEFS=[
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
- const base=Number(m.rub||m.price||0);
+ const master=currentCarCatalogEntry(m),src=master||m;
+ const base=Number(src?.rub||src?.price||0);
  const plate= m&&m.custom ? Number(m.installed?.v||m.oldValue||0) : 0;
  return base+plate;
 }
-function carBaseValue(m){return Number(m.rub||m.price||0)}
+function carBaseValue(m){
+ const master=currentCarCatalogEntry(m),src=master||m;
+ return Number(src?.rub||src?.price||0);
+}
 function carVisual(m,cls='carImage'){
  if(!m)return `<div class="carIcon">🚘</div>`;
  const carName=String(m.name||m.model||'');
@@ -5130,8 +5225,9 @@ function carVisual(m,cls='carImage'){
 function carRarity(m){
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
- if(m.forcedRarity==='normal')return {rank:'normal',name:'Обычная'}; if(m.forcedRarity==='limited')return {rank:'limited',name:'Limited'}; if(m.forcedRarity==='epic')return {rank:'epic',name:'Эпическая'}; if(m.forcedRarity==='legendary')return {rank:'legendary',name:'Легендарная'};
- if(carName==='Ferrari F40'||carName==='Porsche Carrera GT'||m.forcedRarity==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
+ const master=currentCarCatalogEntry(m),forced=master?master.forcedRarity:m?.forcedRarity;
+ if(forced==='normal')return {rank:'normal',name:'Обычная'}; if(forced==='limited')return {rank:'limited',name:'Limited'}; if(forced==='epic')return {rank:'epic',name:'Эпическая'}; if(forced==='legendary')return {rank:'legendary',name:'Легендарная'};
+ if(carName==='Ferrari F40'||carName==='Porsche Carrera GT'||forced==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
  if(v>=20000000)return {rank:'legendary',name:'Легендарная'};
  if(v>=5000000)return {rank:'epic',name:'Эпическая'};
  if(v>=1200000)return {rank:'rare',name:'Редкая'};
@@ -6059,7 +6155,43 @@ const SAVE_SCHEMA=3;
 const SAVE_PREFIX='nr_save_v2';
 const SAVE_MANIFEST=SAVE_PREFIX+'_manifest';
 const SAVE_CHUNK_SIZE=3500;
+function currentCarCatalogEntry(car){
+ const name=String(car?.model||car?.name||'').trim();
+ if(!name)return null;
+ let found=CARS.find(x=>String(x.name||x.model||'').trim()===name)||null;
+ if(found)return found;
+ const extras=[];
+ if(typeof MYTHIC_HAMMER!=='undefined')extras.push(MYTHIC_HAMMER);
+ if(typeof MYTHIC_CARRERA_GT!=='undefined')extras.push(MYTHIC_CARRERA_GT);
+ if(typeof UPGRADE_F40!=='undefined')extras.push(UPGRADE_F40);
+ if(typeof UPGRADE_COUNTACH!=='undefined')extras.push(UPGRADE_COUNTACH);
+ if(typeof UPGRADE_COUNTACH_800!=='undefined')extras.push(UPGRADE_COUNTACH_800);
+ if(typeof MYTHIC_F50!=='undefined')extras.push(MYTHIC_F50);
+ return extras.find(x=>String(x.name||x.model||'').trim()===name)||null;
+}
+function syncCarFromCurrentCatalog(car){
+ if(!car||typeof car!=='object')return car;
+ const master=currentCarCatalogEntry(car);
+ if(!master)return car;
+ // Price and rarity are always authoritative from the current game catalog.
+ if(Number.isFinite(Number(master.price)))car.price=Number(master.price);
+ if(Number.isFinite(Number(master.rub)))car.rub=Number(master.rub);
+ else if(Number.isFinite(Number(master.price)))car.rub=Number(master.price);
+ if(master.currency!=null)car.currency=master.currency;
+ if(Object.prototype.hasOwnProperty.call(master,'forcedRarity'))car.forcedRarity=master.forcedRarity;
+ else delete car.forcedRarity;
+ return car;
+}
+function syncOwnedCarsWithCurrentCatalog(){
+ if(Array.isArray(cars))cars.forEach(syncCarFromCurrentCatalog);
+ if(pendingCasePrize?.car)syncCarFromCurrentCatalog(pendingCasePrize.car);
+ if(Array.isArray(pendingCasePrizes))pendingCasePrizes.forEach(x=>x?.car&&syncCarFromCurrentCatalog(x.car));
+}
+
 const LOCAL_SAVE_KEY='nr-local-save-v2';
+const TARGETED_WIPE_PLAYER_ID='guest_muohd7xy_hmzexct2';
+const TARGETED_WIPE_ID='target_wipe_guest_muohd7xy_hmzexct2_2026_10_03_v1';
+const TARGETED_WIPE_MARKER='nr-target-wipe-'+TARGETED_WIPE_ID;
 let saveSystemReady=false,saveBusy=false,lastSavedFingerprint='',saveQueued=false;
 
 function buildSaveData(){
@@ -6095,6 +6227,8 @@ function applySaveData(d){
  if(Number.isFinite(d.storageUpgradesUsed))storageUpgradesUsed=Math.max(0,Math.floor(d.storageUpgradesUsed));
  if(d.pendingCasePrize&&d.pendingCasePrize.car)pendingCasePrize=d.pendingCasePrize;
  if(Array.isArray(d.pendingCasePrizes))pendingCasePrizes=d.pendingCasePrizes.filter(x=>x&&x.car);
+ syncOwnedCarsWithCurrentCatalog();
+ syncOwnedPlatesWithCurrentRules();
  // Старые сохранения начинают систему уровней с 0, чтобы не выдавать награды задним числом.
  storageUpgradesUsed=Math.min(storageUpgradesUsed,playerLevel);
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
@@ -6195,9 +6329,53 @@ async function writeSupabaseGameState(data){
  if(r.error){console.warn('Supabase save error:',r.error);return false}return true;
 }
 
+
+function targetedWipeCurrentPlayer(){
+ try{return String(chatUser().telegram_id||'')===TARGETED_WIPE_PLAYER_ID}catch(e){return false}
+}
+function targetedWipeApplied(){
+ try{return localStorage.getItem(TARGETED_WIPE_MARKER)==='1'}catch(e){return false}
+}
+async function runTargetedOneTimeWipe(){
+ if(!targetedWipeCurrentPlayer()||targetedWipeApplied())return false;
+
+ // Mark first so this exact wipe cannot loop forever after a reload.
+ try{localStorage.setItem(TARGETED_WIPE_MARKER,'1')}catch(e){}
+
+ // Delete only this browser player's local game save.
+ try{localStorage.removeItem(LOCAL_SAVE_KEY)}catch(e){}
+
+ // This ID is a PC/local guest, but clear Telegram cloud too if this build is ever
+ // opened in an environment where CloudStorage is available.
+ if(cloudAvailable()){
+   try{
+     let count=0;
+     try{
+       const manifest=JSON.parse(await cloudGet(SAVE_MANIFEST)||'{}');
+       count=Math.max(0,Math.min(1023,Number(manifest.chunks)||0));
+     }catch(e){}
+     const keys=[SAVE_MANIFEST];
+     for(let n=0;n<count;n++)keys.push(SAVE_PREFIX+'_chunk_'+n);
+     await cloudRemove(keys);
+   }catch(e){console.warn('Targeted cloud wipe error:',e)}
+ }
+
+ // Remove only this player's Supabase game state row so the old server save
+ // cannot restore itself on the same first launch.
+ if(chatDb){
+   try{
+     const r=await chatDb.from('player_profiles').delete().eq('telegram_id',TARGETED_WIPE_PLAYER_ID);
+     if(r.error)console.warn('Targeted Supabase wipe error:',r.error);
+   }catch(e){console.warn('Targeted Supabase wipe error:',e)}
+ }
+ return true;
+}
 async function loadGame(){
+ const targetedWipedNow=await runTargetedOneTimeWipe();
  let raw='',source='new',ss=null;
- try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
+ if(!targetedWipedNow){
+  try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
+ }
  if(ss&&!ss.__legacyProfile){raw=JSON.stringify(ss);source='supabase'}
  else{
   try{if(cloudAvailable()){raw=await readCloudSave();if(raw)source='cloud'}}catch(e){console.warn('Cloud load error:',e)}
