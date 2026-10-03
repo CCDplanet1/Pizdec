@@ -1348,12 +1348,6 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .pill.limited{color:#ff4fb3!important;background:rgba(255,79,179,.13)!important;border:1px solid rgba(255,79,179,.42)!important;box-shadow:0 0 13px rgba(255,79,179,.22)}
 .carGlowLimited{box-shadow:0 0 24px rgba(255,61,166,.78),0 0 48px rgba(255,61,166,.20)!important;border-color:rgba(255,79,179,.82)!important}
 .profileExactGarageCard.limited{box-shadow:0 0 24px rgba(255,61,166,.78),0 0 48px rgba(255,61,166,.20)!important;border-color:rgba(255,79,179,.82)!important}
-.promoRow{display:flex;gap:8px;margin-top:12px}
-.promoRow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:var(--card);color:inherit;font:inherit;text-transform:uppercase}
-.promoRow button{border:0;border-radius:11px;padding:0 16px;background:#4c7cff;color:#fff;font-weight:800;cursor:pointer}
-.promoResult{min-height:18px;margin-top:9px;font-size:12px;font-weight:700;color:var(--muted)}
-.promoResult.ok{color:#2fb968}.promoResult.bad{color:#e45b64}
-@media(max-width:520px){.promoRow{flex-direction:column}.promoRow button{min-height:42px}}
 
 
 /* ===== v0.0.58 CCDPlanet-style plate texture + RoadNumbers 2.0 ===== */
@@ -3511,6 +3505,11 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 #lotteryPrize.lotteryMurcielagoGold .caseResultImage{filter:drop-shadow(0 0 14px #fff0a0) drop-shadow(0 0 30px #ffb300)}
 #lotteryPrize.lotteryMurcielagoGold strong,#lotteryPrize.lotteryMurcielagoGold small{color:#3b2400;text-shadow:0 0 12px #ffe67a}
 @keyframes lotteryGoldPulse{from{box-shadow:inset 0 0 35px #ffe985,0 0 20px #ffc400,0 0 48px #ffae00}to{box-shadow:inset 0 0 58px #fff8c9,0 0 38px #ffd84d,0 0 90px #ff9d00}}
+
+.promoCard{display:flex;flex-direction:column;gap:14px}.promoInfo h3{margin:0 0 5px}.promoInfo p{margin:0;color:var(--muted)}
+.promoRow{display:flex;gap:9px}.promoRow input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel,#fff);color:var(--text);font:inherit;outline:none}.promoRow input:focus{border-color:var(--text)}
+.promoMessage{min-height:18px;font-size:13px;color:var(--muted)}
+@media(max-width:520px){.promoRow{flex-direction:column}.promoRow .buy{width:100%}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3774,7 +3773,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 </div>
 <div id="auctionAllPane"><div id="auctionStatus" style="display:none"></div><div id="auctionGrid"></div></div>
 <div id="auctionMinePane" style="display:none"><div class="auctionMyHead"><div><h3>Мои лоты</h3><div>Выставленные вами машины, ваши ставки и выигранные автомобили</div></div></div><div id="auctionMyGrid"></div></div>
-</section><section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
+</section><section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, Mercedes-AMG ONE, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
 </section> <section class="page" id="upgraderPage">
 <h2 class="statsTitle">Апгрейдер</h2>
 <p style="color:var(--muted);margin-top:-6px">Поставь автомобиль из гаража и попробуй улучшить его до более дорогой машины.</p>
@@ -3804,6 +3803,18 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
     <button class="buy" id="upgradeGarageBtn" onclick="upgradeGarage()">+1 место · 1 500 000 ₽</button>
   </div>
 </div>
+
+<div class="settingsCard promoCard">
+  <div class="promoInfo">
+    <h3>Промокоды</h3>
+    <p>Введи действующий промокод, чтобы получить награду.</p>
+  </div>
+  <div class="promoRow">
+    <input id="promoCodeInput" type="text" placeholder="Введите промокод" autocomplete="off">
+    <button class="buy" onclick="redeemPromoCode()">Активировать</button>
+  </div>
+  <div class="promoMessage" id="promoMessage"></div>
+</div>
 </section>
 
 <section class="page" id="lotteryPage">
@@ -3824,12 +3835,6 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
 <div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.33</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
-<div class="settingsCard promoCard">
-<h3 style="margin-top:0">Промокод</h3>
-<p style="color:var(--muted);font-size:13px">Введи промокод и получи награду.</p>
-<div class="promoRow"><input id="promoCodeInput" type="text" maxlength="32" autocomplete="off" placeholder="Введите промокод"><button type="button" onclick="redeemPromoCode()">Активировать</button></div>
-<div id="promoCodeResult" class="promoResult"></div>
-</div>
 <div class="settingsCard"><h3 style="margin-top:0">Шансы выпадения</h3>
 <p style="color:var(--muted);font-size:13px;margin-top:-4px">Это точные шансы, которые используются при каждом прокруте.</p>
 <div style="display:grid;gap:9px;margin-top:15px">
@@ -4027,7 +4032,7 @@ const CARS=[
 {name:'Porsche 718 Cayman',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
 {name:'Porsche 911 Carrera 4S',price:11600000,currency:'₽',rub:11600000,icon:'🚘'},
 {name:'Porsche 911 Dakar',price:100000000,currency:'$',rub:100000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'porsche'},
-{name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true,dealerHidden:true,caseExclusive:'porsche'},
+{name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true,upgradeHidden:true,limited:true,caseExclusive:'porsche'},
 {name:'Porsche 918 Spyder',price:991000,currency:'€',rub:100091000,icon:'🚘'},
 {name:'Porsche 930',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
 {name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true,limited:true,caseExclusive:'porsche'},
@@ -4591,7 +4596,7 @@ function toggleCarLock(carId,ev){
 }
 function mercedesCollectionModels(){
  const mercedes=CARS.map(x=>x.name).filter(n=>String(n).startsWith('Mercedes-Benz ')&&n!=='Mercedes-Benz 300E Hammer AMG');
- return [...new Set([...mercedes,'Ferrari F40','Ferrari F50'])].sort();
+ return [...new Set([...mercedes,'Mercedes-AMG ONE','Ferrari F40','Ferrari F50'])].sort();
 }
 function hasCarModel(model){return cars.some(c=>(c.model||c.name)===model&&!c.locked)}
 let collectionHammerClaimed=false;
@@ -5757,174 +5762,36 @@ update();render();renderDealer();renderGarage();
    CloudStorage values are chunked because Telegram limits one value to 4096 chars.
    localStorage is a backup/fallback for browser testing.
 */
+
 let redeemedPromoCodes=new Set();
 
 function promoMessage(text,ok=false){
- const el=$('promoCodeResult');if(!el)return;
- el.textContent=text;el.className='promoResult '+(ok?'ok':'bad');
+ const el=$('promoMessage');
+ if(!el)return;
+ el.textContent=text;
+ el.style.color=ok?'#2a9d55':'';
 }
+function redeemPromoCode(){
+ const input=$('promoCodeInput');
+ const raw=String(input?.value||'').trim();
+ if(!raw){promoMessage('Введите промокод.');return}
+ const key=raw.toLowerCase();
 
-function promoAddCar(model,code){
- const reward=CARS.find(x=>x.name===model);if(!reward)return false;
- if(cars.length>=garageCap)return false;
- const rp=randomPlateForCar();
- cars.push({id:++carSeq,model:reward.name,image:reward.image||null,icon:reward.icon||'🚘',
-  price:reward.price,currency:reward.currency,rub:reward.rub||reward.price,
-  forcedRarity:reward.forcedRarity||null,limited:!!reward.limited,caseExclusive:reward.caseExclusive||null,
-  plate:rp.p,region:rp.r,custom:false,promoCode:String(code||'').toLowerCase()});
- return true;
-}
-function promoMythicPlate(region,extraTaken){
- const reg=String(region),taken=extraTaken||new Set();let g,p,r,tries=0,key='';
- do{
-  g=generateMythicPlate(reg);p=g.plateText||g.p||'';r=String(g.r||reg);key=p+'|'+r;tries++;
- }while((plateInStorage(p,r)||taken.has(key))&&tries<3000);
- taken.add(key);
- return {id:++seq,p,r,v:mythicNumberValue(p,r),desc:g.desc||('Мифический номер · '+r),rank:'mythic',rarity:'Мифический'};
-}
-function promoFinish(code,message){
- redeemedPromoCodes.add(code);const input=$('promoCodeInput');if(input)input.value='';
- promoMessage(message,true);update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();
- if(typeof scheduleGameSave==='function')scheduleGameSave();
- if(typeof scheduleCloudSave==='function')scheduleCloudSave();
- if(typeof syncPublicProfile==='function')syncPublicProfile();
-}
-async function redeemPromoCode(){
- const input=$('promoCodeInput');if(!input)return;
- const code=String(input.value||'').trim().toUpperCase();
-  if(String(code||'').trim().toLowerCase()==='cheat'){
-    bal=Number(bal||0)+5000000000;
-    if(typeof update==='function')update();
-    if(typeof scheduleCloudSave==='function')scheduleCloudSave();
-    if(typeof toast==='function')toast('Промокод Cheat: +5 000 000 000 ₽');
-    return;
-  }
-
- if(!code){promoMessage('Введите промокод.');return}
-
-if(code==='CARPACK'){
- const use1='CARPACK#1',use2='CARPACK#2';
- const used=(redeemedPromoCodes.has(use1)?1:0)+(redeemedPromoCodes.has(use2)?1:0);
- if(used>=2){promoMessage('Этот промокод уже был активирован 2 раза.');return}
- if(cars.length+5>garageCap){promoMessage('Для промокода нужно минимум 5 свободных мест в гараже.');return}
- const rewards=[
-  CARS.find(x=>x.name==='Mercedes-Benz 300SL'),
-  CARS.find(x=>x.name==='Mercedes-Benz G63 6x6'),
-  CARS.find(x=>x.name==='Mercedes-Benz CLK GTR'),
-  MYTHIC_F50,
-  UPGRADE_F40
- ];
- if(rewards.some(x=>!x)){promoMessage('Одна из наград временно недоступна.');return}
- for(const reward of rewards){
-  const rp=randomPlateForCar();
-  cars.push({id:++carSeq,model:reward.name,image:reward.image||null,icon:reward.icon||'🚘',
-   price:reward.price,currency:reward.currency,rub:reward.rub||reward.price,
-   forcedRarity:reward.forcedRarity||null,limited:!!reward.limited,caseExclusive:reward.caseExclusive||null,
-   plate:rp.p,region:rp.r,custom:false,promoCode:'carpack'});
- }
- redeemedPromoCodes.add(used===0?use1:use2);
- const input=$('promoCodeInput');if(input)input.value='';
- promoMessage('Промокод активирован! Mercedes-Benz 300SL, Mercedes-Benz G63 6x6, Mercedes-Benz CLK GTR, Ferrari F50 и Ferrari F40 добавлены в гараж. Осталось активаций: '+(1-used)+'.',true);
- update();render();renderStore();renderDealer();renderGarage();renderUpgrader();renderContainers();
- if(typeof scheduleGameSave==='function')scheduleGameSave();
- if(typeof scheduleCloudSave==='function')scheduleCloudSave();
- if(typeof syncPublicProfile==='function')syncPublicProfile();
- return;
-}
-if(code==='B888BB88'||code==='В888ВВ88'){
- const promoKey='B888BB88';
- if(redeemedPromoCodes.has(promoKey)){promoMessage('Этот промокод уже был активирован.');return}
- if(inv.length>=storageCap){promoMessage('Хранилище заполнено.');return}
- const p='B888BB',r='88';
- inv.unshift({id:++seq,p,r,v:mythicNumberValue(p,r),desc:'В888ВВ 88',rank:'mythic',rarity:'Мифический',locked:false,promoCode:promoKey});
- promoFinish(promoKey,'Промокод активирован! В888ВВ 88 добавлен в хранилище.');return;
-}
-if(['FERRARI40','FERRARI50','MERC300SL','G636X6','MYTH78','MYTH98','MYTH77'].includes(code)){
- if(redeemedPromoCodes.has(code)){promoMessage('Этот промокод уже был активирован.');return}
- if(code==='MYTH78'||code==='MYTH98'||code==='MYTH77'){
-  if(inv.length+10>storageCap){promoMessage('В хранилище нужно минимум 10 свободных мест.');return}
-  const region=code.slice(4),taken=new Set();for(let i=0;i<10;i++)inv.unshift(promoMythicPlate(region,taken));
-  promoFinish(code,'Промокод активирован! 10 случайных мифических номеров · регион '+region+' добавлены в хранилище.');return;
- }
- const rewards={FERRARI40:'Ferrari F40',FERRARI50:'Ferrari F50',MERC300SL:'Mercedes-Benz 300SL',G636X6:'Mercedes-Benz G63 6x6'};
- const model=rewards[code];
- if(cars.length>=garageCap){promoMessage('В гараже нет свободного места.');return}
- if(!promoAddCar(model,code)){promoMessage('Награда временно недоступна.');return}
- promoFinish(code,'Промокод активирован! '+model+' добавлен в гараж.');return;
-}
-
-
- if(code==='INDEX124'){
-  if(redeemedPromoCodes.has(code)){
+ if(redeemedPromoCodes.has(key)){
    promoMessage('Этот промокод уже был активирован.');
    return;
-  }
-  if(cars.length>=garageCap){
-   promoMessage('В гараже нет свободного места. Освободи или купи слот и попробуй снова.');
-   return;
-  }
-
-  promoMessage('Получаем серийный номер Hammer...');
-  const serial=await claimHammerSerial();
-  if(!serial){
-   const reason=String(window.__hammerSerialError||'Не удалось получить серийный номер.');
-   promoMessage('Hammer не выдан: '+reason);
-   return;
-  }
-
-  const rp=randomPlateForCar();
-  cars.push({
-   id:++carSeq,
-   model:'Mercedes-Benz 300E Hammer AMG',
-   image:'images/124.png',
-   icon:'🚘',
-   price:3000000000,
-   currency:'₽',
-   rub:3000000000,
-   forcedRarity:'mythic',
-   globalLimited:true,
-   globalLimit:54,
-   limitedSerial:serial,
-   limitedTotal:54,
-   plate:rp.p,
-   region:rp.r,
-   custom:false,
-   promoCode:'index124'
-  });
-
-  redeemedPromoCodes.add(code);
-  input.value='';
-  promoMessage('Промокод активирован! Mercedes-Benz 300E Hammer AMG · '+String(serial).padStart(2,'0')+' of 54 добавлен в гараж.',true);
-  update();
-  renderDealer();
-  renderGarage();
-  renderUpgrader();
-  renderContainers();
-  if(typeof scheduleGameSave==='function')scheduleGameSave();
-  if(typeof scheduleCloudSave==='function')scheduleCloudSave();
-  if(typeof syncPublicProfile==='function')syncPublicProfile();
-  return;
  }
-
- if(code!=='911'){promoMessage('Промокод не найден.');return}
- if(redeemedPromoCodes.has(code)){promoMessage('Этот промокод уже был активирован.');return}
- if(cars.length>=garageCap){promoMessage('В гараже нет свободного места. Освободи или купи слот и попробуй снова.');return}
- const reward=CARS.find(x=>x.name==='Porsche 911 GT3 RS'&&x.promoOnly);
- if(!reward){promoMessage('Награда временно недоступна.');return}
- const rp=randomPlateForCar();
- cars.push({
-  id:++carSeq,model:reward.name,icon:reward.icon||'🚘',
-  price:450000000,currency:'₽',rub:450000000,
-  plate:rp.p,region:rp.r,custom:false,forcedRarity:'limited',limited:true,promoCode:'911'
- });
- redeemedPromoCodes.add(code);
- input.value='';
- promoMessage('Промокод активирован! Porsche 911 GT3 RS добавлен в гараж.',true);
- update();renderDealer();renderGarage();renderUpgrader();renderContainers();
- if(typeof scheduleGameSave==='function')scheduleGameSave();
+ if(key==='diamond'){
+   diamonds+=100;
+   redeemedPromoCodes.add(key);
+   if(input)input.value='';
+   promoMessage('Промокод активирован! +100 кристаллов.',true);
+   update();
+   saveGame(true);
+   return;
+ }
+ promoMessage('Промокод не найден.');
 }
-
-
 async function processAdminCarGrants(){
  if(!chatDb||!saveSystemReady)return;
  const me=profileMe(),tid=String(me?.telegram_id||''); if(!tid)return;
@@ -5991,10 +5858,10 @@ function buildSaveData(){
  return {
    schema:SAVE_SCHEMA,
    savedAt:Date.now(),
-   bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,playerLevel,playerXp,diamonds,storageUpgradesUsed,
+   bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,playerLevel,playerXp,diamonds,storageUpgradesUsed,redeemedPromoCodes:[...redeemedPromoCodes],
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
-   redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null
+   collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null
  };
 }
 function saveFingerprint(data){
@@ -6016,12 +5883,13 @@ function applySaveData(d){
  if(Number.isFinite(d.playerLevel))playerLevel=Math.max(0,Math.floor(d.playerLevel));
  if(Number.isFinite(d.playerXp))playerXp=Math.max(0,Math.floor(d.playerXp));
  if(Number.isFinite(d.diamonds))diamonds=Math.max(0,Math.floor(d.diamonds));
+ if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(x=>String(x).toLowerCase()));
  if(Number.isFinite(d.storageUpgradesUsed))storageUpgradesUsed=Math.max(0,Math.floor(d.storageUpgradesUsed));
  // Старые сохранения начинают систему уровней с 0, чтобы не выдавать награды задним числом.
  storageUpgradesUsed=Math.min(storageUpgradesUsed,playerLevel);
  pendingCasePrize=null;pendingCasePrizes=[];
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
- if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String)); collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
+ collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
  isRolling=false;caseRolling=false;upgradeRolling=false;
  const fast=$('fastCaseRoll');if(fast)fast.checked=fastCaseRoll;
  update();render();if(typeof renderStore==='function')renderStore();if(typeof renderDealer==='function')renderDealer();if(typeof renderGarage==='function')renderGarage();if(typeof renderUpgrader==='function')renderUpgrader();if(typeof renderContainers==='function')renderContainers();if(typeof renderUpgrades==='function')renderUpgrades();
@@ -6218,10 +6086,19 @@ async function auctionLoad(){
  }
  auctionRenderRows();
 }
+let auctionLastCreateAt=0;
+const AUCTION_CREATE_COOLDOWN=5000;
+function auctionCreateCooldownLeft(){
+ return Math.max(0,AUCTION_CREATE_COOLDOWN-(Date.now()-auctionLastCreateAt));
+}
 async function auctionCreate(){
- if(!chatDb)return alert('Supabase не подключён');const me=chatUser(),id=Number($('auctionCarSelect')?.value),car=cars.find(c=>Number(c.id)===id),start=Math.floor(Number($('auctionStartPrice')?.value)),buy=Math.floor(Number($('auctionBuyoutPrice')?.value));
+ if(!chatDb)return alert('Supabase не подключён');
+ const left=auctionCreateCooldownLeft();
+ if(left>0)return alert('Следующий лот можно выставить через '+Math.ceil(left/1000)+' сек.');
+ const me=chatUser(),id=Number($('auctionCarSelect')?.value),car=cars.find(c=>Number(c.id)===id),start=Math.floor(Number($('auctionStartPrice')?.value)),buy=Math.floor(Number($('auctionBuyoutPrice')?.value));
  if(!car)return alert('Выбери машину');if(car.locked)return alert('Машина на ключике. Сначала сними защиту.');if(!(start>0&&buy>start))return alert('Цена выкупа должна быть выше стартовой ставки');
  const q=await chatDb.from('auction_listings').insert({seller_id:me.telegram_id,seller_name:me.display_name,car_json:car,start_price:start,buyout_price:buy,status:'active',ends_at:new Date(Date.now()+86400000).toISOString()}).select('id').single();if(q.error)return alert(q.error.message);
+ auctionLastCreateAt=Date.now();
  cars=cars.filter(c=>Number(c.id)!==id);update();renderGarage();await saveGame(true);await syncPublicProfile();auctionLoad();
 }
 async function auctionBid(id){
