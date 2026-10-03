@@ -3824,7 +3824,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.41</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.42</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5481,6 +5481,71 @@ function rouletteItem(m,light=false){
  const visual=light?'<div class="carIcon" style="font-size:42px">🚘</div>':carVisual(m,'caseCarImage');
  return `<div class="caseItem ${carGlowClass(m)}"><div class="ci">${visual}</div><b>${m.name}</b><small>${money(carRubValue(m))}</small></div>`;
 }
+
+function reconcilePendingContainerState(){
+ // If a prize was already added to the garage but an older save still says it is pending,
+ // clear only the stale pending flag. This prevents permanent navigation lock / duplicates.
+ if(pendingCasePrize&&pendingCasePrize.car){
+   const pid=String(pendingCasePrize.car.id??'');
+   if(pid&&cars.some(c=>String(c.id??'')===pid))pendingCasePrize=null;
+ }
+ if(Array.isArray(pendingCasePrizes)&&pendingCasePrizes.length){
+   pendingCasePrizes=pendingCasePrizes.filter(x=>{
+     if(!x||!x.car)return false;
+     const pid=String(x.car.id??'');
+     return !(pid&&cars.some(c=>String(c.id??'')===pid));
+   });
+ }
+}
+function renderPendingContainerDecision(){
+ reconcilePendingContainerState();
+ const result=$('caseResult');
+ if(!result)return;
+
+ if(pendingCasePrize&&pendingCasePrize.car){
+   const p=pendingCasePrize,car=p.car,value=Number(p.value||carRubValue(car)||0);
+   result.style.display='block';
+   result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
+   result.innerHTML=`<span style="color:var(--muted)">Незавершённый приз из контейнера</span>
+   <div class="caseResultCar ${carGlowClass(car)}">${carVisual(car,'caseResultImage')}
+    <div><strong>${car.model||car.name||'Машина'}</strong><small>${money(value)}</small></div>
+   </div>
+   <div class="caseResultActions">
+    <button class="buy" onclick="keepCasePrize()">Забрать в гараж</button>
+    <button class="sell" onclick="sellCasePrize()">Продать за ${money(value)}</button>
+   </div>`;
+   return;
+ }
+
+ if(Array.isArray(pendingCasePrizes)&&pendingCasePrizes.length){
+   const totalValue=pendingCasePrizes.reduce((sum,x)=>sum+Number(x.value||carRubValue(x.car)||0),0);
+   result.style.display='block';
+   result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
+   result.innerHTML=`<span style="color:var(--muted)">Незавершённые призы из контейнеров</span>
+   <strong style="display:block;margin:8px 0">Выберите, какие машины продать</strong>
+   <small class="caseChoiceHint">Галочка означает <b>ПРОДАТЬ</b>. Машины без галочки будут добавлены в гараж. Их можно забрать даже сверх лимита гаража.</small>
+   <div class="caseFiveChoices">
+    ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}${x.sellSelected?' selectedSell':''}" id="caseChoice${i}">
+      <input type="checkbox" ${x.sellSelected?'checked':''} onchange="toggleFiveCaseSell(${i},this.checked)">
+      ${carVisual(x.car,'caseFiveImage')}
+      <span><b>${x.car.model||x.car.name||'Машина'}</b><small>${money(Number(x.value||carRubValue(x.car)||0))}</small></span>
+    </label>`).join('')}
+   </div>
+   <div class="caseResultActions caseFiveActions">
+    <button id="caseMixedActionBtn" class="caseKeep" onclick="resolveSelectedCasePrizes()">Подтвердить выбор</button>
+    <button class="sell" onclick="sellAllCasePrizes()">Продать все · ${money(totalValue)}</button>
+   </div>`;
+   updateFiveCaseChoiceButton();
+   return;
+ }
+
+ // No unresolved prize: stale result must not keep an old "sold" message visible after reload.
+ if(result.dataset.pendingRestore==='1'){
+   result.style.display='none';
+   result.innerHTML='';
+   delete result.dataset.pendingRestore;
+ }
+}
 function hideCaseOpening(){
  const wrap=$('caseRouletteWrap'),result=$('caseResult');
  if(wrap)wrap.style.display='none';
@@ -5687,8 +5752,8 @@ async function resolveSelectedCasePrizes(){
  const receivedAt=Date.now();
  if(keep.length)cars.unshift(...keep.map((x,i)=>({...x.car,containerReceivedAt:receivedAt+i})));
  if(value){bal+=value;earned+=value}
- const kept=keep.length,sold=sell.length;pendingCasePrizes=[];hideCaseOpening();
- $('caseResult').innerHTML='<strong>Оставлено: '+kept+' · Продано: '+sold+(sold?' за '+money(value):'')+'</strong>';
+ const kept=keep.length,sold=sell.length;pendingCasePrizes=[];hideCaseOpening();syncCaseNavigationLock();
+ $('caseResult').style.display='block';$('caseResult').innerHTML='<strong>Оставлено: '+kept+' · Продано: '+sold+(sold?' за '+money(value):'')+'</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  await saveGame(true);
  if(typeof syncPublicProfile==='function')await syncPublicProfile();
@@ -5697,8 +5762,8 @@ async function keepAllCasePrizes(){
  if(!pendingCasePrizes.length)return;
  const receivedAt=Date.now();
  cars.unshift(...pendingCasePrizes.map((x,i)=>({...x.car,containerReceivedAt:receivedAt+i})));
- pendingCasePrizes=[]; hideCaseOpening();
- const result=$('caseResult');result.innerHTML='<strong>Все 5 машин отправлены в гараж</strong>';
+ pendingCasePrizes=[]; hideCaseOpening();syncCaseNavigationLock();
+ const result=$('caseResult');result.style.display='block';result.innerHTML='<strong>Все 5 машин отправлены в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  await saveGame(true);
  if(typeof syncPublicProfile==='function')await syncPublicProfile();
@@ -5746,7 +5811,8 @@ async function keepCasePrize(){
  wonCar.containerReceivedAt=Date.now();
  cars.unshift(wonCar);
  hideCaseOpening();
- const result=$('caseResult');result.innerHTML='<strong>Машина отправлена в гараж</strong>';
+ syncCaseNavigationLock();
+ const result=$('caseResult');result.style.display='block';result.innerHTML='<strong>Машина отправлена в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  await saveGame(true);
  if(typeof syncPublicProfile==='function')await syncPublicProfile();
@@ -5755,8 +5821,8 @@ function sellCasePrize(){
  if(!pendingCasePrize)return;
  const value=pendingCasePrize.value;
  bal+=value;earned+=value;
- pendingCasePrize=null; hideCaseOpening();
- const result=$('caseResult');result.innerHTML=`<strong>Машина продана за ${money(value)}</strong><span style="color:var(--muted)">Можно открывать следующий контейнер.</span>`;
+ pendingCasePrize=null; hideCaseOpening();syncCaseNavigationLock();
+ const result=$('caseResult');result.style.display='block';result.innerHTML=`<strong>Машина продана за ${money(value)}</strong><span style="color:var(--muted)">Можно открывать следующий контейнер.</span>`;
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function upgradeStorage(){
@@ -6077,6 +6143,10 @@ async function loadGame(){
  if(raw){
   try{const data=JSON.parse(raw);if(ss&&ss.__legacyProfile){if(Array.isArray(ss.cars)&&ss.cars.length)data.cars=ss.cars;if(Array.isArray(ss.inv))data.inv=ss.inv}if(applySaveData(data)){lastSavedFingerprint=saveFingerprint(buildSaveData());console.info('Прогресс загружен:',source)}}catch(e){console.warn('Save parse error:',e)}
  }else if(ss&&ss.__legacyProfile){applySaveData(ss);source='supabase-legacy'}
+ reconcilePendingContainerState();
+ const caseResultEl=$('caseResult');if(caseResultEl)caseResultEl.dataset.pendingRestore='1';
+ renderPendingContainerDecision();
+ update();
  saveSystemReady=true;await saveGame(true);try{await writeSupabaseGameState(buildSaveData())}catch(e){console.warn('Initial Supabase sync error:',e)}
 }
 function flushSave(){saveGame(true)}
