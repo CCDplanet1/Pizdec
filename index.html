@@ -3504,6 +3504,12 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .autoSellLevelTrack{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:18px 0 12px}.autoSellLevelDot{height:7px;border-radius:999px;background:var(--line)}.autoSellLevelDot.on{background:var(--text)}
 .autoSellUpgradeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.autoSellChoice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel,#fff);font-size:13px;font-weight:750}.autoSellChoice.locked{opacity:.45}.autoSellChoice input{width:17px;height:17px}
 @media(max-width:700px){.autoSellUpgradeHead{align-items:flex-start;flex-direction:column}.autoSellUpgradeHead .buy{width:100%}.autoSellUpgradeGrid{grid-template-columns:repeat(2,1fr)}}
+
+.levelCard{max-width:760px;margin:14px auto 20px;padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--panel,#fff)}
+.levelTop{display:flex;align-items:center;justify-content:space-between;gap:18px}.levelTop>div:first-child{display:flex;flex-direction:column}.levelTop small,.diamondStat small{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.08em}.levelTop b{font-size:34px;line-height:1.05}
+.diamondStat{display:flex;align-items:center;gap:10px}.diamondStat img{width:34px;height:34px;object-fit:contain}.diamondStat span{display:flex;flex-direction:column}.diamondStat b{font-size:22px}
+.levelProgress{height:12px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:16px}.levelProgress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5a8cff,#9d66ff);border-radius:inherit;transition:width .25s}
+.levelMeta{display:flex;justify-content:space-between;gap:12px;margin-top:7px;color:var(--muted);font-size:12px}.levelReward{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}.levelReward img{width:16px;height:16px;vertical-align:-3px}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3721,7 +3727,14 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <button type="button" onclick="plateClearSearch()">Сбросить</button>
 </div><div id="storage"></div></section>
 
-<section class="page" id="statsPage"><h2 class="statsTitle">Статистика</h2><div class="stats" style="margin-top:14px"><div class="stat"><small>ПРОКРУТОВ</small><b id="sRolls">0</b></div><div class="stat"><small>ПОТРАЧЕНО</small><b id="sSpent">0 ₽</b></div><div class="stat"><small>ПРОДАНО НА</small><b id="sEarned">0 ₽</b></div><div class="stat"><small>БАЛАНС</small><b id="sBalance">100 000 ₽</b></div><div class="stat"><small>В ХРАНИЛИЩЕ</small><b id="sStored">0</b></div><div class="stat"><small>СТОИМОСТЬ КОЛЛЕКЦИИ</small><b id="sCollection">0 ₽</b></div></div></section>
+<section class="page" id="statsPage"><h2 class="statsTitle">Статистика</h2>
+<div class="levelCard">
+ <div class="levelTop"><div><small>УРОВЕНЬ</small><b id="playerLevel">0</b></div><div class="diamondStat"><img src="images3/diamond.png" alt=""><span><small>КРИСТАЛЛЫ</small><b id="diamondBalance">0</b></span></div></div>
+ <div class="levelProgress"><i id="levelProgressBar"></i></div>
+ <div class="levelMeta"><span id="levelXpText">0 / 500 XP</span><span>1 прокрут = 1 XP</span></div>
+ <div class="levelReward">За каждый новый уровень: <b>5 000 000 ₽</b> + <b>25</b> <img src="images3/diamond.png" alt="">. Каждые 5 уровней требование XP растёт ещё на +500.</div>
+</div>
+<div class="stats" style="margin-top:14px"><div class="stat"><small>ПРОКРУТОВ</small><b id="sRolls">0</b></div><div class="stat"><small>ПОТРАЧЕНО</small><b id="sSpent">0 ₽</b></div><div class="stat"><small>ПРОДАНО НА</small><b id="sEarned">0 ₽</b></div><div class="stat"><small>БАЛАНС</small><b id="sBalance">100 000 ₽</b></div><div class="stat"><small>В ХРАНИЛИЩЕ</small><b id="sStored">0</b></div><div class="stat"><small>СТОИМОСТЬ КОЛЛЕКЦИИ</small><b id="sCollection">0 ₽</b></div></div></section>
 
 <section class="page" id="dealerPage"><div class="storeHead"><div><h2>Автосалон</h2><div class="count">Каталог CCDPlanet · максимум 3 одинаковые машины</div></div></div>
 <div class="tools"><input id="carSearch" placeholder="Поиск машины..." style="width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff"><select id="carSort" style="margin-left:8px">
@@ -3780,8 +3793,8 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <h2 class="statsTitle">Улучшения</h2>
 <div class="settingsCard">
   <div class="settingRow">
-    <div><h3>Хранилище номеров</h3><p>Сейчас: <b id="storageCapText">10 мест</b>. Каждое улучшение добавляет +50 мест. Максимум — 700.</p></div>
-    <button class="buy" id="upgradeStorageBtn" onclick="upgradeStorage()">+50 мест · 5 000 000 ₽</button>
+    <div><h3>Хранилище номеров</h3><p>Сейчас: <b id="storageCapText">50 мест</b>. Каждый полученный уровень открывает одно улучшение на +50 мест. Максимум — 700.</p><p id="storageLevelHint" style="margin-top:6px"></p></div>
+    <button class="buy" id="upgradeStorageBtn" onclick="upgradeStorage()">+50 мест</button>
   </div>
 </div>
 <div class="settingsCard">
@@ -3833,7 +3846,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:var(--panel)"><b style="color:#8b93a1">Обычный</b><strong>48,53%</strong></div>
 <div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(43,180,92,,12)"><b style="color:#2bb45c">Необычный</b><strong>34,24%</strong></div>
 <div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(41,145,255,,12)"><b style="color:#2991ff">Редкий</b><strong>6,98%</strong></div>
-<div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(155,72,255,,12)"><b style="color:#9b48ff">Эпический</b><strong>0,25%</strong></div>
+<div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(155,72,255,,12)"><b style="color:#9b48ff">Эпический</b><strong>0,20%</strong></div>
 <div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(255,183,28,,13)"><b style="color:#d99a0b">Легендарный</b><strong>0,05%</strong></div>
 <div style="display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(255,35,35,,13)"><b style="color:#e02020">Мифический</b><strong>0,01% / 0,1% на 77/97</strong></div>
 </div></div>
@@ -3867,6 +3880,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <script>
 const L='АВЕКМНОРСТУХ',REG=['01','101','02','102','702','03','103','04','05','105','06','07','08','09','10','11','12','13','113','14','15','16','116','716','17','18','19','95','21','121','22','122','222','23','93','123','193','323','24','124','224','25','125','725','26','126','27','28','29','30','130','31','131','32','33','34','134','35','36','136','37','38','138','39','91','40','41','42','142','43','44','45','46','47','147','48','49','50','90','150','190','250','550','750','790','52','152','252','53','54','154','754','55','155','56','156','57','58','158','59','159','60','61','161','761','62','63','163','763','64','164','65','66','96','196','67','68','69','169','70','71','72','172','73','173','74','174','774','75','76','176','77','97','99','177','197','199','277','299','777','797','799','977','997','78','98','178','198','778','79','80','180','81','181','82','83','84','184','85','185','86','186','87','89','92','192','94','188'],COST=3000,REGION_FEE=25000,SPECIAL_REGION_FEE=50000;
 let bal=100000,inv=[],seq=0,rolls=0,spent=0,earned=0,filter='all',cars=[],carSeq=0,storageCap=50,garageCap=1,isRolling=false;
+let playerLevel=0,playerXp=0,diamonds=0,storageUpgradesUsed=0;
 const CARS=[
 {name:'Alfa Romeo Giulia',price:3000000,currency:'₽',rub:3000000,icon:'🚘'},
 {name:'Aston Martin Valkyrie',price:475000000,currency:'₽',rub:475000000,icon:'🚘'},
@@ -3922,9 +3936,9 @@ const CARS=[
 {name:'Cadillac Escalade ESV',price:7000000,currency:'₽',rub:7000000,icon:'🚘'},
 {name:'Chevrolet Corvette C6 ZR1',price:5700000,currency:'₽',rub:5700000,icon:'🚘'},
 {name:'Chevrolet Corvette C7',price:75000,currency:'$',rub:6900000,icon:'🚘'},
-{name:'Daewoo Matiz',price:250000,currency:'₽',rub:250000,icon:'🚘'},
-{name:'DeLorean DMC-12',price:60000,currency:'$',rub:5520000,icon:'🚘'},
-{name:'DeLorean DMC-12 BTTF',price:60000,currency:'$',rub:5520000,icon:'🚘'},
+{name:'Daewoo Matiz',price:250000,currency:'₽',rub:250000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'common'},
+{name:'DeLorean DMC-12',price:60000,currency:'$',rub:5520000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
+{name:'DeLorean DMC-12 BTTF',price:60000,currency:'$',rub:5520000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
 {name:'Dodge Challenger SRT Demon',price:9000000,currency:'₽',rub:9000000,icon:'🚘'},
 {name:'Dodge Charger R/T',price:6000000,currency:'₽',rub:6000000,icon:'🚘'},
 {name:'Dodge Charger SRT Hellcat',price:8500000,currency:'₽',rub:8500000,icon:'🚘'},
@@ -3939,10 +3953,10 @@ const CARS=[
 {name:'Ferrari Purosangue',price:600000,currency:'$',rub:55200000,icon:'🚘'},
 {name:'Ferrari SF90',price:515000,currency:'$',rub:47380000,icon:'🚘'},
 {name:'Ferrari SF90XX',price:150000000,currency:'₽',rub:150000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'ferrari'},
-{name:'Ford Bronco',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
+{name:'Ford Bronco',price:15000000,currency:'₽',rub:15000000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
 {name:'Ford F-150 Raptor',price:50000,currency:'$',rub:4600000,icon:'🚘'},
 {name:'Ford GT',price:27000000,currency:'₽',rub:27000000,icon:'🚘'},
-{name:'Ford GT40 MkII',price:400000,currency:'$',rub:36800000,icon:'🚘'},
+{name:'Ford GT40 MkII',price:400000,currency:'$',rub:36800000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
 {name:'Ford Mustang GT',price:53000,currency:'$',rub:4876000,icon:'🚘'},
 {name:'Ford Mustang GT \'66',price:6500000,currency:'₽',rub:6500000,icon:'🚘'},
 {name:'Ford Transit',price:1800800,currency:'₽',rub:1800800,icon:'🚘'},
@@ -3955,7 +3969,7 @@ const CARS=[
 {name:'Koenigsegg Agera R',price:2000000,currency:'$',rub:184000000,icon:'🚘'},
 {name:'Koenigsegg Jesko Absolut',price:3000000,currency:'$',rub:276000000,icon:'🚘'},
 {name:'Lamborghini Aventador',price:435000,currency:'€',rub:43935000,icon:'🚘'},
-{name:'Lamborghini Diablo SV',price:100000000,currency:'₽',rub:100000000,icon:'🚘'},
+{name:'Lamborghini Diablo SV',price:100000000,currency:'₽',rub:100000000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
 {name:'Lamborghini Huracan',price:310000,currency:'$',rub:28520000,icon:'🚘'},
 {name:'Lamborghini Murciélago',price:400000,currency:'$',rub:36800000,icon:'🚘'},
 {name:'Lamborghini Temerario',price:470000,currency:'$',rub:43240000,icon:'🚘'},
@@ -3992,7 +4006,7 @@ const CARS=[
 {name:'Mercedes-Benz G65 AMG',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Mercedes-Benz GLE',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
 {name:'Mercedes-Benz GLS 63 AMG',price:23900000,currency:'₽',rub:23900000,icon:'🚘'},
-{name:'Mercedes-Benz Mini-Wagen',price:349999,currency:'₽',rub:349999,icon:'🚘'},
+{name:'Mercedes-Benz Mini-Wagen',price:349999,currency:'₽',rub:349999,icon:'🚘',dealerHidden:true},
 {name:'Mercedes-Benz O345',price:4000000,currency:'₽',rub:4000000,icon:'🚘'},
 {name:'Mercedes-Benz S-Class (W220)',price:2350000,currency:'₽',rub:2350000,icon:'🚘'},
 {name:'Mercedes-Benz S-klass W223',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
@@ -4003,7 +4017,7 @@ const CARS=[
 {name:'Mercedes-Benz SL63 AMG R232',price:19000000,currency:'₽',rub:19000000,icon:'🚘'},
 {name:'Mercedes-Benz SLS AMG',price:210000,currency:'$',rub:19320000,icon:'🚘'},
 {name:'Mercedes-Benz Sprinter',price:5000000,currency:'₽',rub:5000000,icon:'🚘'},
-{name:'Mini Cooper JCW',price:3000000,currency:'₽',rub:3000000,icon:'🚘'},
+{name:'Mini Cooper JCW',price:3000000,currency:'₽',rub:3000000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'uncommon'},
 {name:'Mitsubishi Canter',price:320000,currency:'₽',rub:320000,icon:'🚘'},
 {name:'Mitsubishi Lancer Evolution IX',price:1400000,currency:'₽',rub:1400000,icon:'🚘'},
 {name:'Mitsubishi Lancer Evolution VI',price:1350000,currency:'₽',rub:1350000,icon:'🚘'},
@@ -4011,24 +4025,24 @@ const CARS=[
 {name:'Nissan 350Z',price:12500,currency:'$',rub:1150000,icon:'🚘'},
 {name:'Nissan 400Z',price:4400000,currency:'₽',rub:4400000,icon:'🚘'},
 {name:'Nissan GT-R',price:7500000,currency:'₽',rub:7500000,icon:'🚘'},
-{name:'Nissan GT-R GTT Draco',price:25000000,currency:'₽',rub:25000000,icon:'🚘'},
-{name:'Nissan GT-R GTT Lucifer',price:25000000,currency:'₽',rub:25000000,icon:'🚘'},
+{name:'Nissan GT-R GTT Draco',price:25000000,currency:'₽',rub:25000000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
+{name:'Nissan GT-R GTT Lucifer',price:25000000,currency:'₽',rub:25000000,icon:'🚘',dealerHidden:true,upgradeHidden:true},
 {name:'Nissan Silvia S13',price:300000,currency:'₽',rub:300000,icon:'🚘'},
 {name:'Nissan Silvia S14',price:515000,currency:'₽',rub:515000,icon:'🚘'},
 {name:'Nissan Silvia S15',price:675000,currency:'₽',rub:675000,icon:'🚘'},
 {name:'Nissan Skyline R32',price:1000000,currency:'₽',rub:1000000,icon:'🚘'},
 {name:'Nissan Skyline R34',price:1150000,currency:'₽',rub:1150000,icon:'🚘'},
 {name:'Pagani Zonda Cinque',price:2000000,currency:'$',rub:184000000,icon:'🚘'},
-{name:'Polaris RZR Pro',price:1500000,currency:'₽',rub:1500000,icon:'🚘'},
+{name:'Polaris RZR Pro',price:1500000,currency:'₽',rub:1500000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'common'},
 {name:'Porsche 718 Cayman',price:11000000,currency:'₽',rub:11000000,icon:'🚘'},
 {name:'Porsche 911 Carrera 4S',price:11600000,currency:'₽',rub:11600000,icon:'🚘'},
-{name:'Porsche 911 Dakar',price:280000,currency:'$',rub:25760000,icon:'🚘'},
-{name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true},
+{name:'Porsche 911 Dakar',price:100000000,currency:'$',rub:100000000,icon:'🚘',forcedRarity:'legendary',dealerHidden:true,limited:true,caseExclusive:'porsche'},
+{name:'Porsche 911 GT3 RS',image:'images/gt3rs.png',price:450000000,currency:'₽',rub:450000000,icon:'🚘',forcedRarity:'limited',promoOnly:true,dealerHidden:true,caseExclusive:'porsche'},
 {name:'Porsche 918 Spyder',price:991000,currency:'€',rub:100091000,icon:'🚘'},
 {name:'Porsche 930',price:20000000,currency:'₽',rub:20000000,icon:'🚘'},
-{name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true},
+{name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',dealerHidden:true,limited:true,caseExclusive:'porsche'},
 {name:'Porsche Cayenne Coupe',price:18700000,currency:'₽',rub:18700000,icon:'🚘'},
-{name:'Porsche Gemballa Marsien',price:450000,currency:'€',rub:45450000,icon:'🚘'},
+{name:'Porsche Gemballa Marsien',price:450000,currency:'€',rub:45450000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'porsche'},
 {name:'Porsche Panamera II',price:13000000,currency:'₽',rub:13000000,icon:'🚘'},
 {name:'Porsche Taycan',price:15000000,currency:'₽',rub:15000000,icon:'🚘'},
 {name:'Range Rover Sport SVR',price:8300000,currency:'₽',rub:8300000,icon:'🚘'},
@@ -4068,7 +4082,7 @@ const CARS=[
 {name:'ВАЗ 2170 "Приора"',price:500000,currency:'₽',rub:500000,icon:'🚘'},
 {name:'ВАЗ 2180 "Веста"',price:1100000,currency:'₽',rub:1100000,icon:'🚘'},
 {name:'ГАЗ 24',price:190000,currency:'₽',rub:190000,icon:'🚘'},
-{name:'ЗАЗ 968',price:60000,currency:'₽',rub:60000,icon:'🚘'},
+{name:'ЗАЗ 968',price:60000,currency:'₽',rub:60000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'common'},
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
@@ -4118,11 +4132,29 @@ function unifiedSpecialPlateValue(p,rank,region){
 function epicNumberValue(p,region){return unifiedSpecialPlateValue(p,'epic',region)}
 
 function legendaryNumberValue(p,region){return unifiedSpecialPlateValue(p,'legendary',region)}
+
+function makeNormalPlateParts(){
+ let a,b,c,d;
+ do{a=L[rnd(L.length)];b=L[rnd(L.length)];c=L[rnd(L.length)]}while(a===b||a===c||b===c);
+ do{d=String(1+rnd(999)).padStart(3,'0')}while(new Set(d.split('')).size<3);
+ return {a,b,c,d};
+}
+function makeUncommonPlateParts(){
+ let a=L[rnd(L.length)],b=L[rnd(L.length)],c=L[rnd(L.length)],d=String(1+rnd(999)).padStart(3,'0');
+ if(Math.random()<.5){
+   const x=L[rnd(L.length)],other=L.filter(ch=>ch!==x)[rnd(L.length-1)];
+   if(Math.random()<.5){a=x;b=x;c=other}else{a=x;b=other;c=x}
+ }else{
+   const x=String(rnd(10)),y=String(rnd(10));
+   d=Math.random()<.5?x+x+y:x+y+x;
+ }
+ return {a,b,c,d};
+}
 function evaluate(d,a,b,c,r,chosenRegion=''){
- // Шансы: легендарный 0,05%; мифический 0,1% на специальных выбранных регионах,
+ // Шансы: эпический 0,20%; легендарный 0,05%; мифический 0,1% на специальных выбранных регионах,
  // 0% при другом ручном регионе, 0,01% при случайном регионе.
  const mythicChance=chosenRegion?(['77','97','99','78','98','777'].includes(String(chosenRegion))?.001:0):.0001;
- const legendaryChance=.0005,epicChance=.0025;
+ const legendaryChance=.0005,epicChance=.002;
  const baseChance=1-mythicChance-legendaryChance-epicChance;
  const wN=53.9369,wU=38.0507,wR=7.7524,wSum=wN+wU+wR;
  const tN=baseChance*(wN/wSum),tU=tN+baseChance*(wU/wSum),tR=tU+baseChance*(wR/wSum);
@@ -4137,15 +4169,55 @@ function evaluate(d,a,b,c,r,chosenRegion=''){
  return{v,desc,rank,rarity}
 }
 function burst(rank){if(rank!=='epic'&&rank!=='legendary'&&rank!=='mythic')return;const fx=$('fx');fx.innerHTML='';let count=rank==='mythic'?36:(rank==='legendary'?28:18);for(let i=0;i<count;i++){let s=document.createElement('i');s.className='spark';s.style.setProperty('--a',(360/count*i+rnd(15))+'deg');s.style.setProperty('--d',(70+rnd(rank==='legendary'?150:100))+'px');s.style.setProperty('--spark',rank==='mythic'?(i%2?'#ff1f1f':'#ff8a8a'):(rank==='legendary'?(i%2?'#ffb71c':'#ffe58b'):(i%2?'#9b48ff':'#d8a8ff')));fx.appendChild(s)}}
+
+function xpNeededForLevel(level){
+ // Уровни 0-4: 500 XP; 5-9: 1500 XP; 10-14: 2500 XP и т.д.
+ return 500 + Math.floor(level/5)*1000;
+}
+
+function revokeRollXp(amount=1){
+ // Used only when a charged roll is fully refunded before a number is awarded.
+ // Since XP was just granted for this roll, reverse across a possible level boundary including rewards.
+ while(amount-->0){
+   if(playerXp>0){playerXp--;continue}
+   if(playerLevel>0){
+     playerLevel--;bal-=5000000;diamonds=Math.max(0,diamonds-25);
+     playerXp=xpNeededForLevel(playerLevel)-1;
+   }
+ }
+}
+
+function grantRollXp(amount=1){
+ playerXp+=amount;
+ let leveled=false;
+ while(true){
+   const need=xpNeededForLevel(playerLevel);
+   if(playerXp<need)break;
+   playerXp-=need;playerLevel++;bal+=5000000;diamonds+=25;leveled=true;
+ }
+ if(leveled){
+   $('msg').textContent=`Новый уровень ${playerLevel}! +5 000 000 ₽ и +25 кристаллов`;
+ }
+}
+function renderLevel(){
+ const need=xpNeededForLevel(playerLevel);
+ if($('playerLevel'))$('playerLevel').textContent=playerLevel;
+ if($('diamondBalance'))$('diamondBalance').textContent=diamonds;
+ if($('levelXpText'))$('levelXpText').textContent=`${playerXp} / ${need} XP`;
+ if($('levelProgressBar'))$('levelProgressBar').style.width=Math.min(100,playerXp/need*100)+'%';
+}
 function update(){
  if(typeof renderUpgrader==='function'&&!upgraderBusy) setTimeout(renderUpgrader,0);
+ renderLevel();
  if($('storageCapacityLabel'))$('storageCapacityLabel').textContent=inv.length+' / '+storageCap;
  if($('storageCapText'))$('storageCapText').textContent=storageCap+' мест';
  if($('garageCapText'))$('garageCapText').textContent=garageCap+' '+(garageCap===1?'место':'мест');
  if($('upgradeStorageBtn')){
  const maxed=storageCap>=700;
- $('upgradeStorageBtn').disabled=maxed||bal<5000000;
- $('upgradeStorageBtn').textContent=maxed?'Максимум · 700 мест':'+50 мест · 5 000 000 ₽';
+ const available=Math.max(0,playerLevel-storageUpgradesUsed);
+ $('upgradeStorageBtn').disabled=maxed||available<=0;
+ $('upgradeStorageBtn').textContent=maxed?'Максимум · 700 мест':(available>0?'+50 мест · использовать улучшение уровня':'Нужен новый уровень');
+ if($('storageLevelHint'))$('storageLevelHint').textContent=maxed?'Достигнут максимум 700 мест.':`Доступно улучшений от уровня: ${available}. Использовано: ${storageUpgradesUsed}.`;
 }
  if($('upgradeGarageBtn'))$('upgradeGarageBtn').disabled=bal<1500000;
  if(inv.length>=storageCap){
@@ -4324,6 +4396,7 @@ if(bal<COST)return update();isRolling=true;
  let chosen=$('regionChoice').value,r=chosen||REG[rnd(REG.length)],fee=chosen?(['77','97','99','78','98','777'].includes(String(chosen))?SPECIAL_REGION_FEE:REGION_FEE):0;
  if(bal<fee){$('msg').textContent='Не хватает денег на выбор региона';bal+=COST;spent-=COST;rolls--;isRolling=false;update();return}
  bal-=fee;spent+=fee;
+ grantRollXp(1);
 
  let e=evaluate(d,a,b,c,r,chosen),plateText=a+d+b+c;
 
@@ -4404,7 +4477,7 @@ if(bal<COST)return update();isRolling=true;
  if(chosen)r=String(chosen);
 
  if(plateInStorage(plateText,r)){
-   bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
+   bal+=COST+fee;spent-=COST+fee;rolls--;revokeRollXp(1);isRolling=false;
    $('msg').textContent='Этот номер уже занят — генерируем другой.';
    refreshRollButton();update();render();setTimeout(()=>roll(),0);return;
  }
@@ -4421,12 +4494,12 @@ if(bal<COST)return update();isRolling=true;
      });
      if(claim.error)throw claim.error;
      if(claim.data!==true){
-       bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
+       bal+=COST+fee;spent-=COST+fee;rolls--;revokeRollXp(1);isRolling=false;
        $('msg').textContent='Такой номер сейчас занят — крутим другой.';
        refreshRollButton();update();render();setTimeout(()=>roll(),0);return;
      }
    }catch(err){
-     bal+=COST+fee;spent-=COST+fee;rolls--;isRolling=false;
+     bal+=COST+fee;spent-=COST+fee;rolls--;revokeRollXp(1);isRolling=false;
      $('msg').textContent='Не удалось проверить уникальность номера. Прокрут возвращён.';
      refreshRollButton();update();render();return;
    }
@@ -4695,11 +4768,9 @@ if(plateRollBtn){
  plateRollBtn.addEventListener('click',()=>{if(!plateHoldActive)requestPlateRoll()});
  plateRollBtn.addEventListener('pointerdown',e=>{
   if(e.button!==undefined&&e.button!==0)return;
-  plateHoldStartTimer=setTimeout(()=>{
-   plateHoldActive=true;
-   requestPlateRoll();
-   plateHoldTimer=setInterval(requestPlateRoll,100);
-  },250);
+  plateHoldActive=true;
+  requestPlateRoll();
+  plateHoldTimer=setInterval(requestPlateRoll,100);
  });
  ['pointerup','pointercancel','pointerleave'].forEach(ev=>plateRollBtn.addEventListener(ev,()=>{
    const wasHold=plateHoldActive;stopPlateHold();
@@ -4720,7 +4791,7 @@ function upgradeSources(){
  return owned;
 }
 function upgradeTargets(){
- return [...CARS.filter(x=>x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden&&!isLimitedFerrari(x)),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40,MYTHIC_CARRERA_GT].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ return [...CARS.filter(x=>x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden&&!x.upgradeHidden&&!x.caseExclusive&&!isLimitedFerrari(x)),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40].sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
@@ -4822,12 +4893,15 @@ async function runUpgrade(){
 }
 
 const CASE_DEFS=[
- {id:'common',name:'Обычный контейнер',cls:'case-common',icon:'📦',from:0,to:.34,desc:'Бюджетные автомобили из автосалона.'},
- {id:'uncommon',name:'Необычный контейнер',cls:'case-uncommon',icon:'🟩',from:.18,to:.54,desc:'Средний ценовой сегмент автосалона.'},
- {id:'rare',name:'Редкий контейнер',cls:'case-rare',icon:'🟦',from:.42,to:.73,desc:'Спорт и премиум из автосалона.'},
- {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары. Лимитированные Mercedes-Benz отсюда убраны.'},
- {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Эксклюзивы: Porsche Carrera GT — 2%, Ferrari F50 — 1%. Лимитированные Mercedes-Benz отсюда убраны.'},
- {id:'mercedes',name:'Mercedes-Benz контейнер',cls:'case-legendary',icon:'⭐',desc:'Только Mercedes-Benz. 300SL, CLK GTR и G63 6x6 — по 1% каждый и выпадают только здесь.'}, {id:'bmw',name:'BMW контейнер',cls:'case-rare',icon:'🔵',desc:'Только BMW. Лимитированные 3.0 CSL, 850 CSI, M1 E26 и Z8 выпадают только здесь.'}, {id:'ferrari',name:'Ferrari контейнер',cls:'case-legendary',icon:'🔴',desc:'Только Ferrari. 812 Competizione — 1%, F430 — 5%, SF90XX — 2%.'}
+ {id:'common',name:'Обычный контейнер',cls:'case-common',icon:'📦',from:0,to:.34,desc:'Бюджетные автомобили. Лимитки Daewoo Matiz, Polaris RZR Pro и ЗАЗ 968 — по 5%.'},
+ {id:'uncommon',name:'Необычный контейнер',cls:'case-uncommon',icon:'🟩',from:.18,to:.54,desc:'Автомобили среднего сегмента. Mini Cooper JCW — лимитка с шансом 5%.'},
+ {id:'rare',name:'Редкий контейнер',cls:'case-rare',icon:'🟦',from:.42,to:.73,desc:'Спортивные и премиальные автомобили редкого сегмента.'},
+ {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары эпического сегмента.'},
+ {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Самые дорогие автомобили общего пула и Ferrari F50 — 1%.'},
+ {id:'mercedes',name:'Mercedes-Benz контейнер',cls:'case-legendary',icon:'⭐',desc:'Только Mercedes-Benz. 300SL, CLK GTR и G63 6x6 — по 1%.'},
+ {id:'bmw',name:'BMW контейнер',cls:'case-rare',icon:'🔵',desc:'Только BMW. Лимитированные BMW доступны только здесь.'},
+ {id:'ferrari',name:'Ferrari контейнер',cls:'case-legendary',icon:'🔴',desc:'Только Ferrari. 812 Competizione — 1%, F430 — 5%, SF90XX — 2%.'},
+ {id:'porsche',name:'Porsche контейнер',cls:'case-legendary',icon:'🏁',desc:'Только Porsche. 911 Dakar — 5%, Carrera GT — 1%, 911 GT3 RS — 1,5%. Gemballa Marsien — лимитка этого контейнера.'}
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
@@ -5088,6 +5162,7 @@ function brandCasePool(prefix){
 }
 function bmwCasePool(){return brandCasePool('BMW ');}
 function ferrariCasePool(){return brandCasePool('Ferrari ');}
+function porscheCasePool(){return brandCasePool('Porsche ');}
 function mercedesCasePool(){
  return CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&(String(x.name||'').startsWith('Mercedes-Benz ')||String(x.name||'').startsWith('Mercedes-AMG ')))
   .sort((a,b)=>carRubValue(a)-carRubValue(b));
@@ -5096,10 +5171,13 @@ function casePool(c){
  if(c.id==='mercedes')return mercedesCasePool();
  if(c.id==='bmw')return bmwCasePool();
  if(c.id==='ferrari')return ferrariCasePool();
- const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!isLimitedMercedes(x)&&!isLimitedBMW(x)&&!isLimitedFerrari(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
+ if(c.id==='porsche')return porscheCasePool();
+ const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!x.caseExclusive&&!isLimitedMercedes(x)&&!isLimitedBMW(x)&&!isLimitedFerrari(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
- if(c.id==='legendary'){pool.push(MYTHIC_CARRERA_GT);pool.push(MYTHIC_F50);}
+ if(c.id==='common')for(const n of ['Daewoo Matiz','Polaris RZR Pro','ЗАЗ 968']){const m=CARS.find(x=>x.name===n);if(m&&!pool.includes(m))pool.push(m)}
+ if(c.id==='uncommon'){const m=CARS.find(x=>x.name==='Mini Cooper JCW');if(m&&!pool.includes(m))pool.push(m)}
+ if(c.id==='legendary'){pool.push(MYTHIC_F50);}
  return pool;
 }
 function brandWeight(m){
@@ -5126,13 +5204,40 @@ function ferrariCaseChance(m,pool){
  const normal=pool.filter(x=>!isLimitedFerrari(x)),total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
  return total?.92*(brandWeight(m)/total):0;
 }
+
+function fixedCaseChance(m,pool,c){
+ const n=String(m?.name||m?.model||'');
+ let fixed={};
+ if(c?.id==='common')fixed={'Daewoo Matiz':.05,'Polaris RZR Pro':.05,'ЗАЗ 968':.05};
+ else if(c?.id==='uncommon')fixed={'Mini Cooper JCW':.05};
+ else if(c?.id==='porsche')fixed={'Porsche 911 Dakar':.05,'Porsche Carrera GT':.01,'Porsche 911 GT3 RS':.015};
+ else return null;
+ if(fixed[n]!=null)return fixed[n];
+ const reserved=Object.values(fixed).reduce((a,b)=>a+b,0);
+ const normal=pool.filter(x=>fixed[String(x.name||x.model||'')]==null);
+ const total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
+ return total?(1-reserved)*(brandWeight(m)/total):0;
+}
+function fixedWeightedCaseCar(pool,c){
+ const r=Math.random(); let acc=0;
+ const fixed=c.id==='common'?[['Daewoo Matiz',.05],['Polaris RZR Pro',.05],['ЗАЗ 968',.05]]:
+             c.id==='uncommon'?[['Mini Cooper JCW',.05]]:
+             c.id==='porsche'?[['Porsche 911 Dakar',.05],['Porsche Carrera GT',.01],['Porsche 911 GT3 RS',.015]]:[];
+ for(const [name,ch] of fixed){acc+=ch;if(r<acc)return pool.find(x=>x.name===name)}
+ const fixedNames=new Set(fixed.map(x=>x[0])),normal=pool.filter(x=>!fixedNames.has(x.name));
+ const total=normal.reduce((sum,x)=>sum+brandWeight(x),0);
+ let n=((r-acc)/(1-acc))*total;
+ for(const m of normal){n-=brandWeight(m);if(n<=0)return m}
+ return normal[normal.length-1]||pool[0];
+}
 function caseExpectedValue(pool,c){
+ if(['common','uncommon','porsche'].includes(c?.id))return pool.reduce((sum,m)=>sum+carRubValue(m)*fixedCaseChance(m,pool,c),0);
  if(c?.id==='ferrari')return pool.reduce((sum,m)=>sum+carRubValue(m)*ferrariCaseChance(m,pool),0);
  if(c?.id==='bmw')return pool.reduce((sum,m)=>sum+carRubValue(m)*bmwCaseChance(m,pool),0);
  if(c?.id==='mercedes'){
   return pool.reduce((sum,m)=>sum+carRubValue(m)*mercedesCaseChance(m,pool),0);
  }
- const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
+ const carrera=null,f50=pool.find(x=>x===MYTHIC_F50);
  const base=pool.filter(x=>x!==carrera&&x!==f50);
  let total=0,wSum=0;
  for(let i=0;i<base.length;i++){let w=Math.pow(base.length-i,1.35);total+=carRubValue(base[i])*w;wSum+=w}
@@ -5151,6 +5256,7 @@ function casePrice(c){
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
 }
 function weightedCaseCar(pool,c){
+ if(c&&['common','uncommon','porsche'].includes(c.id))return fixedWeightedCaseCar(pool,c);
  if(c&&c.id==='ferrari'){
   const r=Math.random();
   if(r<.01)return pool.find(x=>x.name==='Ferrari 812 Competizione');
@@ -5172,7 +5278,7 @@ function weightedCaseCar(pool,c){
   for(const m of normal){n-=brandWeight(m);if(n<=0)return m}
   return normal[normal.length-1];
  }
- const carrera=pool.find(x=>x===MYTHIC_CARRERA_GT),f50=pool.find(x=>x===MYTHIC_F50);
+ const carrera=null,f50=pool.find(x=>x===MYTHIC_F50);
  const specialRoll=Math.random();
  if(carrera&&specialRoll<0.02)return carrera;
  if(f50&&specialRoll<0.03)return f50;
@@ -5183,6 +5289,7 @@ function weightedCaseCar(pool,c){
  return base[base.length-1];
 }
 function caseChancePercent(m,pool,c){
+ if(['common','uncommon','porsche'].includes(c?.id))return fixedCaseChance(m,pool,c)*100;
  if(c?.id==='ferrari')return ferrariCaseChance(m,pool)*100;
  if(c?.id==='mercedes')return mercedesCaseChance(m,pool)*100; if(c?.id==='bmw')return bmwCaseChance(m,pool)*100;
  return null;
@@ -5679,17 +5786,16 @@ function sellCasePrize(){
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function upgradeStorage(){
- const cost=5000000,MAX_STORAGE_CAP=700;
+ const MAX_STORAGE_CAP=700;
  if(storageCap>=MAX_STORAGE_CAP){
-   storageCap=MAX_STORAGE_CAP;
-   alert('Хранилище уже улучшено до максимума — 700 мест.');
-   update();renderStore();renderUpgrades();
-   return;
+   storageCap=MAX_STORAGE_CAP;alert('Хранилище уже улучшено до максимума — 700 мест.');update();renderStore();return;
  }
- if(bal<cost){alert('Недостаточно денег. Нужно 5 000 000 ₽.');return}
- bal-=cost;spent+=cost;
+ if(storageUpgradesUsed>=playerLevel){
+   alert('Для следующего улучшения хранилища нужен новый уровень игрока.');return;
+ }
+ storageUpgradesUsed++;
  storageCap=Math.min(MAX_STORAGE_CAP,storageCap+50);
- update();renderStore();renderUpgrades();
+ update();renderStore();saveGame(true);
 }
 function upgradeGarage(){
  if(bal<1500000){alert('Для улучшения гаража нужно 1 500 000 ₽');return}
@@ -5957,7 +6063,7 @@ function buildSaveData(){
  return {
    schema:SAVE_SCHEMA,
    savedAt:Date.now(),
-   bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,
+   bal,inv,seq,rolls,spent,earned,cars,carSeq,storageCap,garageCap,playerLevel,playerXp,diamonds,storageUpgradesUsed,
    pendingCasePrize:null,pendingCasePrizes:[],
    fastCaseRoll:!!fastCaseRoll,
    redeemedPromoCodes:[...redeemedPromoCodes],collectionHammerClaimed:!!collectionHammerClaimed,pendingLotteryCar:pendingLotteryCar?{name:pendingLotteryCar.name}:null,autoSellRanks,autoSellLevel
@@ -5979,6 +6085,12 @@ function applySaveData(d){
  if(Number.isFinite(d.carSeq))carSeq=d.carSeq;
  if(Number.isFinite(d.storageCap))storageCap=Math.max(50,d.storageCap);
  if(Number.isFinite(d.garageCap))garageCap=Math.max(1,d.garageCap);
+ if(Number.isFinite(d.playerLevel))playerLevel=Math.max(0,Math.floor(d.playerLevel));
+ if(Number.isFinite(d.playerXp))playerXp=Math.max(0,Math.floor(d.playerXp));
+ if(Number.isFinite(d.diamonds))diamonds=Math.max(0,Math.floor(d.diamonds));
+ if(Number.isFinite(d.storageUpgradesUsed))storageUpgradesUsed=Math.max(0,Math.floor(d.storageUpgradesUsed));
+ // Старые сохранения начинают систему уровней с 0, чтобы не выдавать награды задним числом.
+ storageUpgradesUsed=Math.min(storageUpgradesUsed,playerLevel);
  pendingCasePrize=null;pendingCasePrizes=[];
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
  if(Array.isArray(d.redeemedPromoCodes))redeemedPromoCodes=new Set(d.redeemedPromoCodes.map(String)); collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
