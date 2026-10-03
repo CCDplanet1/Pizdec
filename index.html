@@ -3824,7 +3824,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.42</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.43</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5546,7 +5546,18 @@ function renderPendingContainerDecision(){
    delete result.dataset.pendingRestore;
  }
 }
+let caseResultClearTimer=null;
+function clearResolvedCaseResult(delay=1800){
+ if(caseResultClearTimer)clearTimeout(caseResultClearTimer);
+ caseResultClearTimer=setTimeout(()=>{
+   if(pendingCasePrize||pendingCasePrizes.length||caseRolling)return;
+   const result=$('caseResult');
+   if(result){result.style.display='none';result.innerHTML=''}
+   caseResultClearTimer=null;
+ },delay);
+}
 function hideCaseOpening(){
+ if(caseResultClearTimer){clearTimeout(caseResultClearTimer);caseResultClearTimer=null}
  const wrap=$('caseRouletteWrap'),result=$('caseResult');
  if(wrap)wrap.style.display='none';
  if(result){result.style.display='none';result.innerHTML=''}
@@ -5688,6 +5699,7 @@ function resetCaseOpenState(){
 }
 async function openFiveContainers(id){
  if(caseRolling||pendingCasePrize||pendingCasePrizes.length)return;
+ hideCaseOpening();
  const c=CASE_DEFS.find(x=>x.id===id);if(!c)return;
  const pool=casePool(c),price=casePrice(c),totalCost=price*5;
  if(bal<totalCost){alert('Недостаточно денег для открытия 5 контейнеров.');return}
@@ -5710,6 +5722,7 @@ async function openFiveContainers(id){
    const totalValue=pendingCasePrizes.reduce((sum,x)=>sum+x.value,0);
    pendingCasePrizes.forEach(x=>x.sellSelected=false);
    const result=$('caseResult');
+   result.innerHTML='';
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
    result.innerHTML=`<span style="color:var(--muted)">Открыто 5 × «${c.name}»</span>
  <small class="caseChoiceHint">Галочка означает <b>ПРОДАТЬ</b>. Машины без галочки будут добавлены в гараж после подтверждения выбора. Машины из контейнеров можно забрать даже сверх лимита гаража.</small>
@@ -5754,6 +5767,7 @@ async function resolveSelectedCasePrizes(){
  if(value){bal+=value;earned+=value}
  const kept=keep.length,sold=sell.length;pendingCasePrizes=[];hideCaseOpening();syncCaseNavigationLock();
  $('caseResult').style.display='block';$('caseResult').innerHTML='<strong>Оставлено: '+kept+' · Продано: '+sold+(sold?' за '+money(value):'')+'</strong>';
+ clearResolvedCaseResult();
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  await saveGame(true);
  if(typeof syncPublicProfile==='function')await syncPublicProfile();
@@ -5764,6 +5778,7 @@ async function keepAllCasePrizes(){
  cars.unshift(...pendingCasePrizes.map((x,i)=>({...x.car,containerReceivedAt:receivedAt+i})));
  pendingCasePrizes=[]; hideCaseOpening();syncCaseNavigationLock();
  const result=$('caseResult');result.style.display='block';result.innerHTML='<strong>Все 5 машин отправлены в гараж</strong>';
+ clearResolvedCaseResult();
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  await saveGame(true);
  if(typeof syncPublicProfile==='function')await syncPublicProfile();
@@ -5778,7 +5793,8 @@ function sellAllCasePrizes(){
 
 async function openContainer(id){
  if(caseRolling)return;
- if(pendingCasePrize||pendingCasePrizes.length){hideCaseOpening();return}
+ if(pendingCasePrize||pendingCasePrizes.length){renderPendingContainerDecision();return}
+ hideCaseOpening();
  const c=CASE_DEFS.find(x=>x.id===id);if(!c)return;
  const pool=casePool(c),price=casePrice(c);
  if(bal<price){alert('Недостаточно денег для открытия контейнера.');return}
@@ -5813,6 +5829,7 @@ async function keepCasePrize(){
  hideCaseOpening();
  syncCaseNavigationLock();
  const result=$('caseResult');result.style.display='block';result.innerHTML='<strong>Машина отправлена в гараж</strong>';
+ clearResolvedCaseResult();
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
  await saveGame(true);
  if(typeof syncPublicProfile==='function')await syncPublicProfile();
@@ -5823,6 +5840,7 @@ function sellCasePrize(){
  bal+=value;earned+=value;
  pendingCasePrize=null; hideCaseOpening();syncCaseNavigationLock();
  const result=$('caseResult');result.style.display='block';result.innerHTML=`<strong>Машина продана за ${money(value)}</strong><span style="color:var(--muted)">Можно открывать следующий контейнер.</span>`;
+ clearResolvedCaseResult();
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
 }
 function upgradeStorage(){
