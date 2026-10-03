@@ -3824,7 +3824,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.40</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.41</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -4679,7 +4679,7 @@ function renderGarage(){
    const bs=b.model==='Mercedes-Benz 300E Hammer AMG'?Number(b.limitedSerial||0):Number(b.globalSerial||0);
    return (as||Number.MAX_SAFE_INTEGER)-(bs||Number.MAX_SAFE_INTEGER);
   }
-  return Number(b.auctionReceivedAt||b.id||0)-Number(a.auctionReceivedAt||a.id||0);
+  return Number(b.containerReceivedAt||b.auctionReceivedAt||b.id||0)-Number(a.containerReceivedAt||a.auctionReceivedAt||a.id||0);
  });
  garageCars.forEach(car=>{
   let c=document.createElement('div'),cr=carRarity(car);c.className='carCard '+carGlowClass(car);
@@ -5680,22 +5680,28 @@ function updateFiveCaseChoiceButton(){
  btn.disabled=false;
  btn.textContent='Подтвердить: продать '+sell.length+' · забрать '+keep+(sell.length?' · +'+money(value):'');
 }
-function resolveSelectedCasePrizes(){
+async function resolveSelectedCasePrizes(){
  if(!pendingCasePrizes.length)return;
  const sell=pendingCasePrizes.filter(x=>x.sellSelected),keep=pendingCasePrizes.filter(x=>!x.sellSelected);
  const value=sell.reduce((sum,x)=>sum+x.value,0);
- if(keep.length)cars.unshift(...keep.map(x=>x.car));
+ const receivedAt=Date.now();
+ if(keep.length)cars.unshift(...keep.map((x,i)=>({...x.car,containerReceivedAt:receivedAt+i})));
  if(value){bal+=value;earned+=value}
  const kept=keep.length,sold=sell.length;pendingCasePrizes=[];hideCaseOpening();
  $('caseResult').innerHTML='<strong>Оставлено: '+kept+' · Продано: '+sold+(sold?' за '+money(value):'')+'</strong>';
- update();renderGarage();renderDealer();renderUpgrader();renderContainers();saveGame(true);syncPublicProfile();
+ update();renderGarage();renderDealer();renderUpgrader();renderContainers();
+ await saveGame(true);
+ if(typeof syncPublicProfile==='function')await syncPublicProfile();
 }
-function keepAllCasePrizes(){
+async function keepAllCasePrizes(){
  if(!pendingCasePrizes.length)return;
- cars.unshift(...pendingCasePrizes.map(x=>x.car));
+ const receivedAt=Date.now();
+ cars.unshift(...pendingCasePrizes.map((x,i)=>({...x.car,containerReceivedAt:receivedAt+i})));
  pendingCasePrizes=[]; hideCaseOpening();
  const result=$('caseResult');result.innerHTML='<strong>Все 5 машин отправлены в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
+ await saveGame(true);
+ if(typeof syncPublicProfile==='function')await syncPublicProfile();
 }
 function sellAllCasePrizes(){
  if(!pendingCasePrizes.length)return;
@@ -5733,12 +5739,17 @@ async function openContainer(id){
   resetCaseOpenState();
  }
 }
-function keepCasePrize(){
+async function keepCasePrize(){
  if(!pendingCasePrize)return;
- cars.unshift(pendingCasePrize.car);
- pendingCasePrize=null; hideCaseOpening();
+ const wonCar=pendingCasePrize.car;
+ pendingCasePrize=null;
+ wonCar.containerReceivedAt=Date.now();
+ cars.unshift(wonCar);
+ hideCaseOpening();
  const result=$('caseResult');result.innerHTML='<strong>Машина отправлена в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
+ await saveGame(true);
+ if(typeof syncPublicProfile==='function')await syncPublicProfile();
 }
 function sellCasePrize(){
  if(!pendingCasePrize)return;
@@ -5957,7 +5968,6 @@ function applySaveData(d){
  if(Array.isArray(d.pendingCasePrizes))pendingCasePrizes=d.pendingCasePrizes.filter(x=>x&&x.car);
  // Старые сохранения начинают систему уровней с 0, чтобы не выдавать награды задним числом.
  storageUpgradesUsed=Math.min(storageUpgradesUsed,playerLevel);
- pendingCasePrize=null;pendingCasePrizes=[];
  if(typeof d.fastCaseRoll==='boolean')fastCaseRoll=d.fastCaseRoll;
  collectionHammerClaimed=!!d.collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG');
  isRolling=false;caseRolling=false;upgradeRolling=false;
