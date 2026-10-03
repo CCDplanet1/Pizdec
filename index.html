@@ -3707,6 +3707,37 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 .caseCarImage{display:block;max-width:112px;max-height:55px;width:auto;height:auto;object-fit:contain}
 .caseItem .ci .carIcon{font-size:31px}
 @media(max-width:700px){.upCarVisual{width:78px;min-width:78px}.upCarImage{max-width:76px}}
+
+/* ===== CONTAINER x5 RESULT v0.2.44 ===== */
+#caseResult{max-width:980px;margin:14px auto 0}
+.caseFiveHeader{text-align:center;margin-bottom:14px}
+.caseFiveHeader>span{display:block;color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.caseFiveHeader>strong{display:block;font-size:20px;margin-top:4px}
+.caseFiveHeader>small{display:block;color:var(--muted);margin-top:5px}
+.caseFiveChoiceList{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px!important;margin:14px 0!important;overflow:visible!important}
+.caseFiveChoice{position:relative;display:flex!important;flex-direction:column;align-items:center;min-width:0!important;padding:12px 8px 10px!important;border-radius:14px!important;text-align:center}
+.caseFiveChoice input{position:absolute!important;opacity:0!important;pointer-events:none!important}
+.caseChoiceState{position:absolute;top:7px;right:7px;padding:4px 7px;border-radius:999px;background:rgba(47,185,104,.16);border:1px solid rgba(47,185,104,.45);color:#6ee7a0;font-size:8px;font-weight:900;letter-spacing:.04em}
+.caseFiveChoice.selectedSell .caseChoiceState{background:rgba(239,100,100,.16);border-color:rgba(239,100,100,.5);color:#ff8f8f}
+.caseFiveChoice.selectedSell{opacity:1!important;transform:translateY(1px);border-color:#ef6464!important}
+.caseFiveChoice .choiceVisual{width:100%;height:82px!important;margin-top:11px}
+.caseFiveChoice .choiceVisual .carImage{max-width:130px!important;max-height:78px!important}
+.caseFiveChoice b{font-size:11px!important;line-height:1.25;min-height:28px;display:flex!important;align-items:center;justify-content:center}
+.caseFiveChoice small{font-size:10px!important}
+.caseFiveSummary{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025);margin-top:10px}
+.caseFiveSummary span{color:var(--muted);font-size:11px}.caseFiveSummary b{font-size:14px}.caseFiveSummary small{grid-column:1/-1;color:var(--muted);font-size:10px}
+.caseFiveActions{margin-top:10px!important}
+.caseFiveActions button{flex:1;max-width:330px}
+@media(max-width:700px){
+ #caseResult{width:100%;padding:13px!important;box-sizing:border-box}
+ .caseFiveHeader>strong{font-size:17px}
+ .caseFiveChoiceList{grid-template-columns:repeat(2,minmax(0,1fr))!important;overflow:visible!important}
+ .caseFiveChoice:last-child{grid-column:1/-1;max-width:calc(50% - 5px);width:100%;justify-self:center}
+ .caseFiveChoice .choiceVisual{height:68px!important}
+ .caseFiveChoice .choiceVisual .carImage{max-width:112px!important;max-height:64px!important}
+ .casePrizeActions.caseFiveActions{display:grid!important;grid-template-columns:1fr!important}
+ .caseFiveActions button{width:100%;max-width:none}
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -3824,7 +3855,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.43</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.44</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5521,19 +5552,24 @@ function renderPendingContainerDecision(){
    const totalValue=pendingCasePrizes.reduce((sum,x)=>sum+Number(x.value||carRubValue(x.car)||0),0);
    result.style.display='block';
    result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
-   result.innerHTML=`<span style="color:var(--muted)">Незавершённые призы из контейнеров</span>
-   <strong style="display:block;margin:8px 0">Выберите, какие машины продать</strong>
-   <small class="caseChoiceHint">Галочка означает <b>ПРОДАТЬ</b>. Машины без галочки будут добавлены в гараж. Их можно забрать даже сверх лимита гаража.</small>
-   <div class="caseFiveChoices">
+   result.innerHTML=`<div class="caseFiveHeader">
+     <span>Незавершённое открытие</span>
+     <strong>5 машин ждут решения</strong>
+     <small>Нажми на машину, чтобы отметить её на продажу</small>
+   </div>
+   <div class="caseFiveChoiceList">
     ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}${x.sellSelected?' selectedSell':''}" id="caseChoice${i}">
       <input type="checkbox" ${x.sellSelected?'checked':''} onchange="toggleFiveCaseSell(${i},this.checked)">
-      ${carVisual(x.car,'caseFiveImage')}
-      <span><b>${x.car.model||x.car.name||'Машина'}</b><small>${money(Number(x.value||carRubValue(x.car)||0))}</small></span>
+      <span class="caseChoiceState">${x.sellSelected?'ПРОДАТЬ':'ЗАБРАТЬ'}</span>
+      <div class="choiceVisual">${carVisual(x.car,'carImage')}</div>
+      <b>${x.car.model||x.car.name||'Машина'}</b>
+      <small>${money(Number(x.value||carRubValue(x.car)||0))}</small>
     </label>`).join('')}
    </div>
-   <div class="caseResultActions caseFiveActions">
+   <div class="caseFiveSummary"><span>Общая стоимость</span><b>${money(totalValue)}</b><small>Можно забрать все машины даже сверх лимита гаража.</small></div>
+   <div class="casePrizeActions caseFiveActions">
     <button id="caseMixedActionBtn" class="caseKeep" onclick="resolveSelectedCasePrizes()">Подтвердить выбор</button>
-    <button class="sell" onclick="sellAllCasePrizes()">Продать все · ${money(totalValue)}</button>
+    <button class="caseSell" onclick="sellAllCasePrizes()">Продать все · ${money(totalValue)}</button>
    </div>`;
    updateFiveCaseChoiceButton();
    return;
@@ -5724,17 +5760,21 @@ async function openFiveContainers(id){
    const result=$('caseResult');
    result.innerHTML='';
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
-   result.innerHTML=`<span style="color:var(--muted)">Открыто 5 × «${c.name}»</span>
- <small class="caseChoiceHint">Галочка означает <b>ПРОДАТЬ</b>. Машины без галочки будут добавлены в гараж после подтверждения выбора. Машины из контейнеров можно забрать даже сверх лимита гаража.</small>
+   result.innerHTML=`<div class="caseFiveHeader">
+   <span>Результат открытия</span>
+   <strong>5 × ${c.name}</strong>
+   <small>Нажми на машину, чтобы отметить её на продажу</small>
+ </div>
  <div class="caseFiveChoiceList">
  ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}" id="caseChoice${i}">
   <input type="checkbox" onchange="toggleFiveCaseSell(${i},this.checked)">
+  <span class="caseChoiceState">ЗАБРАТЬ</span>
   <div class="choiceVisual">${carVisual(x.car,'carImage')}</div>
   <b>${x.car.model}${hammerSerialText(x.car)?' · '+hammerSerialText(x.car):''}</b>
   <small>${money(x.value)}</small>
  </label>`).join('')}
  </div>
- <small style="color:var(--muted)">Общая стоимость: ${money(totalValue)} · Свободно мест в гараже: ${free}</small>
+ <div class="caseFiveSummary"><span>Общая стоимость</span><b>${money(totalValue)}</b><small>Машины из контейнера можно забрать даже сверх лимита гаража.</small></div>
  <div class="casePrizeActions">
   <button id="caseMixedActionBtn" class="caseKeep" onclick="resolveSelectedCasePrizes()">Подтвердить выбор</button>
   <button class="caseSell" onclick="sellAllCasePrizes()">Продать все за ${money(totalValue)}</button>
@@ -5748,7 +5788,12 @@ async function openFiveContainers(id){
 function toggleFiveCaseSell(index,checked){
  const x=pendingCasePrizes[index];if(!x)return;
  x.sellSelected=!!checked;
- const card=$('caseChoice'+index);if(card)card.classList.toggle('selectedSell',!!checked);
+ const card=$('caseChoice'+index);
+ if(card){
+   card.classList.toggle('selectedSell',!!checked);
+   const state=card.querySelector('.caseChoiceState');
+   if(state)state.textContent=checked?'ПРОДАТЬ':'ЗАБРАТЬ';
+ }
  updateFiveCaseChoiceButton();
 }
 function updateFiveCaseChoiceButton(){
