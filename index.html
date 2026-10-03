@@ -3855,7 +3855,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.48</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.49</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -6189,9 +6189,6 @@ function syncOwnedCarsWithCurrentCatalog(){
 }
 
 const LOCAL_SAVE_KEY='nr-local-save-v2';
-const TARGETED_WIPE_PLAYER_ID='guest_muohd7xy_hmzexct2';
-const TARGETED_WIPE_ID='target_wipe_guest_muohd7xy_hmzexct2_2026_10_03_v1';
-const TARGETED_WIPE_MARKER='nr-target-wipe-'+TARGETED_WIPE_ID;
 let saveSystemReady=false,saveBusy=false,lastSavedFingerprint='',saveQueued=false;
 
 function buildSaveData(){
@@ -6330,52 +6327,9 @@ async function writeSupabaseGameState(data){
 }
 
 
-function targetedWipeCurrentPlayer(){
- try{return String(chatUser().telegram_id||'')===TARGETED_WIPE_PLAYER_ID}catch(e){return false}
-}
-function targetedWipeApplied(){
- try{return localStorage.getItem(TARGETED_WIPE_MARKER)==='1'}catch(e){return false}
-}
-async function runTargetedOneTimeWipe(){
- if(!targetedWipeCurrentPlayer()||targetedWipeApplied())return false;
-
- // Mark first so this exact wipe cannot loop forever after a reload.
- try{localStorage.setItem(TARGETED_WIPE_MARKER,'1')}catch(e){}
-
- // Delete only this browser player's local game save.
- try{localStorage.removeItem(LOCAL_SAVE_KEY)}catch(e){}
-
- // This ID is a PC/local guest, but clear Telegram cloud too if this build is ever
- // opened in an environment where CloudStorage is available.
- if(cloudAvailable()){
-   try{
-     let count=0;
-     try{
-       const manifest=JSON.parse(await cloudGet(SAVE_MANIFEST)||'{}');
-       count=Math.max(0,Math.min(1023,Number(manifest.chunks)||0));
-     }catch(e){}
-     const keys=[SAVE_MANIFEST];
-     for(let n=0;n<count;n++)keys.push(SAVE_PREFIX+'_chunk_'+n);
-     await cloudRemove(keys);
-   }catch(e){console.warn('Targeted cloud wipe error:',e)}
- }
-
- // Remove only this player's Supabase game state row so the old server save
- // cannot restore itself on the same first launch.
- if(chatDb){
-   try{
-     const r=await chatDb.from('player_profiles').delete().eq('telegram_id',TARGETED_WIPE_PLAYER_ID);
-     if(r.error)console.warn('Targeted Supabase wipe error:',r.error);
-   }catch(e){console.warn('Targeted Supabase wipe error:',e)}
- }
- return true;
-}
 async function loadGame(){
- const targetedWipedNow=await runTargetedOneTimeWipe();
  let raw='',source='new',ss=null;
- if(!targetedWipedNow){
-  try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
- }
+ try{ss=await readSupabaseGameState()}catch(e){console.warn('Supabase load error:',e)}
  if(ss&&!ss.__legacyProfile){raw=JSON.stringify(ss);source='supabase'}
  else{
   try{if(cloudAvailable()){raw=await readCloudSave();if(raw)source='cloud'}}catch(e){console.warn('Cloud load error:',e)}
