@@ -3510,6 +3510,8 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 .promoRow{display:flex;flex-direction:column;gap:9px}.promoRow input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel,#fff);color:var(--text);font:inherit;outline:none}.promoRow input:focus{border-color:var(--text)}
 .promoRow .buy{width:100%}.promoMessage{min-height:18px;font-size:13px;color:var(--muted)}
 @media(max-width:520px){.promoRow{flex-direction:column}.promoRow .buy{width:100%}}
+
+body.caseNavLocked .tabs .tab:not([data-page="containersPage"]){opacity:.38;cursor:not-allowed}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -3822,7 +3824,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.36</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.40</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -4103,6 +4105,12 @@ const SPECIAL_PLATE_REGION_MULTIPLIER={
  '78':0.65,
  '98':0.70
 };
+// На этих регионах цена эпических и легендарных номеров остаётся без нового понижения.
+// На всех остальных регионах итоговая цена делится на 2.5.
+const SPECIAL_PRICE_PROTECTED_REGIONS=new Set([
+ '77','97','99','98','78','777','778','197','177','198','178','199',
+ '50','90','47','23','93'
+]);
 function unifiedSpecialPlateValue(p,rank,region){
  const plate=String(p||'').toUpperCase();
  const digits=(plate.match(/\d{3}/)||[''])[0];
@@ -4121,8 +4129,13 @@ function unifiedSpecialPlateValue(p,rank,region){
  }
 
  // Сначала формируется цена по буквам/цифрам, затем применяется множитель региона.
- const regionMultiplier=SPECIAL_PLATE_REGION_MULTIPLIER[String(region||'')]||1;
- return Math.round(base*(1+letterBonus+digitBonus+comboBonus)*regionMultiplier);
+ const regionKey=String(region||'');
+ const regionMultiplier=SPECIAL_PLATE_REGION_MULTIPLIER[regionKey]||1;
+ let value=base*(1+letterBonus+digitBonus+comboBonus)*regionMultiplier;
+ if((rank==='epic'||rank==='legendary')&&!SPECIAL_PRICE_PROTECTED_REGIONS.has(regionKey)){
+   value/=2.5;
+ }
+ return Math.round(value);
 }
 function epicNumberValue(p,region){return unifiedSpecialPlateValue(p,'epic',region)}
 
@@ -4201,7 +4214,11 @@ function renderLevel(){
  if($('levelXpText'))$('levelXpText').textContent=`${playerXp} / ${need} XP`;
  if($('levelProgressBar'))$('levelProgressBar').style.width=Math.min(100,playerXp/need*100)+'%';
 }
+function syncCaseNavigationLock(){
+ document.body.classList.toggle('caseNavLocked',!!(caseRolling||pendingCasePrize||(Array.isArray(pendingCasePrizes)&&pendingCasePrizes.length)));
+}
 function update(){
+ syncCaseNavigationLock();
  if(typeof renderUpgrader==='function'&&!upgraderBusy) setTimeout(renderUpgrader,0);
  renderLevel();
  if($('storageCapacityLabel'))$('storageCapacityLabel').textContent=inv.length+' / '+storageCap;
@@ -4717,7 +4734,24 @@ if(plateRollBtn){
 window.addEventListener('blur',stopPlateHold);
 $('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='auctionPage')auctionLoad();if(b.dataset.page==='storePage')render();if(b.dataset.page==='dealerPage')renderDealer();if(b.dataset.page==='garagePage')renderGarage();if(b.dataset.page==='collectionPage'){renderMercedesCollection();}update()});
+function containerOpeningBlocksNavigation(){
+ return !!(caseRolling||pendingCasePrize||(Array.isArray(pendingCasePrizes)&&pendingCasePrizes.length));
+}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+ if(containerOpeningBlocksNavigation()&&b.dataset.page!=='containersPage'){
+   const result=$('caseResult');
+   if(result&&result.animate)result.animate([{transform:'translateX(0)'},{transform:'translateX(-7px)'},{transform:'translateX(7px)'},{transform:'translateX(0)'}],{duration:220});
+   return;
+ }
+ document.querySelectorAll('.tab,.page').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');$(b.dataset.page).classList.add('on');
+ if(b.dataset.page==='auctionPage')auctionLoad();
+ if(b.dataset.page==='storePage')render();
+ if(b.dataset.page==='dealerPage')renderDealer();
+ if(b.dataset.page==='garagePage')renderGarage();
+ if(b.dataset.page==='collectionPage'){renderMercedesCollection();}
+ update();
+});
 
 
 
@@ -5609,18 +5643,14 @@ async function openFiveContainers(id){
      };
    });
    const totalValue=pendingCasePrizes.reduce((sum,x)=>sum+x.value,0);
-   const free=Math.max(0,garageCap-cars.length);
-   const mustSell=Math.max(0,pendingCasePrizes.length-free);
-   if(mustSell){
-     [...pendingCasePrizes].sort((a,b)=>a.value-b.value).slice(0,mustSell).forEach(x=>x.sellSelected=true);
-   }
+   pendingCasePrizes.forEach(x=>x.sellSelected=false);
    const result=$('caseResult');
    result.style.display='block';result.classList.remove('pop');void result.offsetWidth;result.classList.add('pop');
    result.innerHTML=`<span style="color:var(--muted)">Открыто 5 × «${c.name}»</span>
- <small class="caseChoiceHint">${mustSell?`В гараже недостаточно мест. Нужно продать минимум ${mustSell} из 5 машин. Самые дешёвые уже отмечены — выбор можно изменить.`:'Отметь галочкой машины, которые нужно ПРОДАТЬ. Неотмеченные останутся и отправятся в гараж.'}</small>
+ <small class="caseChoiceHint">Галочка означает <b>ПРОДАТЬ</b>. Машины без галочки будут добавлены в гараж после подтверждения выбора. Машины из контейнеров можно забрать даже сверх лимита гаража.</small>
  <div class="caseFiveChoiceList">
- ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}${x.sellSelected?' selectedSell':''}" id="caseChoice${i}">
-  <input type="checkbox" ${x.sellSelected?'checked':''} onchange="toggleFiveCaseSell(${i},this.checked)">
+ ${pendingCasePrizes.map((x,i)=>`<label class="caseFiveChoice ${carGlowClass(x.car)}" id="caseChoice${i}">
+  <input type="checkbox" onchange="toggleFiveCaseSell(${i},this.checked)">
   <div class="choiceVisual">${carVisual(x.car,'carImage')}</div>
   <b>${x.car.model}${hammerSerialText(x.car)?' · '+hammerSerialText(x.car):''}</b>
   <small>${money(x.value)}</small>
@@ -5646,27 +5676,23 @@ function toggleFiveCaseSell(index,checked){
 function updateFiveCaseChoiceButton(){
  const btn=$('caseMixedActionBtn');if(!btn||!pendingCasePrizes.length)return;
  const sell=pendingCasePrizes.filter(x=>x.sellSelected),keep=pendingCasePrizes.length-sell.length;
- const value=sell.reduce((sum,x)=>sum+x.value,0),free=Math.max(0,garageCap-cars.length);
- btn.disabled=keep>free;
- btn.textContent=keep>free?'Нужно '+keep+' мест в гараже':'Подтвердить: продать '+sell.length+' · оставить '+keep+(sell.length?' · +'+money(value):'');
+ const value=sell.reduce((sum,x)=>sum+x.value,0);
+ btn.disabled=false;
+ btn.textContent='Подтвердить: продать '+sell.length+' · забрать '+keep+(sell.length?' · +'+money(value):'');
 }
 function resolveSelectedCasePrizes(){
  if(!pendingCasePrizes.length)return;
  const sell=pendingCasePrizes.filter(x=>x.sellSelected),keep=pendingCasePrizes.filter(x=>!x.sellSelected);
- const free=garageCap-cars.length;
- if(keep.length>free){alert('Недостаточно мест в гараже. Нужно '+keep.length+' свободных мест.');return}
  const value=sell.reduce((sum,x)=>sum+x.value,0);
- if(keep.length)cars.push(...keep.map(x=>x.car));
+ if(keep.length)cars.unshift(...keep.map(x=>x.car));
  if(value){bal+=value;earned+=value}
  const kept=keep.length,sold=sell.length;pendingCasePrizes=[];hideCaseOpening();
  $('caseResult').innerHTML='<strong>Оставлено: '+kept+' · Продано: '+sold+(sold?' за '+money(value):'')+'</strong>';
- update();renderGarage();renderDealer();renderUpgrader();renderContainers();saveGame(true);
+ update();renderGarage();renderDealer();renderUpgrader();renderContainers();saveGame(true);syncPublicProfile();
 }
 function keepAllCasePrizes(){
  if(!pendingCasePrizes.length)return;
- const free=garageCap-cars.length;
- if(free<pendingCasePrizes.length){alert('Недостаточно мест в гараже. Нужно '+pendingCasePrizes.length+' свободных мест.');return}
- cars.push(...pendingCasePrizes.map(x=>x.car));
+ cars.unshift(...pendingCasePrizes.map(x=>x.car));
  pendingCasePrizes=[]; hideCaseOpening();
  const result=$('caseResult');result.innerHTML='<strong>Все 5 машин отправлены в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
@@ -5709,8 +5735,7 @@ async function openContainer(id){
 }
 function keepCasePrize(){
  if(!pendingCasePrize)return;
- if(cars.length>=garageCap){alert('Нет свободного слота в гараже. Продай машину или улучши гараж.');return}
- cars.push(pendingCasePrize.car);
+ cars.unshift(pendingCasePrize.car);
  pendingCasePrize=null; hideCaseOpening();
  const result=$('caseResult');result.innerHTML='<strong>Машина отправлена в гараж</strong>';
  update();renderGarage();renderDealer();renderUpgrader();renderContainers();
