@@ -3829,6 +3829,40 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
     display:none!important;
   }
 }
+
+/* ===== v0.2.62 PHONE GARAGE + AUCTION INSTALLED PLATES ===== */
+@media(max-width:620px){
+  /* Те же параметры, что у номера в хранилище:
+     текст 625%, вниз 25%; регион вниз 5%. */
+  .garagePlate .miniPlate.ccdPlate .miniMain,
+  #auctionPage .garagePlate .miniPlate.ccdPlate .miniMain,
+  #auctionPage .carCard .miniPlate.ccdPlate .miniMain,
+  .auctionCard .garagePlate .miniPlate.ccdPlate .miniMain,
+  .auctionCard .miniPlate.ccdPlate .miniMain{
+    font-size:625%!important;
+    background:transparent!important;
+    background-image:none!important;
+    border:0!important;
+    box-shadow:none!important;
+    text-decoration:none!important;
+    line-height:.72!important;
+    overflow:visible!important;
+    isolation:isolate!important;
+    position:relative!important;
+    z-index:5!important;
+  }
+
+
+  .garagePlate .miniPlate.ccdPlate .miniMain::before,
+  .garagePlate .miniPlate.ccdPlate .miniMain::after,
+  #auctionPage .miniPlate.ccdPlate .miniMain::before,
+  #auctionPage .miniPlate.ccdPlate .miniMain::after,
+  .auctionCard .miniPlate.ccdPlate .miniMain::before,
+  .auctionCard .miniPlate.ccdPlate .miniMain::after{
+    content:none!important;
+    display:none!important;
+  }
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
