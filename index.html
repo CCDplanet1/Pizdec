@@ -3738,6 +3738,135 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  .casePrizeActions.caseFiveActions{display:grid!important;grid-template-columns:1fr!important}
  .caseFiveActions button{width:100%;max-width:none}
 }
+
+/* ===== v0.2.52 MOBILE UI CONSOLIDATION ===== */
+@media(max-width:700px){
+ html,body{width:100%;max-width:100%;overflow-x:hidden}
+ body{font-size:14px}
+ .app{width:100%;max-width:100%;padding:10px 10px calc(18px + env(safe-area-inset-bottom))!important}
+ .head{gap:8px!important;margin-bottom:10px!important;flex-wrap:wrap}
+ .brand{min-width:0;flex:1 1 120px}
+ .brand b{font-size:19px!important;line-height:1.05}
+ .brand span{font-size:10px!important;white-space:normal}
+ .wallet{margin-left:auto!important;padding:7px 10px!important;border-radius:12px!important;max-width:48vw}
+ .wallet small{font-size:9px!important}
+ .wallet strong{font-size:15px!important;white-space:nowrap}
+
+ /* Navigation */
+ .tabs{width:100%!important;max-width:none!important;margin:0 0 10px!important;padding:4px!important;gap:4px!important;border-radius:14px!important;
+   display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;overflow:visible!important}
+ .tab{min-width:0!important;min-height:38px!important;padding:7px 4px!important;border-radius:10px!important;
+   font-size:10px!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
+
+ /* Generic headers / controls */
+ .storeHead{align-items:flex-start!important;gap:8px!important;flex-wrap:wrap}
+ .storeHead h2,.statsTitle{font-size:21px!important}
+ .tools{gap:5px!important;margin:10px 0!important}
+ .filter{padding:7px 9px!important;font-size:10px!important}
+ .sort{margin-left:0!important;max-width:100%;font-size:11px!important}
+ input,select,button{max-width:100%}
+ .settingsCard{padding:13px!important;border-radius:15px!important}
+ .settingRow{gap:8px!important}
+
+ /* Main roll plate */
+ .roll{padding:20px 9px!important;border-radius:18px!important}
+ .roll h1{font-size:20px!important}
+ .plateButton{width:100%!important;margin:22px auto 18px!important}
+ .plate.ccdPlate{width:100%!important;max-width:520px!important;border-width:3px!important;border-radius:9px!important}
+ .plate.ccdPlate .plateMain{font-size:clamp(37px,13.3vw,61px)!important;letter-spacing:-1.8px!important;padding-left:2px!important}
+ .plate.ccdPlate .plateRegion{border-left-width:3px!important}
+ .plate.ccdPlate .regionNum{font-size:clamp(25px,8.6vw,40px)!important;letter-spacing:-1px!important}
+ .plate.ccdPlate .rus{margin-top:4px!important;font-size:8px!important}
+ .plate.ccdPlate .flag{width:20px!important;height:11px!important}
+ .plate.ccdPlate .bolt{width:8px!important;height:8px!important}
+ .info{width:100%!important;grid-template-columns:1fr 1fr!important;gap:8px!important;padding:11px!important;border-radius:14px!important}
+ .info>div:first-child{grid-column:1/-1}
+ .price{font-size:22px!important}.regionInfo{font-size:22px!important}
+
+ /* Storage: two compact cards; plate always keeps RF proportions */
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ .card{min-width:0!important;padding:8px!important;border-radius:13px!important;overflow:hidden}
+ .card .miniPlate.ccdPlate,.garagePlate .miniPlate.ccdPlate,.auctionPlate .miniPlate.ccdPlate,
+ .profileExactGaragePlate .miniPlate.ccdPlate{
+   width:100%!important;max-width:100%!important;aspect-ratio:520/112!important;height:auto!important;
+   border-width:2px!important;border-radius:6px!important;transform:none!important;margin:0!important;overflow:hidden!important
+ }
+ .miniPlate.ccdPlate .miniMain{
+   font-size:clamp(18px,7.1vw,31px)!important;letter-spacing:-1.1px!important;padding:0 2px!important;min-width:0!important
+ }
+ .miniPlate.ccdPlate .miniRegion{border-left:2px solid #111!important;min-width:0!important}
+ .miniPlate.ccdPlate .miniRegion b{font-size:clamp(12px,4.7vw,20px)!important;letter-spacing:-.5px!important}
+ .cardFoot{margin-top:7px!important;gap:3px!important;align-items:flex-start!important;flex-direction:column}
+ .cardPrice{font-size:11px!important;overflow-wrap:anywhere}
+ .tag{font-size:8px!important;padding:3px 5px!important}
+ .sell{padding:7px 5px!important;font-size:10px!important}
+
+ /* Dealer / garage */
+ .dealerGrid,.garageGrid{grid-template-columns:1fr!important;gap:9px!important;margin-top:10px!important}
+ .carCard{width:100%!important;min-width:0!important;padding:11px!important;border-radius:15px!important;overflow:hidden}
+ .carVisual{height:145px!important;border-radius:12px!important}
+ .carVisual img,.carImage{max-width:100%!important;max-height:100%!important;object-fit:contain!important}
+ .carCard h3{font-size:16px!important;margin:9px 0 3px!important;overflow-wrap:anywhere}
+ .carMeta{font-size:10px!important}.carPrice{font-size:17px!important;margin-top:7px!important}
+ .garagePlate{width:100%!important;max-width:100%!important;margin-top:9px!important;overflow:visible!important}
+ .plateSelect,.applyPlate,.buy{font-size:12px!important;padding:9px!important}
+
+ /* Auction: cards and plates must fit screen without distorted text */
+ #auctionPage .auctionGrid,#auctionPage .dealerGrid,#auctionPage .garageGrid,
+ .auctionGrid{grid-template-columns:1fr!important;gap:9px!important}
+ #auctionPage .card,#auctionPage .carCard,.auctionCard{width:100%!important;min-width:0!important;max-width:100%!important;overflow:hidden!important}
+ #auctionPage .miniPlate.ccdPlate,.auctionCard .miniPlate.ccdPlate{
+   width:min(100%,390px)!important;margin:7px auto!important;aspect-ratio:520/112!important
+ }
+ #auctionPage .miniPlate.ccdPlate .miniMain,.auctionCard .miniPlate.ccdPlate .miniMain{
+   font-size:clamp(27px,10vw,42px)!important
+ }
+ #auctionPage .miniPlate.ccdPlate .miniRegion b,.auctionCard .miniPlate.ccdPlate .miniRegion b{
+   font-size:clamp(17px,6.2vw,26px)!important
+ }
+
+ /* Profile / showcase: one card per row on phones so plates are actually readable */
+ .profileShowcase,.profileShowcase.profileGarageShowcase,
+ .profileExactGarageGrid,.showcaseGrid{grid-template-columns:1fr!important;gap:9px!important}
+ .profileGarageCar,.profileExactGarageCard{width:100%!important;min-width:0!important;max-width:100%!important;padding:10px!important;overflow:hidden!important}
+ .profileGaragePlate,.profileExactGaragePlate{width:100%!important;max-width:100%!important;min-height:0!important;overflow:visible!important}
+ .profileGarageCar .profileRusPlate,.profileExactGaragePlate .profileRusPlate{
+   width:100%!important;max-width:100%!important;aspect-ratio:520/112!important;height:auto!important;transform:none!important;margin:7px 0!important
+ }
+ .profileGarageCar .profileRusPlate .profilePlateMain{padding:0 3%!important;gap:1%!important;min-width:0!important}
+ .profileGarageCar .profileRusPlate .profilePlateMain strong,
+ .profileGarageCar .profileRusPlate .profilePlateMain .profilePlateLetters{
+   font-size:clamp(25px,10.2vw,39px)!important;line-height:1!important;letter-spacing:-1.2px!important
+ }
+ .profileGarageCar .profileRusPlate .profilePlateRegion{
+   flex:0 0 24%!important;width:24%!important;min-width:0!important;padding:0 3px!important
+ }
+ .profileGarageCar .profileRusPlate .profilePlateRegion b{font-size:clamp(17px,6.8vw,27px)!important;margin:0!important}
+ .profileGarageCar .profileRusPlate .profilePlateRegion small{font-size:6px!important;margin-top:2px!important}
+
+ /* Containers / upgrader / lottery */
+ .caseFiveChoiceList{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ .caseFiveChoice{min-width:0!important}
+ .upgrader{grid-template-columns:1fr!important}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ .stat{padding:11px!important;border-radius:13px!important}.stat b{font-size:18px!important}
+
+ /* Modals should never be wider than the phone */
+ .modal,.modalCard,.profileModal,.auctionModal,[class*="ModalCard"]{
+   max-width:calc(100vw - 20px)!important;max-height:calc(100vh - 20px)!important
+ }
+}
+
+@media(max-width:390px){
+ .app{padding-left:7px!important;padding-right:7px!important}
+ .tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .grid{gap:5px!important}
+ .card{padding:6px!important}
+ .miniPlate.ccdPlate .miniMain{font-size:clamp(16px,7vw,27px)!important}
+ .miniPlate.ccdPlate .miniRegion b{font-size:clamp(11px,4.5vw,18px)!important}
+ .profileGarageCar .profileRusPlate .profilePlateMain strong,
+ .profileGarageCar .profileRusPlate .profilePlateMain .profilePlateLetters{font-size:clamp(22px,10vw,34px)!important}
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -3855,7 +3984,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.51</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.52</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
