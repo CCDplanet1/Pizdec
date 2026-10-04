@@ -4013,7 +4013,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.51</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.70</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -6208,7 +6208,8 @@ const PROMO_CODES={
  'diamond':{type:'diamonds',amount:100,label:'100 кристаллов'},
  '911':{type:'car',car:'Porsche 911 GT3 RS'},
  'w124':{type:'car',car:'Mercedes-Benz 300E Hammer AMG'},
- 'v888vv88':{type:'plate',plate:'В888ВВ',region:'88'}
+ 'v888vv88':{type:'plate',plate:'В888ВВ',region:'88'},
+ 'collection124':{type:'w124_collection',label:'Все машины для коллекции W124'}
 };
 
 function promoMessage(text,ok=false){
@@ -6222,6 +6223,7 @@ function findPromoCar(name){
  return CARS.find(x=>x.name===name)
    || (typeof MYTHIC_CARRERA_GT!=='undefined'&&MYTHIC_CARRERA_GT.name===name?MYTHIC_CARRERA_GT:null)
    || (typeof MYTHIC_F50!=='undefined'&&MYTHIC_F50.name===name?MYTHIC_F50:null)
+   || (typeof MYTHIC_F40!=='undefined'&&MYTHIC_F40.name===name?MYTHIC_F40:null)
    || (typeof UPGRADE_W124!=='undefined'&&UPGRADE_W124.name===name?UPGRADE_W124:null);
 }
 
@@ -6246,6 +6248,18 @@ async function redeemPromoCode(){
    const m=findPromoCar(promo.car);
    if(!m){promoMessage('Машина для этого промокода временно недоступна.');return}
    cars.unshift({...m,id:++carSeq,obtainedAt:Date.now(),promoCode:key});
+ }else if(promo.type==='w124_collection'){
+   const models=mercedesCollectionModels();
+   const missing=models.filter(name=>!hasCarModel(name));
+   const rewardCars=[];
+   for(const name of missing){
+     const m=findPromoCar(name);
+     if(!m){promoMessage('Не удалось найти машину коллекции: '+name);return}
+     rewardCars.push({...m,id:++carSeq,obtainedAt:Date.now(),promoCode:key,collectionPromo:true});
+   }
+   // Для тестового промокода машины выдаются даже сверх текущего лимита гаража,
+   // чтобы можно было получить всю коллекцию одним кодом.
+   cars.unshift(...rewardCars);
  }else if(promo.type==='plate'){
    if(inv.length>=storageCap){promoMessage('В хранилище номеров нет свободного места.');return}
    const plateText=promo.plate,region=String(promo.region);
