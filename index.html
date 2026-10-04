@@ -3738,6 +3738,47 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  .casePrizeActions.caseFiveActions{display:grid!important;grid-template-columns:1fr!important}
  .caseFiveActions button{width:100%;max-width:none}
 }
+\n/* ===== PHONE-ONLY roll/plate fixes ===== */
+@media(max-width:620px){
+ /* Rare+ reveal: keep glow animation, but never scale/brighten the white plate layer.
+    This removes the white strip that could appear in Telegram/mobile WebView. */
+ .plate.revealEpic,.plate.revealLegendary,.plate.revealMythic,
+ .plate.epic.drop,.plate.legendary.drop{
+   animation:none!important;transform:none!important;filter:none!important;
+ }
+ .plate.revealEpic{box-shadow:0 0 28px 8px rgba(163,83,255,.72),0 0 55px rgba(163,83,255,.22)!important}
+ .plate.revealLegendary{box-shadow:0 0 34px 9px rgba(255,190,30,.82),0 0 68px rgba(255,190,30,.28)!important}
+ .plate.revealMythic{box-shadow:0 0 38px 10px rgba(255,30,30,.86),0 0 76px rgba(255,30,30,.32)!important}
+
+ /* Storage plate uses exactly the same phone geometry and typography as the roll plate. */
+ #storage .miniPlate.ccdPlate{
+   display:grid!important;grid-template-columns:75.7% 24.3%!important;
+   width:100%!important;max-width:100%!important;aspect-ratio:465/94!important;
+   border:4px solid #111!important;border-radius:12px!important;
+   background:linear-gradient(#fff,#f0f0ed)!important;box-sizing:border-box!important;
+ }
+ #storage .miniPlate.ccdPlate .miniMain{
+   width:100%!important;height:100%!important;min-width:0!important;
+   padding:0 1.5%!important;margin:0!important;display:flex!important;
+   align-items:center!important;justify-content:center!important;white-space:nowrap!important;
+   font-size:clamp(66px,21.3vw,108px)!important;line-height:.78!important;
+   letter-spacing:0!important;transform:translateY(25%)!important;overflow:visible!important;
+ }
+ #storage .miniPlate.ccdPlate .miniMain .plateLetter.first,
+ #storage .miniPlate.ccdPlate .miniMain .plateDigits{margin-right:2.7%!important}
+ #storage .miniPlate.ccdPlate .miniRegion{
+   width:100%!important;height:100%!important;min-width:0!important;
+   border-left:4px solid #111!important;display:flex!important;align-items:center!important;
+   justify-content:center!important;overflow:visible!important;box-sizing:border-box!important;
+ }
+ #storage .miniPlate.ccdPlate .miniRegion b{
+   font-size:clamp(32px,10.8vw,58px)!important;line-height:.8!important;letter-spacing:-2px!important;
+ }
+}
+@media(max-width:390px){
+ #storage .miniPlate.ccdPlate .miniMain{font-size:clamp(60px,20.55vw,87px)!important}
+ #storage .miniPlate.ccdPlate .miniRegion b{font-size:clamp(29px,10vw,48px)!important}
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -4840,27 +4881,34 @@ function renderGarage(){
 
  if(typeof refreshPendingCasePrize==='function')setTimeout(refreshPendingCasePrize,0);}
 const plateRollBtn=$('plateButton');
-let plateHoldTimer=null,plateHoldStartTimer=null,plateHoldActive=false;
+let plateHoldTimer=null,plateHoldStartTimer=null,plateHoldActive=false,platePointerId=null,plateIgnoreClick=false;
 function stopPlateHold(){
  if(plateHoldStartTimer){clearTimeout(plateHoldStartTimer);plateHoldStartTimer=null}
  if(plateHoldTimer){clearInterval(plateHoldTimer);plateHoldTimer=null}
- plateHoldActive=false;
+ plateHoldActive=false;platePointerId=null;
 }
 function requestPlateRoll(){if(inv.length<storageCap&&bal>=COST)roll()}
 if(plateRollBtn){
- plateRollBtn.addEventListener('click',()=>{if(!plateHoldActive)requestPlateRoll()});
+ plateRollBtn.addEventListener('click',e=>{if(plateIgnoreClick){plateIgnoreClick=false;e.preventDefault();return}requestPlateRoll()});
  plateRollBtn.addEventListener('pointerdown',e=>{
   if(e.button!==undefined&&e.button!==0)return;
-  plateHoldActive=true;
+  stopPlateHold();platePointerId=e.pointerId;plateHoldActive=true;plateIgnoreClick=true;
+  try{plateRollBtn.setPointerCapture(e.pointerId)}catch(_){ }
   requestPlateRoll();
-  plateHoldTimer=setInterval(requestPlateRoll,100);
+  plateHoldTimer=setInterval(()=>{if(plateHoldActive)requestPlateRoll()},100);
  });
- ['pointerup','pointercancel','pointerleave'].forEach(ev=>plateRollBtn.addEventListener(ev,()=>{
-   const wasHold=plateHoldActive;stopPlateHold();
-   if(wasHold)setTimeout(()=>{plateHoldActive=false},0);
- }));
+ const endPlateHold=e=>{
+  if(platePointerId!==null&&e.pointerId!==undefined&&e.pointerId!==platePointerId)return;
+  stopPlateHold();setTimeout(()=>{plateIgnoreClick=false},0);
+ };
+ plateRollBtn.addEventListener('pointerup',endPlateHold);
+ plateRollBtn.addEventListener('pointercancel',endPlateHold);
+ plateRollBtn.addEventListener('lostpointercapture',endPlateHold);
+ document.addEventListener('pointerup',endPlateHold,true);
+ document.addEventListener('pointercancel',endPlateHold,true);
 }
 window.addEventListener('blur',stopPlateHold);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopPlateHold()});
 $('sellAll').onclick=()=>{let sellable=inv.filter(x=>!x.locked);if(!sellable.length)return;let t=sellable.reduce((s,x)=>s+x.v,0);bal+=t;earned+=t;inv=inv.filter(x=>x.locked);update();render()};$('sort').onchange=render;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;render()});
 function containerOpeningBlocksNavigation(){
