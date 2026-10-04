@@ -3779,6 +3779,20 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  #storage .miniPlate.ccdPlate .miniMain{font-size:clamp(60px,20.55vw,87px)!important}
  #storage .miniPlate.ccdPlate .miniRegion b{font-size:clamp(29px,10vw,48px)!important}
 }
+
+/* ===== v0.2.54 PHONE STORAGE PLATE POSITION/SIZE ===== */
+@media(max-width:620px){
+  /* Только хранилище на телефоне */
+  #storagePage .miniPlate.ccdPlate .miniMain,
+  #storage .miniPlate.ccdPlate .miniMain{
+    font-size:110%!important;
+    transform:translateY(25%)!important;
+  }
+  #storagePage .miniPlate.ccdPlate .miniRegion,
+  #storage .miniPlate.ccdPlate .miniRegion{
+    transform:translateY(5%)!important;
+  }
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
