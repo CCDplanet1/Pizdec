@@ -4166,7 +4166,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.86</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.87</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5072,7 +5072,11 @@ async function claimMercedesCollection(){
  const models=mercedesCollectionModels();if(!models.every(hasCarModel))return;
  if(collectionHammerClaimed||cars.some(c=>c.collectionReward&&c.model==='Mercedes-Benz 300E Hammer AMG'))return;
  // Reward is added after ingredients are consumed, so a full garage is fine.
- const serial=await claimHammerSerial();if(!serial){alert('Не удалось получить серийный номер Hammer.');return}
+ const serial=await claimHammerSerial();if(!serial){
+  const reason=String(window.__hammerSerialError||'Неизвестная ошибка Supabase');
+  alert('Не удалось получить серийный номер Hammer.\n\n'+reason);
+  return
+ }
  const consumeIds=[];
  for(const model of models){
   const car=cars.find(c=>(c.model||c.name)===model&&!c.locked&&!consumeIds.includes(c.id));
@@ -7463,6 +7467,88 @@ end;
 $$;
 revoke all on function public.claim_car_serial(text,text) from public;
 grant execute on function public.claim_car_serial(text,text) to anon, authenticated;
+-->
+
+<!-- v0.2.87 HAMMER SERIAL FIX — run once in Supabase SQL Editor
+
+create table if not exists public.hammer_editions (
+  serial_no bigint primary key,
+  telegram_id text not null,
+  claimed_at timestamptz not null default now(),
+  constraint hammer_editions_serial_range check (serial_no between 1 and 54)
+);
+
+alter table public.hammer_editions enable row level security;
+
+drop policy if exists "hammer editions readable" on public.hammer_editions;
+create policy "hammer editions readable"
+on public.hammer_editions
+for select
+to anon, authenticated
+using (true);
+
+create or replace function public.claim_hammer_serial(p_telegram_id text)
+returns bigint
+language plpgsql
+security definer
+set search_path=public
+as $$
+declare
+  v_serial bigint;
+begin
+  perform pg_advisory_xact_lock(hashtext('hammer_editions'));
+
+  select gs
+    into v_serial
+  from generate_series(1,54) as gs
+  where not exists (
+    select 1
+    from public.hammer_editions h
+    where h.serial_no=gs
+  )
+  order by gs
+  limit 1;
+
+  if v_serial is null then
+    return null;
+  end if;
+
+  insert into public.hammer_editions(serial_no,telegram_id)
+  values(v_serial,coalesce(nullif(p_telegram_id,''),'unknown'));
+
+  return v_serial;
+end;
+$$;
+
+revoke all on function public.claim_hammer_serial(text) from public;
+grant execute on function public.claim_hammer_serial(text) to anon, authenticated;
+
+-- Keep exact/admin Hammer grants compatible with the same table.
+create or replace function public.admin_claim_hammer_serial(
+  p_telegram_id text, p_serial bigint
+) returns bigint
+language plpgsql
+security definer
+set search_path=public
+as $$
+begin
+  if p_serial is null or p_serial < 1 or p_serial > 54 then
+    raise exception 'Invalid Hammer serial';
+  end if;
+
+  perform pg_advisory_xact_lock(hashtext('hammer_editions'));
+
+  delete from public.hammer_editions where serial_no=p_serial;
+  insert into public.hammer_editions(serial_no,telegram_id)
+  values(p_serial,coalesce(nullif(p_telegram_id,''),'unknown'));
+
+  return p_serial;
+end;
+$$;
+
+revoke all on function public.admin_claim_hammer_serial(text,bigint) from public;
+grant execute on function public.admin_claim_hammer_serial(text,bigint) to anon, authenticated;
+
 -->
 
 <!-- v0.1.82 exact admin VIN grant RPCs (run once in Supabase SQL Editor)
