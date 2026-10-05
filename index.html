@@ -3924,9 +3924,18 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  .caseCard .caseImageWrap{height:145px!important}
  .caseCard .caseImage{height:138px!important;max-width:95%!important}
 }
+
+/* v0.2.77 CASE COLOR THEMES */
+.caseCard.case-common{border-color:#b87333!important;background:linear-gradient(145deg,rgba(184,115,51,.22),rgba(184,115,51,.055))!important}
+.caseCard.case-rare{border-color:#aeb7c2!important;background:linear-gradient(145deg,rgba(190,200,214,.20),rgba(190,200,214,.045))!important}
+.caseCard.case-legendary{border-color:#e3b341!important;background:linear-gradient(145deg,rgba(227,179,65,.20),rgba(227,179,65,.045))!important}
+.caseCard:has(img[src*="bmw.png"]){border-color:#3b8eea!important;background:linear-gradient(145deg,rgba(45,128,220,.20),rgba(45,128,220,.045))!important}
+.caseCard:has(img[src*="mercedes.png"]){border-color:#c5cbd2!important;background:linear-gradient(145deg,rgba(197,203,210,.18),rgba(120,130,140,.045))!important}
+.caseCard:has(img[src*="ferrari.png"]){border-color:#e53935!important;background:linear-gradient(145deg,rgba(229,57,53,.20),rgba(229,57,53,.045))!important}
+.caseCard:has(img[src*="porsche.png"]){border-color:#d6a934!important;background:linear-gradient(145deg,rgba(214,169,52,.20),rgba(170,32,35,.055))!important}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Кейсы</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -4041,7 +4050,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.76</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.77</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5822,9 +5831,9 @@ function casePool(c){
    return all.filter(x=>!excluded.has(x.name)&&carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
  }
  if(c.id==='gold'){
-   const pool=all.filter(x=>x.name!=='Ferrari F40'&&x.name!=='Ferrari F50'&&carBaseValue(x)>=30000000);
-   const countach=all.find(x=>x.name==='Lamborghini Countach 800-4');
-   if(countach&&!pool.some(x=>x.name===countach.name))pool.push(countach);
+   const allowedLimited=new Set(['Lamborghini Countach','Lamborghini Countach 800-4']);
+   const pool=all.filter(x=>{if(x.name==='Ferrari F40'||x.name==='Ferrari F50')return false;if(isGameLimitedCar(x)&&!allowedLimited.has(x.name))return false;return carBaseValue(x)>=30000000||allowedLimited.has(x.name)});
+   for(const name of allowedLimited){const car=all.find(x=>x.name===name);if(car&&!pool.some(x=>x.name===name))pool.push(car)}
    return pool;
  }
  return [];
@@ -5832,13 +5841,14 @@ function casePool(c){
 function newCaseWeight(m){const v=Math.max(1,carBaseValue(m));return Math.max(.000001,Math.pow(1000000/v,.72))}
 function weightedCaseCar(pool,c){
  if(!pool.length)return null;
+ if(c&&c.id==='gold'){const r=Math.random()*100;if(r<1)return pool.find(x=>x.name==='Lamborghini Countach')||pool[0];if(r<2)return pool.find(x=>x.name==='Lamborghini Countach 800-4')||pool[0];const regular=pool.filter(x=>x.name!=='Lamborghini Countach'&&x.name!=='Lamborghini Countach 800-4');if(!regular.length)return pool[Math.floor(Math.random()*pool.length)];const weights=regular.map(newCaseWeight),total=weights.reduce((a,b)=>a+b,0);let rr=Math.random()*total;for(let i=0;i<regular.length;i++){rr-=weights[i];if(rr<=0)return regular[i]}return regular[regular.length-1]}
  const weights=pool.map(newCaseWeight),total=weights.reduce((a,b)=>a+b,0);let r=Math.random()*total;
  for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0)return pool[i]} return pool[pool.length-1];
 }
-function caseChancePercent(m,pool,c){const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
+function caseChancePercent(m,pool,c){if(c&&c.id==='gold'){const special=new Set(['Lamborghini Countach','Lamborghini Countach 800-4']);if(special.has(m.name))return 1;const regular=pool.filter(x=>!special.has(x.name));const total=regular.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*98:0}const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
 function caseExpectedValue(pool,c){return pool.reduce((sum,m)=>sum+carBaseValue(m)*(caseChancePercent(m,pool,c)/100),0)}
 function casePrice(c){
- const fixed={bmw:6500000,mercedes:6500000,gold:25000000,ferrari:60000000,porsche:50000000};
+ const fixed={bmw:6500000,mercedes:6500000,gold:45000000,ferrari:60000000,porsche:50000000};
  if(fixed[c.id]!=null)return fixed[c.id];
  const pool=casePool(c),ev=caseExpectedValue(pool,c);
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
