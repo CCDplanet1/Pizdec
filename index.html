@@ -3902,6 +3902,28 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 .caseImage{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.18))}
 .carGlowLimited,.profileExactGarageCard.limited{background:linear-gradient(145deg,rgba(255,79,179,.22),rgba(255,79,179,.08))!important;border-color:rgba(255,79,179,.82)!important;box-shadow:0 0 24px rgba(255,61,166,.65),0 0 48px rgba(255,61,166,.16)!important}
 @media(max-width:620px){.caseImageWrap{height:120px}.caseImage{max-width:240px}}
+
+/* ===== v0.2.74 CASE ART VISIBILITY ===== */
+.caseCard .caseImageWrap{
+ width:100%!important;
+ height:180px!important;
+ margin:0 0 12px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ overflow:visible!important;
+}
+.caseCard .caseImage{
+ display:block!important;
+ width:auto!important;
+ max-width:100%!important;
+ height:170px!important;
+ object-fit:contain!important;
+}
+@media(max-width:620px){
+ .caseCard .caseImageWrap{height:145px!important}
+ .caseCard .caseImage{height:138px!important;max-width:95%!important}
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -4019,7 +4041,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.73</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.75</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5164,12 +5186,13 @@ async function runUpgrade(){
 }
 
 const CASE_DEFS=[
- {id:'bronze',name:'Бронзовый кейс',cls:'case-common',image:'bronze.png',desc:'Бюджетные машины из общего пула — до 5 000 000 ₽.'},
- {id:'silver',name:'Серебряный кейс',cls:'case-rare',image:'silver.png',desc:'Машины среднего сегмента — от 5 000 000 ₽ до 30 000 000 ₽.'},
- {id:'gold',name:'Золотой кейс',cls:'case-legendary',image:'gold.png',desc:'Дорогие машины общего пула — от 30 000 000 ₽.'},
- {id:'bmw',name:'Кейс BMW',cls:'case-rare',image:'bmw.png',desc:'Все автомобили BMW, которые есть в игре.'},
- {id:'mercedes',name:'Кейс Mercedes',cls:'case-legendary',image:'mercedes.png',desc:'Все Mercedes-Benz и Mercedes-AMG, кроме W124 300E Hammer.'},
- {id:'ferrari',name:'Кейс Ferrari',cls:'case-legendary',image:'ferrari.png',desc:'Все Ferrari, включая Ferrari F40 и Ferrari F50.'}
+ {id:'bronze',name:'Бронзовый кейс',cls:'case-common',image:'images3/bronze.png',desc:'Бюджетные машины из общего пула — до 5 000 000 ₽.'},
+ {id:'silver',name:'Серебряный кейс',cls:'case-rare',image:'images3/silver.png',desc:'Машины среднего сегмента — от 5 000 000 ₽ до 30 000 000 ₽.'},
+ {id:'gold',name:'Золотой кейс',cls:'case-legendary',image:'images3/gold.png',desc:'Дорогие машины общего пула — от 30 000 000 ₽.'},
+ {id:'bmw',name:'Кейс BMW',cls:'case-rare',image:'images3/bmw.png',desc:'Все автомобили BMW, которые есть в игре.'},
+ {id:'mercedes',name:'Кейс Mercedes',cls:'case-legendary',image:'images3/mercedes.png',desc:'Все Mercedes-Benz и Mercedes-AMG, кроме W124 300E Hammer.'},
+ {id:'ferrari',name:'Кейс Ferrari',cls:'case-legendary',image:'images3/ferrari.png',desc:'Все Ferrari из игры, кроме Ferrari F40.'},
+ {id:'porsche',name:'Кейс Porsche',cls:'case-legendary',image:'images3/porsche.png',desc:'Все автомобили Porsche из игры, включая лимитированные.'}
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
@@ -5791,10 +5814,11 @@ function casePool(c){
  const all=allCaseCars().sort((a,b)=>carBaseValue(a)-carBaseValue(b));
  if(c.id==='bmw')return all.filter(x=>String(x.name||'').startsWith('BMW '));
  if(c.id==='mercedes')return all.filter(x=>{const n=String(x.name||'');return (n.startsWith('Mercedes-Benz ')||n.startsWith('Mercedes-AMG '))&&n!=='Mercedes-Benz 300E Hammer AMG'});
- if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari '));
- if(c.id==='bronze')return all.filter(x=>carBaseValue(x)<5000000);
- if(c.id==='silver')return all.filter(x=>carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
- if(c.id==='gold')return all.filter(x=>carBaseValue(x)>=30000000);
+ if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari ')&&x.name!=='Ferrari F40');
+ if(c.id==='porsche')return all.filter(x=>String(x.name||'').startsWith('Porsche '));
+ if(c.id==='bronze')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)<5000000);
+ if(c.id==='silver')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
+ if(c.id==='gold')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)>=30000000);
  return [];
 }
 function newCaseWeight(m){const v=Math.max(1,carBaseValue(m));return Math.max(.000001,Math.pow(1000000/v,.72))}
@@ -5805,7 +5829,12 @@ function weightedCaseCar(pool,c){
 }
 function caseChancePercent(m,pool,c){const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
 function caseExpectedValue(pool,c){return pool.reduce((sum,m)=>sum+carBaseValue(m)*(caseChancePercent(m,pool,c)/100),0)}
-function casePrice(c){const pool=casePool(c),ev=caseExpectedValue(pool,c);return Math.max(10000,Math.round((ev/.82)/5000)*5000)}
+function casePrice(c){
+ const fixed={bmw:6500000,mercedes:6500000,gold:30000000,ferrari:60000000,porsche:50000000};
+ if(fixed[c.id]!=null)return fixed[c.id];
+ const pool=casePool(c),ev=caseExpectedValue(pool,c);
+ return Math.max(10000,Math.round((ev/.82)/5000)*5000);
+}
 function renderContainers(){
  const root=$('containerGrid');if(!root)return;
  root.innerHTML=CASE_DEFS.map(c=>{
