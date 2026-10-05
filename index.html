@@ -3975,6 +3975,19 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  .caseDropName{font-size:9px;min-height:21px}
  .caseDropChance,.caseDropPrice{font-size:8px}
 }
+
+/* ===== v0.2.81 CASE PREVIEW IMAGE FALLBACKS + RARITY ===== */
+.caseDropRarity{
+ display:inline-flex;align-items:center;justify-content:center;
+ max-width:100%;margin-top:3px;padding:2px 6px;border-radius:999px;
+ font-size:9px;font-weight:900;line-height:1.2;background:#273446;color:#dce7f2
+}
+.caseDropRarity.rarity-rare{background:rgba(45,132,255,.18);color:#74b1ff}
+.caseDropRarity.rarity-epic{background:rgba(164,74,255,.18);color:#c68aff}
+.caseDropRarity.rarity-legendary{background:rgba(255,187,35,.18);color:#ffd05c}
+.caseDropRarity.rarity-mythic{background:rgba(255,52,52,.18);color:#ff7373}
+.caseDropRarity.rarity-limited{background:rgba(255,61,166,.18);color:#ff78c1}
+@media(max-width:620px){.caseDropRarity{font-size:8px;padding:2px 5px}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Кейсы</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -4092,7 +4105,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.80</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.81</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5913,8 +5926,26 @@ function casePrice(c){
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
 }
 
-function caseCarImage(m){
- return String(m?.img||m?.image||m?.src||'');
+function caseCarImageCandidates(m){
+ const raw=String(m?.img||m?.image||m?.src||'').trim();
+ if(!raw)return [];
+ if(/^(?:https?:|data:|blob:|\/)/i.test(raw))return [raw];
+ if(/^images(?:2|3)?\//i.test(raw))return [raw];
+ const file=raw.replace(/^\.\//,'');
+ return [`images/${file}`,`images2/${file}`,`images3/${file}`];
+}
+function caseCarImgTag(m){
+ const list=caseCarImageCandidates(m);
+ if(!list.length)return '';
+ const encoded=encodeURIComponent(JSON.stringify(list));
+ return `<img src="${list[0]}" data-case-imgs="${encoded}" data-case-i="0" alt="${m.name}" loading="lazy" onerror="caseCarImgFallback(this)">`;
+}
+function caseCarImgFallback(img){
+ let list=[];
+ try{list=JSON.parse(decodeURIComponent(img.dataset.caseImgs||''))}catch(e){}
+ let i=Number(img.dataset.caseI||0)+1;
+ if(i<list.length){img.dataset.caseI=String(i);img.src=list[i];}
+ else img.style.visibility='hidden';
 }
 function openCaseDrops(caseId){
  const c=CASE_DEFS.find(x=>x.id===caseId); if(!c)return;
@@ -5923,11 +5954,12 @@ function openCaseDrops(caseId){
  const grid=document.getElementById('caseDropGrid');
  if(title)title.textContent=c.name+' · '+pool.length+' машин';
  if(grid)grid.innerHTML=pool.map(m=>{
-   const img=caseCarImage(m);
    const chance=caseChancePercent(m,pool,c);
-   return `<div class="caseDropCar">
-     ${img?`<img src="${img}" alt="${m.name}" loading="lazy">`:''}
+   const rarity=carRarity(m);
+   return `<div class="caseDropCar ${carGlowClass(m)}">
+     ${caseCarImgTag(m)}
      <div class="caseDropName">${m.name}</div>
+     <div class="caseDropRarity rarity-${rarity.rank}">${rarity.name}</div>
      <div class="caseDropChance">${chance<0.01?chance.toFixed(3):chance.toFixed(2)}%</div>
      <div class="caseDropPrice">${money(carBaseValue(m))}</div>
    </div>`;
