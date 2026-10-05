@@ -4041,7 +4041,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.75</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.76</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5817,8 +5817,16 @@ function casePool(c){
  if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari ')&&x.name!=='Ferrari F40');
  if(c.id==='porsche')return all.filter(x=>String(x.name||'').startsWith('Porsche '));
  if(c.id==='bronze')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)<5000000);
- if(c.id==='silver')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
- if(c.id==='gold')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)>=30000000);
+ if(c.id==='silver'){
+   const excluded=new Set(['Ferrari F40','DeLorean DMC-12','DeLorean DMC-12 BTTF','Nissan GT-R GTT Draco','Nissan GT-R GTT Lucifer']);
+   return all.filter(x=>!excluded.has(x.name)&&carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
+ }
+ if(c.id==='gold'){
+   const pool=all.filter(x=>x.name!=='Ferrari F40'&&x.name!=='Ferrari F50'&&carBaseValue(x)>=30000000);
+   const countach=all.find(x=>x.name==='Lamborghini Countach 800-4');
+   if(countach&&!pool.some(x=>x.name===countach.name))pool.push(countach);
+   return pool;
+ }
  return [];
 }
 function newCaseWeight(m){const v=Math.max(1,carBaseValue(m));return Math.max(.000001,Math.pow(1000000/v,.72))}
@@ -5830,7 +5838,7 @@ function weightedCaseCar(pool,c){
 function caseChancePercent(m,pool,c){const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
 function caseExpectedValue(pool,c){return pool.reduce((sum,m)=>sum+carBaseValue(m)*(caseChancePercent(m,pool,c)/100),0)}
 function casePrice(c){
- const fixed={bmw:6500000,mercedes:6500000,gold:30000000,ferrari:60000000,porsche:50000000};
+ const fixed={bmw:6500000,mercedes:6500000,gold:25000000,ferrari:60000000,porsche:50000000};
  if(fixed[c.id]!=null)return fixed[c.id];
  const pool=casePool(c),ev=caseExpectedValue(pool,c);
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
