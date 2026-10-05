@@ -3896,6 +3896,12 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
     font-size:150%!important;
   }
 }
+
+/* ===== v0.2.73 CASE IMAGES + LIMITED PINK ===== */
+.caseImageWrap{height:150px;display:flex;align-items:center;justify-content:center;background:transparent!important}
+.caseImage{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.18))}
+.carGlowLimited,.profileExactGarageCard.limited{background:linear-gradient(145deg,rgba(255,79,179,.22),rgba(255,79,179,.08))!important;border-color:rgba(255,79,179,.82)!important;box-shadow:0 0 24px rgba(255,61,166,.65),0 0 48px rgba(255,61,166,.16)!important}
+@media(max-width:620px){.caseImageWrap{height:120px}.caseImage{max-width:240px}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Контейнеры</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -3976,9 +3982,9 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <div class="upgradeResult" id="upgradeResult"></div>
 </section>
 <section class="page" id="containersPage">
-<h2 class="statsTitle">Контейнеры</h2>
-<p style="color:var(--muted);margin-top:-6px">Открой контейнер и получи случайный автомобиль. Чем выше редкость контейнера, тем дороже пул машин.</p>
-<label class="caseFastToggle"><input type="checkbox" id="fastCaseRoll" checked> Быстрый прокрут контейнеров</label><div class="caseOpeningStage" id="caseOpeningStage"><div class="caseRouletteWrap" id="caseRouletteWrap"><div class="caseRoulette" id="caseRoulette"><div class="caseTrack" id="caseTrack"></div></div></div><div class="caseResult" id="caseResult" style="display:none"></div></div><div class="containerGrid" id="containerGrid"></div>
+<h2 class="statsTitle">Кейсы</h2>
+<p style="color:var(--muted);margin-top:-6px">Открой кейс и получи случайный автомобиль. Машины распределены по цене и брендовым кейсам.</p>
+<label class="caseFastToggle"><input type="checkbox" id="fastCaseRoll" checked> Быстрый прокрут кейсов</label><div class="caseOpeningStage" id="caseOpeningStage"><div class="caseRouletteWrap" id="caseRouletteWrap"><div class="caseRoulette" id="caseRoulette"><div class="caseTrack" id="caseTrack"></div></div></div><div class="caseResult" id="caseResult" style="display:none"></div></div><div class="containerGrid" id="containerGrid"></div>
 </section>
 <section class="page" id="upgradesPage">
 <h2 class="statsTitle">Улучшения</h2>
@@ -4013,7 +4019,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.70</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.73</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5158,15 +5164,12 @@ async function runUpgrade(){
 }
 
 const CASE_DEFS=[
- {id:'common',name:'Обычный контейнер',cls:'case-common',icon:'📦',from:0,to:.34,desc:'Бюджетные автомобили. Лимитки Daewoo Matiz, Polaris RZR Pro и ЗАЗ 968 — по 5%.'},
- {id:'uncommon',name:'Необычный контейнер',cls:'case-uncommon',icon:'🟩',from:.18,to:.54,desc:'Автомобили среднего сегмента. Mini Cooper JCW — лимитка с шансом 5%.'},
- {id:'rare',name:'Редкий контейнер',cls:'case-rare',icon:'🟦',from:.42,to:.73,desc:'Спортивные и премиальные автомобили редкого сегмента.'},
- {id:'epic',name:'Эпический контейнер',cls:'case-epic',icon:'🟪',from:.66,to:.90,desc:'Дорогой премиум и суперкары эпического сегмента.'},
- {id:'legendary',name:'Легендарный контейнер',cls:'case-legendary',icon:'🟨',from:.84,to:1,desc:'Самые дорогие автомобили общего пула и Ferrari F50 — 1%.'},
- {id:'mercedes',name:'Mercedes-Benz контейнер',cls:'case-legendary',icon:'⭐',desc:'Только Mercedes-Benz. 300SL, CLK GTR и G63 6x6 — по 1%.'},
- {id:'bmw',name:'BMW контейнер',cls:'case-rare',icon:'🔵',desc:'Только BMW. Лимитированные BMW доступны только здесь.'},
- {id:'ferrari',name:'Ferrari контейнер',cls:'case-legendary',icon:'🔴',desc:'Только Ferrari. 812 Competizione — 1%, F430 — 5%, SF90XX — 2%.'},
- {id:'porsche',name:'Porsche контейнер',cls:'case-legendary',icon:'🏁',desc:'Только Porsche. 911 Dakar — 5%, Carrera GT — 1%, 911 GT3 RS — 1,5%. Gemballa Marsien — лимитка этого контейнера.'}
+ {id:'bronze',name:'Бронзовый кейс',cls:'case-common',image:'bronze.png',desc:'Бюджетные машины из общего пула — до 5 000 000 ₽.'},
+ {id:'silver',name:'Серебряный кейс',cls:'case-rare',image:'silver.png',desc:'Машины среднего сегмента — от 5 000 000 ₽ до 30 000 000 ₽.'},
+ {id:'gold',name:'Золотой кейс',cls:'case-legendary',image:'gold.png',desc:'Дорогие машины общего пула — от 30 000 000 ₽.'},
+ {id:'bmw',name:'Кейс BMW',cls:'case-rare',image:'bmw.png',desc:'Все автомобили BMW, которые есть в игре.'},
+ {id:'mercedes',name:'Кейс Mercedes',cls:'case-legendary',image:'mercedes.png',desc:'Все Mercedes-Benz и Mercedes-AMG, кроме W124 300E Hammer.'},
+ {id:'ferrari',name:'Кейс Ferrari',cls:'case-legendary',image:'ferrari.png',desc:'Все Ferrari, включая Ferrari F40 и Ferrari F50.'}
 ];
 let caseRolling=false,pendingCasePrize=null,pendingCasePrizes=[],fastCaseRoll=true;
 function carRubValue(m){
@@ -5394,11 +5397,22 @@ function carVisual(m,cls='carImage'){
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
  return `<div class="carIcon">🚘</div>`;
 }
+const LIMITED_CAR_NAMES=new Set([
+ 'BMW 3.0 CSL','BMW 850 CSI','BMW M1 E26','BMW Z8',
+ 'Ferrari 812 Competizione','Ferrari F430','Ferrari SF90XX',
+ 'Mercedes-Benz 300SL','Mercedes-AMG ONE','Mercedes-Benz CLK GTR','Mercedes-Benz G63 6x6',
+ 'Porsche 911 Dakar','Porsche 911 GT3 RS','Porsche Carrera GT','Porsche Gemballa Marsien',
+ 'Daewoo Matiz','Mini Cooper JCW','Polaris RZR Pro','ЗАЗ 968','Mercedes-Benz 300E Hammer AMG',
+ 'DeLorean DMC-12','DeLorean DMC-12 BTTF','Ford Bronco','Nissan GT-R GTT Draco',
+ 'Lamborghini Diablo SV','Ford GT40 MkII','Ferrari F40','Ferrari F50',
+ 'Mercedes-Benz Mini-Wagen','Lamborghini Countach','Lamborghini Countach 800-4'
+]);
+function isGameLimitedCar(m){return LIMITED_CAR_NAMES.has(String(m?.name||m?.model||'').trim());}
 function carRarity(m){
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
  const master=currentCarCatalogEntry(m),forced=master?master.forcedRarity:m?.forcedRarity;
- if(forced==='normal')return {rank:'normal',name:'Обычная'}; if(forced==='limited')return {rank:'limited',name:'Limited'}; if(forced==='epic')return {rank:'epic',name:'Эпическая'}; if(forced==='legendary')return {rank:'legendary',name:'Легендарная'};
+ if(isGameLimitedCar(m)||forced==='limited')return {rank:'limited',name:'Лимитированная'}; if(forced==='normal')return {rank:'normal',name:'Обычная'}; if(forced==='epic')return {rank:'epic',name:'Эпическая'}; if(forced==='legendary')return {rank:'legendary',name:'Легендарная'};
  if(carName==='Ferrari F40'||carName==='Porsche Carrera GT'||forced==='mythic'||v>=3000000000)return {rank:'mythic',name:'Мифическая'};
  if(v>=20000000)return {rank:'legendary',name:'Легендарная'};
  if(v>=5000000)return {rank:'epic',name:'Эпическая'};
@@ -5409,7 +5423,7 @@ function carRarity(m){
 function carGlowClass(m){
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
- if(m.forcedRarity==='normal')return 'carGlowNormal'; if(m.forcedRarity==='limited')return 'carGlowLimited'; if(m.forcedRarity==='epic')return 'carGlowEpic'; if(m.forcedRarity==='legendary')return 'carGlowLegendary';
+ if(isGameLimitedCar(m)||m.forcedRarity==='limited')return 'carGlowLimited'; if(m.forcedRarity==='normal')return 'carGlowNormal'; if(m.forcedRarity==='epic')return 'carGlowEpic'; if(m.forcedRarity==='legendary')return 'carGlowLegendary';
  if(carName==='Ferrari F40'||carName==='Porsche Carrera GT'||m.forcedRarity==='mythic'||v>=3000000000)return 'carGlowMythic';
  if(v>=20000000)return 'carGlowLegendary';
  if(v>=5000000)return 'carGlowEpic';
@@ -5765,6 +5779,33 @@ function mobileCaseTap(id,count=1){
  }
  return count===5?openFiveContainers(id):openContainer(id);
 }
+
+/* ===== v0.2.73 NEW CASE SYSTEM ===== */
+function allCaseCars(){
+ const extras=[UPGRADE_F40,UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,MYTHIC_F50,MYTHIC_CARRERA_GT].filter(Boolean);
+ const byName=new Map();
+ [...CARS,...extras].forEach(m=>{if(m&&m.name&&m.name!=='Mercedes-Benz 300E Hammer AMG')byName.set(m.name,m)});
+ return [...byName.values()];
+}
+function casePool(c){
+ const all=allCaseCars().sort((a,b)=>carBaseValue(a)-carBaseValue(b));
+ if(c.id==='bmw')return all.filter(x=>String(x.name||'').startsWith('BMW '));
+ if(c.id==='mercedes')return all.filter(x=>{const n=String(x.name||'');return (n.startsWith('Mercedes-Benz ')||n.startsWith('Mercedes-AMG '))&&n!=='Mercedes-Benz 300E Hammer AMG'});
+ if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari '));
+ if(c.id==='bronze')return all.filter(x=>carBaseValue(x)<5000000);
+ if(c.id==='silver')return all.filter(x=>carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
+ if(c.id==='gold')return all.filter(x=>carBaseValue(x)>=30000000);
+ return [];
+}
+function newCaseWeight(m){const v=Math.max(1,carBaseValue(m));return Math.max(.000001,Math.pow(1000000/v,.72))}
+function weightedCaseCar(pool,c){
+ if(!pool.length)return null;
+ const weights=pool.map(newCaseWeight),total=weights.reduce((a,b)=>a+b,0);let r=Math.random()*total;
+ for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0)return pool[i]} return pool[pool.length-1];
+}
+function caseChancePercent(m,pool,c){const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
+function caseExpectedValue(pool,c){return pool.reduce((sum,m)=>sum+carBaseValue(m)*(caseChancePercent(m,pool,c)/100),0)}
+function casePrice(c){const pool=casePool(c),ev=caseExpectedValue(pool,c);return Math.max(10000,Math.round((ev/.82)/5000)*5000)}
 function renderContainers(){
  const root=$('containerGrid');if(!root)return;
  root.innerHTML=CASE_DEFS.map(c=>{
@@ -5772,7 +5813,7 @@ function renderContainers(){
    const exclusives=c.id==='legendary'?'<br>':'';
    const mercLimited=c.id==='mercedes'?pool.filter(isLimitedMercedes).map(m=>`${m.name.replace('Mercedes-Benz ','')}: ${caseChancePercent(m,pool,c).toFixed(3).replace('.',',')}%`).join('<br>'):'';
    const chanceInfo=mercLimited?`<br><b>Шансы лимитированных:</b><br>${mercLimited}`:'';
-   return `<div class="caseCard ${c.cls}"><div class="caseIcon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${chanceInfo}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||bal<price?'disabled':''}>Открыть контейнер</button>
+   return `<div class="caseCard ${c.cls}"><div class="caseIcon caseImageWrap"><img class="caseImage" src="${c.image}" alt="${c.name}" onerror="this.style.display='none'"></div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${chanceInfo}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||bal<price?'disabled':''}>Открыть кейс</button>
    <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
 }
@@ -6209,7 +6250,7 @@ const PROMO_CODES={
  '911':{type:'car',car:'Porsche 911 GT3 RS'},
  'w124':{type:'car',car:'Mercedes-Benz 300E Hammer AMG'},
  'v888vv88':{type:'plate',plate:'В888ВВ',region:'88'},
- 'collection124':{type:'w124_collection',label:'Все машины для коллекции W124'}
+ 'allmercedes':{type:'all_mercedes',label:'Все Mercedes-Benz + Ferrari F40 и F50'}
 };
 
 function promoMessage(text,ok=false){
@@ -6223,8 +6264,9 @@ function findPromoCar(name){
  return CARS.find(x=>x.name===name)
    || (typeof MYTHIC_CARRERA_GT!=='undefined'&&MYTHIC_CARRERA_GT.name===name?MYTHIC_CARRERA_GT:null)
    || (typeof MYTHIC_F50!=='undefined'&&MYTHIC_F50.name===name?MYTHIC_F50:null)
-   || (typeof MYTHIC_F40!=='undefined'&&MYTHIC_F40.name===name?MYTHIC_F40:null)
-   || (typeof UPGRADE_W124!=='undefined'&&UPGRADE_W124.name===name?UPGRADE_W124:null);
+   || (typeof UPGRADE_F40!=='undefined'&&UPGRADE_F40.name===name?UPGRADE_F40:null)
+   || (typeof UPGRADE_W124!=='undefined'&&UPGRADE_W124.name===name?UPGRADE_W124:null)
+   || (typeof MYTHIC_HAMMER!=='undefined'&&MYTHIC_HAMMER.name===name?MYTHIC_HAMMER:null);
 }
 
 async function redeemPromoCode(){
@@ -6248,18 +6290,21 @@ async function redeemPromoCode(){
    const m=findPromoCar(promo.car);
    if(!m){promoMessage('Машина для этого промокода временно недоступна.');return}
    cars.unshift({...m,id:++carSeq,obtainedAt:Date.now(),promoCode:key});
- }else if(promo.type==='w124_collection'){
-   const models=mercedesCollectionModels();
-   const missing=models.filter(name=>!hasCarModel(name));
+ }else if(promo.type==='all_mercedes'){
+   // Все Mercedes, которые существуют в игре, плюс Ferrari F40/F50.
+   // Выдача не зависит от вместимости гаража.
+   const mercedesNames=CARS
+     .map(x=>x.name)
+     .filter(n=>/^Mercedes(?:-Benz|-AMG)?\b/i.test(String(n)));
+   const models=[...new Set([...mercedesNames,'Mercedes-AMG ONE','Ferrari F40','Ferrari F50'])];
    const rewardCars=[];
-   for(const name of missing){
+   for(const name of models){
      const m=findPromoCar(name);
-     if(!m){promoMessage('Не удалось найти машину коллекции: '+name);return}
-     rewardCars.push({...m,id:++carSeq,obtainedAt:Date.now(),promoCode:key,collectionPromo:true});
+     if(!m){promoMessage('Не удалось найти машину: '+name);return}
+     rewardCars.push({...m,id:++carSeq,obtainedAt:Date.now(),promoCode:key,allMercedesPromo:true});
    }
-   // Для тестового промокода машины выдаются даже сверх текущего лимита гаража,
-   // чтобы можно было получить всю коллекцию одним кодом.
    cars.unshift(...rewardCars);
+   promo._grantedCount=rewardCars.length;
  }else if(promo.type==='plate'){
    if(inv.length>=storageCap){promoMessage('В хранилище номеров нет свободного места.');return}
    const plateText=promo.plate,region=String(promo.region);
@@ -6278,7 +6323,9 @@ async function redeemPromoCode(){
 
  redeemedPromoCodes.add(key);
  if(input)input.value='';
- promoMessage('Промокод активирован!',true);
+ promoMessage(promo.type==='all_mercedes'
+   ?('Промокод активирован! Выдано машин: '+Number(promo._grantedCount||0))
+   :'Промокод активирован!',true);
  update();render();renderGarage();
  await saveGame(true);
 }
