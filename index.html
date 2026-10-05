@@ -4141,7 +4141,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.84</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.85</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -6901,8 +6901,8 @@ function auctionRenderRows(){
  const box=$('auctionGrid'),my=$('auctionMyGrid'),bids=$('auctionBidsGrid');if(!box)return;
  const rows=auctionFilteredRows(auctionRows),mine=auctionFilteredRows(auctionMineRows),bidRows=auctionFilteredRows(auctionBidRows);
  box.innerHTML=rows.length?rows.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Ничего не найдено</b><br><span>Измени параметры поиска.</span></div>';
- if(my)my.innerHTML=mine.length?mine.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Нет ваших лотов</b><br><span>Здесь будут только выставленные вами машины.</span></div>';
- if(bids)bids.innerHTML=bidRows.length?bidRows.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Ставок пока нет</b><br><span>Здесь появятся машины, на которые вы поставили ставку.</span></div>';
+ if(my)my.innerHTML=mine.length?mine.map(a=>auctionCardHtml(a,true)).join(''):'<div class="auctionEmpty"><b>Нет ваших лотов</b><br><span>Здесь будут только выставленные вами машины.</span></div>';
+ if(bids)bids.innerHTML=bidRows.length?bidRows.map(a=>auctionCardHtml(a,true)).join(''):'<div class="auctionEmpty"><b>Ставок пока нет</b><br><span>Здесь появятся машины, на которые вы поставили ставку.</span></div>';
 }
 function auctionClearSearch(){if($('auctionCarSearch'))$('auctionCarSearch').value='';if($('auctionPlateSearch'))$('auctionPlateSearch').value='';auctionRenderRows()}
 async function auctionLoad(){
