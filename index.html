@@ -3523,7 +3523,18 @@ body.caseNavLocked .tabs .tab:not([data-page="containersPage"]){opacity:.38;curs
   </div>
   <div id="profileOwnControls" style="display:none">
    <div class="profileEdit"><input id="profileNameInput" maxlength="32" placeholder="Имя игрока"><button id="profileSaveName">Сохранить</button></div>
-   <div class="profileSection"><h3>🚘 Машины на показ <span id="profileCarsCount"></span></h3><div class="profilePicker" id="profileCarsPicker"></div></div>
+   <div class="profileSection"><h3>🚘 Машины на показ <span id="profileCarsCount"></span></h3>
+   <div class="profilePickerTools">
+    <input id="profileCarSearch" type="search" placeholder="Поиск машины...">
+    <select id="profileCarSort">
+     <option value="selected">Выбранные сначала</option>
+     <option value="priceDesc">Сначала дорогие</option>
+     <option value="priceAsc">Сначала дешёвые</option>
+     <option value="nameAsc">По названию А–Я</option>
+     <option value="nameDesc">По названию Я–А</option>
+    </select>
+   </div>
+   <div class="profilePicker" id="profileCarsPicker"></div></div>
    <button class="profileAction" id="profileSaveShowcase" style="width:100%;margin-top:12px">Сохранить витрину</button>
    <div class="profileNote">Можно выставить до 9 машин. Порядок на витрине соответствует порядку выбора.</div>
   </div>
@@ -4002,6 +4013,15 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 @media(max-width:620px){
  .caseDropVisual,.caseDropVisual .caseDropCarImage,.caseDropVisual .carIcon{height:55px!important}
 }
+
+/* ===== v0.2.83 PROFILE SHOWCASE PICKER TOOLS ===== */
+.profilePickerTools{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:7px;margin-bottom:8px}
+.profilePickerTools input,.profilePickerTools select{
+ width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;
+ background:var(--panel);color:var(--text);padding:9px 10px;font:inherit;font-size:11px
+}
+.profilePickSelected{border-color:#7657ff!important;background:rgba(118,87,255,.10)!important}
+@media(max-width:620px){.profilePickerTools{grid-template-columns:1fr}.profilePicker{max-height:260px}}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Кейсы</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -4062,6 +4082,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <div class="auctionTabs">
 <button id="auctionTabAll" class="auctionTab active" onclick="auctionSetTab('all')">Аукцион</button>
 <button id="auctionTabMine" class="auctionTab" onclick="auctionSetTab('mine')">Мои лоты</button>
+<button id="auctionTabBids" class="auctionTab" onclick="auctionSetTab('bids')">Мои ставки</button>
 </div>
 <div class="auctionSearchBar">
 <div class="auctionSearchField"><span>🚘</span><input id="auctionCarSearch" type="text" placeholder="Поиск по машине..." oninput="auctionRenderRows()"></div>
@@ -4069,7 +4090,8 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <button class="auctionSearchClear" onclick="auctionClearSearch()">Сбросить</button>
 </div>
 <div id="auctionAllPane"><div id="auctionStatus" style="display:none"></div><div id="auctionGrid"></div></div>
-<div id="auctionMinePane" style="display:none"><div class="auctionMyHead"><div><h3>Мои лоты</h3><div>Выставленные вами машины, ваши ставки и выигранные автомобили</div></div></div><div id="auctionMyGrid"></div></div>
+<div id="auctionMinePane" style="display:none"><div class="auctionMyHead"><div><h3>Мои лоты</h3><div>Только автомобили, которые вы выставили на аукцион</div></div></div><div id="auctionMyGrid"></div></div>
+<div id="auctionBidsPane" style="display:none"><div class="auctionMyHead"><div><h3>Мои ставки</h3><div>Только автомобили, на которые вы делали ставку</div></div></div><div id="auctionBidsGrid"></div></div>
 </section><section class="page" id="collectionPage"><div class="storeHead"><div><h2>Коллекция Mercedes-Benz</h2><div class="count">Собери по одной машине каждой модели Mercedes-Benz, Mercedes-AMG ONE, а также Ferrari F40 и Ferrari F50, чтобы получить W124 300E Hammer.</div></div></div><div class="collectionProgress"><b id="mercCollectionProgress">0 / 0</b><span id="mercCollectionStatus"></span></div><div class="collectionGrid" id="mercCollectionGrid"></div><button class="buy collectionClaim" id="mercCollectionClaim" onclick="claimMercedesCollection()">Получить W124 300E Hammer</button>
 </section> <section class="page" id="upgraderPage">
 <h2 class="statsTitle">Апгрейдер</h2>
@@ -4119,7 +4141,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.82</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.84</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5908,7 +5930,7 @@ function allCaseCars(){
 function casePool(c){
  const all=allCaseCars().sort((a,b)=>carBaseValue(a)-carBaseValue(b));
  if(c.id==='bmw')return all.filter(x=>String(x.name||'').startsWith('BMW '));
- if(c.id==='mercedes')return all.filter(x=>{const n=String(x.name||'');return (n.startsWith('Mercedes-Benz ')||n.startsWith('Mercedes-AMG '))&&n!=='Mercedes-Benz 300E Hammer AMG'});
+ if(c.id==='mercedes')return all.filter(x=>{const n=String(x.name||'');return (n.startsWith('Mercedes-Benz ')||n.startsWith('Mercedes-AMG '))&&n!=='Mercedes-Benz 300E Hammer AMG'&&n!=='Mercedes-Benz Mini-Wagen'});
  if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari ')&&x.name!=='Ferrari F40');
  if(c.id==='porsche')return all.filter(x=>String(x.name||'').startsWith('Porsche '));
  if(c.id==='bronze')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)<5000000);
@@ -6842,17 +6864,28 @@ function auctionCardHtml(a,myMode=false){
  `<button class="auctionBidBtn" onclick="auctionBid('${a.id}')" ${canBid?'':'disabled'}>${canBid?'Ставка · '+auctionMoney(next):'Ставки закрыты'}</button><button class="auctionBuyBtn" onclick="auctionBuyout('${a.id}')">Выкупить</button>`;
  return `<div class="auctionCard"><div class="auctionImage">${carVisual(c,'auctionMappedImage')}</div><div class="auctionBody"><div class="auctionCardTop"><div><div class="auctionCarName">${auctionEsc(c.model||'Машина')}</div>${(()=>{const n=auctionCarPlate(c);return n.p?`<div style="margin-top:9px;max-width:190px">${plateHtml(n.p,n.r,'normal')}</div>`:''})()}<div class="auctionSeller">${mine?'Ваш лот':'Продавец: '+auctionEsc(a.seller_name||'Игрок')}</div>${serial?`<div class="auctionSerialBadge"><span>СЕРИЙНЫЙ №</span>${auctionEsc(String(serial))}</div>`:''}</div><span class="auctionBadge">${auctionEsc(rar.label||rar.rank||'Авто')}</span></div><div class="auctionPriceBox"><div class="auctionPrice"><span>${cur?'Текущая ставка':'Стартовая ставка'}</span><b>${auctionMoney(cur||start)}</b></div><div class="auctionPrice"><span>Выкуп</span><b>${auctionMoney(buy)}</b></div></div>${cur?`<div class="auctionBidder">Лидер ставки: ${auctionEsc(a.current_bidder_name||'Игрок')}</div>`:`<div class="auctionBidder">Ставок пока нет</div>`}<div class="auctionTimer ${won?'auctionWin':''}">${won?'Вы выиграли · можно забрать':'До конца: '+auctionTimeLeft(a.ends_at)}</div>${actions?`<div class="auctionActions">${actions}</div>`:''}</div></div>`;
 }
+const AUCTION_MY_BIDS_KEY='rf_auction_my_bid_ids_v1';
+function auctionMyBidIds(){
+ try{return new Set(JSON.parse(localStorage.getItem(AUCTION_MY_BIDS_KEY)||'[]').map(String))}catch(e){return new Set()}
+}
+function auctionRememberBid(id){
+ const ids=auctionMyBidIds();ids.add(String(id));
+ try{localStorage.setItem(AUCTION_MY_BIDS_KEY,JSON.stringify([...ids]))}catch(e){}
+}
 let auctionCurrentTab='all';
 function auctionSetTab(tab){
- auctionCurrentTab=tab==='mine'?'mine':'all';
- const all=$('auctionAllPane'),mine=$('auctionMinePane');
+ auctionCurrentTab=(tab==='mine'||tab==='bids')?tab:'all';
+ const all=$('auctionAllPane'),mine=$('auctionMinePane'),bids=$('auctionBidsPane');
  if(all)all.style.display=auctionCurrentTab==='all'?'':'none';
  if(mine)mine.style.display=auctionCurrentTab==='mine'?'':'none';
+ if(bids)bids.style.display=auctionCurrentTab==='bids'?'':'none';
  $('auctionTabAll')?.classList.toggle('active',auctionCurrentTab==='all');
  $('auctionTabMine')?.classList.toggle('active',auctionCurrentTab==='mine');
+ $('auctionTabBids')?.classList.toggle('active',auctionCurrentTab==='bids');
  auctionLoad();
 }
 let auctionMineRows=[];
+let auctionBidRows=[];
 function auctionNormSearch(v){return String(v||'').toUpperCase().replace(/[АВЕКМНОРСТУХ]/g,ch=>({'А':'A','В':'B','Е':'E','К':'K','М':'M','Н':'H','О':'O','Р':'P','С':'C','Т':'T','У':'Y','Х':'X'}[ch]||ch)).replace(/[^A-Z0-9]/g,'')}
 function auctionFilteredRows(rows){
  const carQ=String($('auctionCarSearch')?.value||'').trim().toLowerCase();
@@ -6865,10 +6898,11 @@ function auctionFilteredRows(rows){
  });
 }
 function auctionRenderRows(){
- const box=$('auctionGrid'),my=$('auctionMyGrid');if(!box)return;
- const rows=auctionFilteredRows(auctionRows),mine=auctionFilteredRows(auctionMineRows);
+ const box=$('auctionGrid'),my=$('auctionMyGrid'),bids=$('auctionBidsGrid');if(!box)return;
+ const rows=auctionFilteredRows(auctionRows),mine=auctionFilteredRows(auctionMineRows),bidRows=auctionFilteredRows(auctionBidRows);
  box.innerHTML=rows.length?rows.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Ничего не найдено</b><br><span>Измени параметры поиска.</span></div>';
- if(my)my.innerHTML=mine.length?mine.map(a=>auctionCardHtml(a,true)).join(''):'<div class="auctionEmpty"><b>Ничего не найдено</b><br><span>Здесь пока нет подходящих лотов.</span></div>';
+ if(my)my.innerHTML=mine.length?mine.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Нет ваших лотов</b><br><span>Здесь будут только выставленные вами машины.</span></div>';
+ if(bids)bids.innerHTML=bidRows.length?bidRows.map(a=>auctionCardHtml(a,false)).join(''):'<div class="auctionEmpty"><b>Ставок пока нет</b><br><span>Здесь появятся машины, на которые вы поставили ставку.</span></div>';
 }
 function auctionClearSearch(){if($('auctionCarSearch'))$('auctionCarSearch').value='';if($('auctionPlateSearch'))$('auctionPlateSearch').value='';auctionRenderRows()}
 async function auctionLoad(){
@@ -6880,7 +6914,11 @@ async function auctionLoad(){
  const pill=$('auctionCountPill');if(pill)pill.textContent='Активных лотов: '+auctionRows.length;
  if(my){
   const me=chatUser(),mq=await chatDb.rpc('auction_get_mine',{p_player:String(me.telegram_id)});
-  auctionMineRows=mq.error?[]:(mq.data||[]);
+  const mineData=mq.error?[]:(mq.data||[]);
+  auctionMineRows=mineData.filter(a=>String(a.seller_id)===String(me.telegram_id));
+  const bidIds=auctionMyBidIds();
+  const merged=new Map([...(auctionRows||[]),...mineData].map(a=>[String(a.id),a]));
+  auctionBidRows=[...bidIds].map(id=>merged.get(String(id))).filter(Boolean).filter(a=>String(a.seller_id)!==String(me.telegram_id));
  }
  auctionRenderRows();
 }
@@ -6913,6 +6951,7 @@ async function auctionBid(id){
     p_amount:amount
   });
   if(q.error)throw q.error;
+  auctionRememberBid(id);
   await auctionReload();await auctionLoad();
  }catch(e){alert('Ошибка принятия ставки: '+(e?.message||String(e)))}
 }
@@ -7168,16 +7207,40 @@ let profileCarPickOrder=[];
 function profileRenderPickers(){
  const selectedCars=new Set((profileLocal.showcase_cars||[]).map(x=>String(x.id)));
  profileCarPickOrder=(profileLocal.showcase_cars||[]).map(x=>String(x.id)).filter(id=>cars.some(c=>String(c.id)===id));
- const cp=$('profileCarsPicker');
- cp.innerHTML=cars.length?cars.map(c=>`<div class="profilePick"><label><input type="checkbox" data-profile-car="${chatEsc(c.id)}" ${selectedCars.has(String(c.id))?'checked':''}><span>🚘 ${chatEsc(profileCarLabel(c))}</span></label><b>${money(carRubValue(c))}</b></div>`).join(''):'<div class="profileEmpty">В гараже пока нет машин</div>';
- document.querySelectorAll('[data-profile-car]').forEach(x=>x.onchange=()=>{
-  const id=String(x.dataset.profileCar);
-  if(x.checked){if(!profileCarPickOrder.includes(id))profileCarPickOrder.push(id);if(profileCarPickOrder.length>9){x.checked=false;profileCarPickOrder=profileCarPickOrder.filter(v=>v!==id);alert('Можно выбрать максимум 9.');}}
-  else profileCarPickOrder=profileCarPickOrder.filter(v=>v!==id);
-  profilePickerCounts();
- });
+ renderProfileCarPicker(selectedCars);
  profilePickerCounts();
 }
+
+function renderProfileCarPicker(selectedOverride=null){
+ const cp=$('profileCarsPicker'); if(!cp)return;
+ const selected=selectedOverride||new Set([...document.querySelectorAll('[data-profile-car]:checked')].map(x=>String(x.dataset.profileCar)));
+ const q=String($('profileCarSearch')?.value||'').trim().toLowerCase();
+ const sort=String($('profileCarSort')?.value||'selected');
+ let list=(Array.isArray(cars)?cars:[]).filter(c=>!q||profileCarLabel(c).toLowerCase().includes(q));
+ list.sort((a,b)=>{
+   const aid=String(a.id),bid=String(b.id),as=selected.has(aid),bs=selected.has(bid);
+   if(sort==='selected'&&as!==bs)return as?-1:1;
+   if(sort==='priceDesc')return carRubValue(b)-carRubValue(a);
+   if(sort==='priceAsc')return carRubValue(a)-carRubValue(b);
+   if(sort==='nameDesc')return profileCarLabel(b).localeCompare(profileCarLabel(a),'ru');
+   return profileCarLabel(a).localeCompare(profileCarLabel(b),'ru');
+ });
+ cp.innerHTML=list.length?list.map(c=>`<div class="profilePick ${selected.has(String(c.id))?'profilePickSelected':''}">
+   <label><input type="checkbox" data-profile-car="${chatEsc(c.id)}" ${selected.has(String(c.id))?'checked':''}>
+   <span>🚘 ${chatEsc(profileCarLabel(c))}</span></label><b>${money(carRubValue(c))}</b>
+ </div>`).join(''):'<div class="profileEmpty">Машины не найдены</div>';
+ cp.querySelectorAll('[data-profile-car]').forEach(x=>x.onchange=()=>{
+   const id=String(x.dataset.profileCar);
+   if(x.checked){
+     if(!profileCarPickOrder.includes(id))profileCarPickOrder.push(id);
+     if(profileCarPickOrder.length>9){x.checked=false;profileCarPickOrder=profileCarPickOrder.filter(v=>v!==id);alert('Можно выбрать максимум 9.');}
+   }else profileCarPickOrder=profileCarPickOrder.filter(v=>v!==id);
+   profilePickerCounts();
+   if(($('profileCarSort')?.value||'selected')==='selected')renderProfileCarPicker();
+ });
+}
+document.addEventListener('input',e=>{if(e.target?.id==='profileCarSearch')renderProfileCarPicker()});
+document.addEventListener('change',e=>{if(e.target?.id==='profileCarSort')renderProfileCarPicker()});
 function profilePickerCounts(){
  const a=document.querySelectorAll('[data-profile-car]:checked').length;
  if($('profileCarsCount'))$('profileCarsCount').textContent=`(${a}/9)`;
