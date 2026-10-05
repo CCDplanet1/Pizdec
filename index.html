@@ -3933,6 +3933,48 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 .caseCard:has(img[src*="mercedes.png"]){border-color:#c5cbd2!important;background:linear-gradient(145deg,rgba(197,203,210,.18),rgba(120,130,140,.045))!important}
 .caseCard:has(img[src*="ferrari.png"]){border-color:#e53935!important;background:linear-gradient(145deg,rgba(229,57,53,.20),rgba(229,57,53,.045))!important}
 .caseCard:has(img[src*="porsche.png"]){border-color:#d6a934!important;background:linear-gradient(145deg,rgba(214,169,52,.20),rgba(170,32,35,.055))!important}
+
+/* ===== v0.2.79 CASE CARD CLEANUP + COMPACT DROP PREVIEW ===== */
+.caseCard::before,.caseCard::after{content:none!important;display:none!important}
+.caseCard{border-top-width:1px!important}
+.caseImage{cursor:pointer!important}
+.caseImage:hover{transform:scale(1.025)}
+.caseImage{transition:transform .14s ease}
+
+#caseDropModal{
+ position:fixed;inset:0;z-index:100000;display:none;
+ align-items:center;justify-content:center;padding:16px;
+ background:rgba(2,7,14,.72);backdrop-filter:blur(5px)
+}
+#caseDropModal.show{display:flex}
+.caseDropPanel{
+ width:min(620px,94vw);max-height:min(72vh,650px);overflow:hidden;
+ background:#111923;border:1px solid #34465b;border-radius:18px;
+ box-shadow:0 22px 70px rgba(0,0,0,.55);display:flex;flex-direction:column
+}
+.caseDropHead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #29384a}
+.caseDropHead h3{margin:0;font-size:17px;flex:1}
+.caseDropClose{width:34px;height:34px;border:0;border-radius:10px;background:#263446;color:#fff;font-size:22px;cursor:pointer}
+.caseDropGrid{
+ padding:10px;overflow:auto;display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:8px
+}
+.caseDropCar{
+ min-width:0;background:#182331;border:1px solid #2b3d51;border-radius:11px;
+ padding:7px;text-align:center
+}
+.caseDropCar img{width:100%;height:70px;object-fit:contain;display:block}
+.caseDropName{font-size:10px;font-weight:800;line-height:1.15;min-height:23px;margin-top:3px;overflow:hidden}
+.caseDropChance{font-size:10px;color:#9db0c5;margin-top:3px}
+.caseDropPrice{font-size:9px;color:#74879a;margin-top:2px}
+@media(max-width:620px){
+ .caseDropPanel{width:96vw;max-height:68vh;border-radius:15px}
+ .caseDropGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:7px}
+ .caseDropCar{padding:5px}
+ .caseDropCar img{height:55px}
+ .caseDropName{font-size:9px;min-height:21px}
+ .caseDropChance,.caseDropPrice{font-size:8px}
+}
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
 <button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Кейсы</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
@@ -4050,7 +4092,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
  </div>
 </section>
 <section class="page" id="settingsPage"><h2 class="statsTitle">Настройки</h2>
-<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.77</strong></div></div>
+<div class="settingsCard"><div class="settingRow"><div><h3>Версия игры</h3><p>Текущая версия сборки.</p></div><strong style="font-size:18px">v0.2.80</strong></div></div>
 <div class="settingsCard"><div class="settingRow"><div><h3>Тёмная тема</h3><p>Переключает интерфейс игры на тёмное оформление.</p></div><label class="switch"><input type="checkbox" id="darkTheme"><span class="slider"></span></label></div></div>
 <div class="settingsCard promoCard">
   <div class="promoInfo">
@@ -5436,11 +5478,27 @@ const LIMITED_CAR_NAMES=new Set([
  'Porsche 911 Dakar','Porsche 911 GT3 RS','Porsche Carrera GT','Porsche Gemballa Marsien',
  'Daewoo Matiz','Mini Cooper JCW','Polaris RZR Pro','ЗАЗ 968','Mercedes-Benz 300E Hammer AMG',
  'DeLorean DMC-12','DeLorean DMC-12 BTTF','Ford Bronco','Nissan GT-R GTT Draco',
- 'Lamborghini Diablo SV','Ford GT40 MkII','Ferrari F40','Ferrari F50',
+ 'Lamborghini Diablo SV','Lamborghini Murciélago','Ford GT40 MkII','Ferrari F40','Ferrari F50',
  'Mercedes-Benz Mini-Wagen','Lamborghini Countach','Lamborghini Countach 800-4'
 ]);
 function isGameLimitedCar(m){return LIMITED_CAR_NAMES.has(String(m?.name||m?.model||'').trim());}
+const MYTHIC_CAR_NAMES_OVERRIDE=new Set([
+ 'Bugatti Divo',
+ 'Aston Martin Valkyrie',
+ 'Ferrari LaFerrari',
+ 'Bugatti Chiron',
+ 'Koenigsegg Jesko Absolut',
+ 'Bugatti Veyron 16.4',
+ 'Koenigsegg Agera R',
+ 'Pagani Zonda Cinque',
+ 'McLaren P1',
+ 'Porsche 918 Spyder'
+]);
+function isForcedMythicCar(m){
+ return MYTHIC_CAR_NAMES_OVERRIDE.has(String(m?.name||m?.model||'').trim());
+}
 function carRarity(m){
+ if(isForcedMythicCar(m))return {rank:'mythic',name:'Мифическая'};
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
  const master=currentCarCatalogEntry(m),forced=master?master.forcedRarity:m?.forcedRarity;
@@ -5453,6 +5511,7 @@ function carRarity(m){
  return {rank:'normal',name:'Обычная'};
 }
 function carGlowClass(m){
+ if(isForcedMythicCar(m))return 'carGlowMythic';
  const v=carBaseValue(m);
  const carName=String(m?.name||m?.model||'');
  if(isGameLimitedCar(m)||m.forcedRarity==='limited')return 'carGlowLimited'; if(m.forcedRarity==='normal')return 'carGlowNormal'; if(m.forcedRarity==='epic')return 'carGlowEpic'; if(m.forcedRarity==='legendary')return 'carGlowLegendary';
@@ -5832,7 +5891,7 @@ function casePool(c){
  }
  if(c.id==='gold'){
    const allowedLimited=new Set(['Lamborghini Countach','Lamborghini Countach 800-4']);
-   const pool=all.filter(x=>{if(x.name==='Ferrari F40'||x.name==='Ferrari F50')return false;if(isGameLimitedCar(x)&&!allowedLimited.has(x.name))return false;return carBaseValue(x)>=30000000||allowedLimited.has(x.name)});
+   const pool=all.filter(x=>{if(x.name==='Ferrari F40'||x.name==='Ferrari F50'||x.name==='Lamborghini Murciélago')return false;if(isGameLimitedCar(x)&&!allowedLimited.has(x.name))return false;return carBaseValue(x)>=30000000||allowedLimited.has(x.name)});
    for(const name of allowedLimited){const car=all.find(x=>x.name===name);if(car&&!pool.some(x=>x.name===name))pool.push(car)}
    return pool;
  }
@@ -5853,6 +5912,34 @@ function casePrice(c){
  const pool=casePool(c),ev=caseExpectedValue(pool,c);
  return Math.max(10000,Math.round((ev/.82)/5000)*5000);
 }
+
+function caseCarImage(m){
+ return String(m?.img||m?.image||m?.src||'');
+}
+function openCaseDrops(caseId){
+ const c=CASE_DEFS.find(x=>x.id===caseId); if(!c)return;
+ const pool=casePool(c).slice().sort((a,b)=>carBaseValue(b)-carBaseValue(a));
+ const title=document.getElementById('caseDropTitle');
+ const grid=document.getElementById('caseDropGrid');
+ if(title)title.textContent=c.name+' · '+pool.length+' машин';
+ if(grid)grid.innerHTML=pool.map(m=>{
+   const img=caseCarImage(m);
+   const chance=caseChancePercent(m,pool,c);
+   return `<div class="caseDropCar">
+     ${img?`<img src="${img}" alt="${m.name}" loading="lazy">`:''}
+     <div class="caseDropName">${m.name}</div>
+     <div class="caseDropChance">${chance<0.01?chance.toFixed(3):chance.toFixed(2)}%</div>
+     <div class="caseDropPrice">${money(carBaseValue(m))}</div>
+   </div>`;
+ }).join('');
+ document.getElementById('caseDropModal')?.classList.add('show');
+ document.body.style.overflow='hidden';
+}
+function closeCaseDrops(){
+ document.getElementById('caseDropModal')?.classList.remove('show');
+ document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCaseDrops()});
 function renderContainers(){
  const root=$('containerGrid');if(!root)return;
  root.innerHTML=CASE_DEFS.map(c=>{
@@ -5860,7 +5947,7 @@ function renderContainers(){
    const exclusives=c.id==='legendary'?'<br>':'';
    const mercLimited=c.id==='mercedes'?pool.filter(isLimitedMercedes).map(m=>`${m.name.replace('Mercedes-Benz ','')}: ${caseChancePercent(m,pool,c).toFixed(3).replace('.',',')}%`).join('<br>'):'';
    const chanceInfo=mercLimited?`<br><b>Шансы лимитированных:</b><br>${mercLimited}`:'';
-   return `<div class="caseCard ${c.cls}"><div class="caseIcon caseImageWrap"><img class="caseImage" src="${c.image}" alt="${c.name}" onerror="this.style.display='none'"></div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${chanceInfo}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||bal<price?'disabled':''}>Открыть кейс</button>
+   return `<div class="caseCard ${c.cls}"><div class="caseIcon caseImageWrap" title="Посмотреть машины"><img class="caseImage" src="${c.image}" alt="${c.name}" onclick="openCaseDrops('${c.id}')" onerror="this.style.display='none'"></div><h3>${c.name}</h3><p>${c.desc}<br>В пуле: ${pool.length} машин<br>Цена машин: ${money(min)} — ${money(max)}${chanceInfo}${exclusives}</p><div class="casePrice">${money(price)}</div><button class="caseOpen" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',1)}" onclick="if(event.pointerType!=='touch')openContainer('${c.id}')" ${caseRolling||bal<price?'disabled':''}>Открыть кейс</button>
    <button class="caseOpen" style="margin-top:7px;filter:brightness(.88)" onpointerup="if(event.pointerType==='touch'){event.preventDefault();mobileCaseTap('${c.id}',5)}" onclick="if(event.pointerType!=='touch')openFiveContainers('${c.id}')" ${caseRolling||bal<price*5?'disabled':''}>Открыть ×5 · ${money(price*5)}</button></div>`
  }).join('');
 }
@@ -7294,4 +7381,14 @@ end; $$;
 revoke all on function public.admin_claim_hammer_serial(text,bigint) from public;
 grant execute on function public.admin_claim_hammer_serial(text,bigint) to anon, authenticated;
 -->
+
+<div id="caseDropModal" onclick="if(event.target===this)closeCaseDrops()">
+ <div class="caseDropPanel">
+  <div class="caseDropHead">
+   <h3 id="caseDropTitle">Машины в кейсе</h3>
+   <button class="caseDropClose" onclick="closeCaseDrops()">×</button>
+  </div>
+  <div id="caseDropGrid" class="caseDropGrid"></div>
+ </div>
+</div>
 </body></html>
