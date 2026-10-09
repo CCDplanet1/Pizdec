@@ -5557,7 +5557,7 @@ const LIMITED_CAR_NAMES=new Set([
  'Daewoo Matiz','Mini Cooper JCW','Polaris RZR Pro','ЗАЗ 968','Mercedes-Benz 300E Hammer AMG',
  'DeLorean DMC-12','DeLorean DMC-12 BTTF','Ford Bronco','Nissan GT-R GTT Draco',
  'Lamborghini Diablo SV','Lamborghini Murciélago','Ford GT40 MkII','Ferrari F40','Ferrari F50',
- 'Mercedes-Benz Mini-Wagen','Lamborghini Countach','Lamborghini Countach 800-4'
+ 'Mercedes-Benz Mini-Wagen','Lamborghini Countach','Lamborghini Countach 800-4','Koenigsegg Gemera'
 ]);
 function isGameLimitedCar(m){return LIMITED_CAR_NAMES.has(String(m?.name||m?.model||'').trim());}
 const MYTHIC_CAR_NAMES_OVERRIDE=new Set([
@@ -5949,9 +5949,11 @@ function mobileCaseTap(id,count=1){
  return count===5?openFiveContainers(id):openContainer(id);
 }
 
+/* ===== v0.2.88 KOENIGSEGG GEMERA ===== */
+const CASE_KOENIGSEGG_GEMERA={name:'Koenigsegg Gemera',image:'images3/gemera.png',price:300000000,rub:300000000,currency:'₽',icon:'🚘',forcedRarity:'limited'};
 /* ===== v0.2.73 NEW CASE SYSTEM ===== */
 function allCaseCars(){
- const extras=[UPGRADE_F40,UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,MYTHIC_F50,MYTHIC_CARRERA_GT].filter(Boolean);
+ const extras=[UPGRADE_F40,UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,MYTHIC_F50,MYTHIC_CARRERA_GT,CASE_KOENIGSEGG_GEMERA].filter(Boolean);
  const byName=new Map();
  [...CARS,...extras].forEach(m=>{if(m&&m.name&&m.name!=='Mercedes-Benz 300E Hammer AMG')byName.set(m.name,m)});
  return [...byName.values()];
@@ -5968,7 +5970,7 @@ function casePool(c){
    return all.filter(x=>!excluded.has(x.name)&&carBaseValue(x)>=5000000&&carBaseValue(x)<30000000);
  }
  if(c.id==='gold'){
-   const allowedLimited=new Set(['Lamborghini Countach','Lamborghini Countach 800-4']);
+   const allowedLimited=new Set(['Lamborghini Countach','Lamborghini Countach 800-4','Koenigsegg Gemera']);
    const pool=all.filter(x=>{if(x.name==='Ferrari F40'||x.name==='Ferrari F50'||x.name==='Lamborghini Murciélago')return false;if(isGameLimitedCar(x)&&!allowedLimited.has(x.name))return false;return carBaseValue(x)>=30000000||allowedLimited.has(x.name)});
    for(const name of allowedLimited){const car=all.find(x=>x.name===name);if(car&&!pool.some(x=>x.name===name))pool.push(car)}
    return pool;
@@ -5978,11 +5980,11 @@ function casePool(c){
 function newCaseWeight(m){const v=Math.max(1,carBaseValue(m));return Math.max(.000001,Math.pow(1000000/v,.72))}
 function weightedCaseCar(pool,c){
  if(!pool.length)return null;
- if(c&&c.id==='gold'){const r=Math.random()*100;if(r<1)return pool.find(x=>x.name==='Lamborghini Countach')||pool[0];if(r<2)return pool.find(x=>x.name==='Lamborghini Countach 800-4')||pool[0];const regular=pool.filter(x=>x.name!=='Lamborghini Countach'&&x.name!=='Lamborghini Countach 800-4');if(!regular.length)return pool[Math.floor(Math.random()*pool.length)];const weights=regular.map(newCaseWeight),total=weights.reduce((a,b)=>a+b,0);let rr=Math.random()*total;for(let i=0;i<regular.length;i++){rr-=weights[i];if(rr<=0)return regular[i]}return regular[regular.length-1]}
+ if(c&&c.id==='gold'){const r=Math.random()*100;if(r<1)return pool.find(x=>x.name==='Lamborghini Countach')||pool[0];if(r<2)return pool.find(x=>x.name==='Lamborghini Countach 800-4')||pool[0];if(r<3)return pool.find(x=>x.name==='Koenigsegg Gemera')||pool[0];const regular=pool.filter(x=>x.name!=='Lamborghini Countach'&&x.name!=='Lamborghini Countach 800-4'&&x.name!=='Koenigsegg Gemera');if(!regular.length)return pool[Math.floor(Math.random()*pool.length)];const weights=regular.map(newCaseWeight),total=weights.reduce((a,b)=>a+b,0);let rr=Math.random()*total;for(let i=0;i<regular.length;i++){rr-=weights[i];if(rr<=0)return regular[i]}return regular[regular.length-1]}
  const weights=pool.map(newCaseWeight),total=weights.reduce((a,b)=>a+b,0);let r=Math.random()*total;
  for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0)return pool[i]} return pool[pool.length-1];
 }
-function caseChancePercent(m,pool,c){if(c&&c.id==='gold'){const special=new Set(['Lamborghini Countach','Lamborghini Countach 800-4']);if(special.has(m.name))return 1;const regular=pool.filter(x=>!special.has(x.name));const total=regular.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*98:0}const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
+function caseChancePercent(m,pool,c){if(c&&c.id==='gold'){const special=new Set(['Lamborghini Countach','Lamborghini Countach 800-4','Koenigsegg Gemera']);if(special.has(m.name))return 1;const regular=pool.filter(x=>!special.has(x.name));const total=regular.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*97:0}const total=pool.reduce((sum,x)=>sum+newCaseWeight(x),0);return total?newCaseWeight(m)/total*100:0}
 function caseExpectedValue(pool,c){return pool.reduce((sum,m)=>sum+carBaseValue(m)*(caseChancePercent(m,pool,c)/100),0)}
 function casePrice(c){
  const fixed={bmw:6500000,mercedes:6500000,gold:45000000,ferrari:60000000,porsche:50000000};
