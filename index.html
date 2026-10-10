@@ -4458,6 +4458,9 @@ const SPECIAL_PLATE_LETTER_BONUS={
  'А':2.50,'В':2.00,'Е':1.00,'К':1.00,'М':2.00,'Н':0.50,
  'О':2.50,'Р':1.00,'С':1.00,'Т':1.50,'У':1.50,'Х':2.50
 };
+const SPECIAL_SERIES_LEGENDARY_DIGITS=['111','222','333','444','555','666','777','888','999','001','005','007'];
+const SPECIAL_SERIES_EPIC_DIGITS=['002','003','004','006','008','009'];
+const SPECIAL_SERIES_LETTERS=['ЕКХ','ХАМ','ВОР'];
 const SPECIAL_PLATE_DIGIT_BONUS={
  '111':1.00,'222':0.50,'333':0.25,'444':1.25,'555':1.60,
  '666':2.00,'777':3.25,'888':2.00,'999':2.25,'001':1.50
@@ -4497,7 +4500,7 @@ function unifiedSpecialPlateValue(p,rank,region){
  const regionMultiplier=SPECIAL_PLATE_REGION_MULTIPLIER[regionKey]||1;
  let value=base*(1+letterBonus+digitBonus+comboBonus)*regionMultiplier;
  // ЕКХ, ХАМ и ВОР: фиксированный множитель x1.5 к цене легендарного номера.
- if(rank==='legendary'&&['ЕКХ','ХАМ','ВОР'].includes(letters))value*=1.5;
+ if(rank==='legendary'&&SPECIAL_SERIES_LETTERS.includes(letters))value*=1.5;
 
  const threeSameLetters=letters.length===3&&letters[0]===letters[1]&&letters[1]===letters[2];
  const boostedLegendaryFormat=rank==='legendary'&&threeSameLetters&&['001','005','007','009'].includes(digits);
@@ -4718,14 +4721,14 @@ function currentPlateDefinition(item){
  }
  // Current legendary formats.
  else if(
+   (SPECIAL_SERIES_LETTERS.includes(a+b+c)&&SPECIAL_SERIES_LEGENDARY_DIGITS.includes(digits)) ||
    sameLetters ||
-   (['005','007'].includes(digits)&&specialRegions.has(region)) ||
-   ['ХАМ','ВОР','ЕКХ'].includes(a+b+c)
+   (['005','007'].includes(digits)&&specialRegions.has(region))
  ){
    rank='legendary';rarity='Легендарный';desc='Коллекционный номер';
  }
  // Current epic formats.
- else if(sameLetters&&['002','003','004','005','006','007','008','009'].includes(digits)){
+ else if((SPECIAL_SERIES_LETTERS.includes(a+b+c)&&SPECIAL_SERIES_EPIC_DIGITS.includes(digits)) || (sameLetters&&SPECIAL_SERIES_EPIC_DIGITS.includes(digits))){
    rank='epic';rarity='Эпический';desc='Полублат';
  }
  // Existing lower-rarity rules.
@@ -4829,11 +4832,11 @@ if(bal<COST)return update();isRolling=true;
    else{d=String(1+rnd(9))+'00';plateText=a+d+b+c;e.desc='Редкий · формат *00'}
  }else if(e.rank==='epic'){
    // Эпические цифровые серии: только 002/003/004/006/008/009.
-   const epicDigits=['002','003','004','006','008'];
+   const epicDigits=SPECIAL_SERIES_EPIC_DIGITS;
    d=epicDigits[rnd(epicDigits.length)];
-   // Эпик сохраняет красивую буквенную комбинацию: три одинаковые буквы.
+   const series=Math.random()<0.35?SPECIAL_SERIES_LETTERS[rnd(SPECIAL_SERIES_LETTERS.length)]:null;
    const EL=L[rnd(L.length)];
-   a=EL;b=EL;c=EL;
+   a=series?series[0]:EL;b=series?series[1]:EL;c=series?series[2]:EL;
    e.desc='Полублат · серия '+d;
    plateText=a+d+b+c;
    e.v=epicNumberValue(plateText,r);
@@ -4848,7 +4851,7 @@ if(bal<COST)return update();isRolling=true;
  }else{
   const legendarySeries=['ХАМ','ВОР','ЕКХ'];
   const lt=rnd(3);
-  if(lt===0){const ls=legendarySeries[rnd(legendarySeries.length)],sd=String(1+rnd(999)).padStart(3,'0');plateText=ls[0]+sd+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
+  if(lt===0){const ls=legendarySeries[rnd(legendarySeries.length)],sd=SPECIAL_SERIES_LEGENDARY_DIGITS[rnd(SPECIAL_SERIES_LEGENDARY_DIGITS.length)];plateText=ls[0]+sd+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
   else{const LL=L[rnd(L.length)],ld=['001','005','007','009'][rnd(4)];plateText=LL+ld+LL+LL;e.desc='Легендарный формат · '+ld+' '+r}
  }
  e.v=legendaryNumberValue(plateText,r);
@@ -4872,13 +4875,13 @@ if(bal<COST)return update();isRolling=true;
   const fb=generateLegendaryFullBlat(r);plateText=fb.plateText;e.desc=fb.desc;
  }else{
   const lt=rnd(3);
-  if(lt===0){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)],sd=String(1+rnd(999)).padStart(3,'0');plateText=ls[0]+sd+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
+  if(lt===0){const ls=['ХАМ','ВОР','ЕКХ'][rnd(3)],sd=SPECIAL_SERIES_LEGENDARY_DIGITS[rnd(SPECIAL_SERIES_LEGENDARY_DIGITS.length)];plateText=ls[0]+sd+ls[1]+ls[2];e.desc='Легендарная серия · '+ls}
   else{const LL=L[rnd(L.length)],ld=['001','005','007','009'][rnd(4)];plateText=LL+ld+LL+LL;e.desc='Легендарный формат · '+ld+' '+r}
  }
  e.v=legendaryNumberValue(plateText,r);
  }else if(e.rank==='epic'){
-     const epicRerollDigits=['002','003','004','006','008'],ed=epicRerollDigits[rnd(epicRerollDigits.length)],EL=L[rnd(L.length)];
-     plateText=EL+ed+EL+EL;
+     const ed=SPECIAL_SERIES_EPIC_DIGITS[rnd(SPECIAL_SERIES_EPIC_DIGITS.length)],EL=L[rnd(L.length)],series=Math.random()<0.35?SPECIAL_SERIES_LETTERS[rnd(SPECIAL_SERIES_LETTERS.length)]:null;
+     plateText=series?series[0]+ed+series[1]+series[2]:EL+ed+EL+EL;
      if(!chosen)r=REG[rnd(REG.length)];
      e.desc='Полублат · серия '+ed;e.v=epicNumberValue(plateText,r);
    }else if(e.rank==='rare'){
