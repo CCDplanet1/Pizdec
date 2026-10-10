@@ -3514,6 +3514,11 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 body.caseNavLocked .tabs .tab:not([data-page="containersPage"]){opacity:.38;cursor:not-allowed}
 .crystalTabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;width:100%;max-width:100%}.crystalTabs button{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.crystalTabs button.active{background:#7657ff;color:#fff;border-color:#7657ff}
 @media(max-width:620px){.crystalTabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}.crystalTabs button{min-width:0;padding:10px 5px;font-size:12px;white-space:normal;overflow-wrap:anywhere}#crystalDealer{grid-template-columns:minmax(0,1fr);width:100%;max-width:100%}#crystalDealer .carCard{min-width:0;width:100%;box-sizing:border-box}}
+/* Ensure dealer tabs stay exclusive even when mobile grid rules use !important */
+#dealerPage #dealer.dealer-pane-hidden,
+#dealerPage #crystalDealer.dealer-pane-hidden,
+#dealerPage #rubDealerTools.dealer-pane-hidden,
+#dealerPage #crystalDealerInfo.dealer-pane-hidden { display:none !important; }
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -4081,12 +4086,12 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <div class="stats" style="margin-top:14px"><div class="stat"><small>ПРОКРУТОВ</small><b id="sRolls">0</b></div><div class="stat"><small>ПОТРАЧЕНО</small><b id="sSpent">0 ₽</b></div><div class="stat"><small>ПРОДАНО НА</small><b id="sEarned">0 ₽</b></div><div class="stat"><small>БАЛАНС</small><b id="sBalance">100 000 ₽</b></div><div class="stat"><small>В ХРАНИЛИЩЕ</small><b id="sStored">0</b></div><div class="stat"><small>СТОИМОСТЬ КОЛЛЕКЦИИ</small><b id="sCollection">0 ₽</b></div></div></section>
 
 <section class="page" id="dealerPage"><div class="storeHead"><div><h2>Автосалон</h2><div class="count">Каталог CCDPlanet · максимум 3 одинаковые машины</div></div></div>
-<div class="crystalTabs"><button id="rubDealerTab" class="active" onclick="setDealerMode('rub')">Автосалон за ₽</button><button id="crystalDealerTab" onclick="setDealerMode('crystal')">💎 Магазин кристаллов</button></div><div id="crystalDealerInfo" style="display:none;margin:10px 0;color:var(--text)">Баланс: <b id="crystalShopBalance">0</b> 💎 · Кристаллы выдаются за уровни</div><div class="tools" id="rubDealerTools"><input id="carSearch" placeholder="Поиск машины..." style="width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff"><select id="carSort" style="margin-left:8px">
+<div class="crystalTabs"><button id="rubDealerTab" class="active" onclick="setDealerMode('rub')">Автосалон за ₽</button><button id="crystalDealerTab" onclick="setDealerMode('crystal')">💎 Магазин кристаллов</button></div><div id="crystalDealerInfo" class="dealer-pane-hidden" style="display:none!important;margin:10px 0;color:var(--text)">Баланс: <b id="crystalShopBalance">0</b> 💎 · Кристаллы выдаются за уровни</div><div class="tools" id="rubDealerTools"><input id="carSearch" placeholder="Поиск машины..." style="width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff"><select id="carSort" style="margin-left:8px">
 <option value="default">Сортировка</option>
 <option value="cheap">Сначала дешёвые</option>
 <option value="expensive">Сначала дорогие</option>
 </select></div>
-<div class="dealerGrid" id="dealer"></div><div class="dealerGrid" id="crystalDealer" style="display:none"></div></section>
+<div class="dealerGrid" id="dealer"></div><div class="dealerGrid" id="crystalDealer" class="dealer-pane-hidden" style="display:none!important"></div></section>
 <section class="page" id="garagePage"><div class="storeHead"><div><h2>Гараж</h2><div class="count" id="garageCount">0 машин</div></div><div class="garageSortWrap"><label for="garageSort">Сортировка</label><select id="garageSort" onchange="renderGarage()"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="priceDesc">Цена: дорогие → дешёвые</option><option value="priceAsc">Цена: дешёвые → дорогие</option><option value="rarity">По редкости</option><option value="name">По названию</option><option value="serial">По серийному номеру</option></select></div></div>
 <div class="garageSearchBar">
 <input id="garageNameSearch" placeholder="Поиск по названию машины..." oninput="renderGarage()">
@@ -4999,10 +5004,11 @@ function setDealerMode(mode){
  dealerMode=mode==='crystal'?'crystal':'rub';
  document.getElementById('rubDealerTab')?.classList.toggle('active',dealerMode==='rub');
  document.getElementById('crystalDealerTab')?.classList.toggle('active',dealerMode==='crystal');
- document.getElementById('rubDealerTools').style.display=dealerMode==='rub'?'':'none';
- document.getElementById('dealer').style.display=dealerMode==='rub'?'':'none';
- document.getElementById('crystalDealer').style.display=dealerMode==='crystal'?'':'none';
- document.getElementById('crystalDealerInfo').style.display=dealerMode==='crystal'?'':'none';
+ for(const [id,visible] of [['rubDealerTools',dealerMode==='rub'],['dealer',dealerMode==='rub'],['crystalDealer',dealerMode==='crystal'],['crystalDealerInfo',dealerMode==='crystal']]){
+  const el=document.getElementById(id);if(!el)continue;
+  el.classList.toggle('dealer-pane-hidden',!visible);
+  el.style.setProperty('display',visible?(id==='dealer'||id==='crystalDealer'?'grid':''):'none',visible?'':'important');
+ }
  renderDealer();
 }
 function buyCrystalCar(name){
