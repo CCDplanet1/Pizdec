@@ -3512,7 +3512,8 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:520px){.promoRow{flex-direction:column}.promoRow .buy{width:100%}}
 
 body.caseNavLocked .tabs .tab:not([data-page="containersPage"]){opacity:.38;cursor:not-allowed}
-.crystalTabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.crystalTabs button{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.crystalTabs button.active{background:#7657ff;color:#fff;border-color:#7657ff}
+.crystalTabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;width:100%;max-width:100%}.crystalTabs button{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.crystalTabs button.active{background:#7657ff;color:#fff;border-color:#7657ff}
+@media(max-width:620px){.crystalTabs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}.crystalTabs button{min-width:0;padding:10px 5px;font-size:12px;white-space:normal;overflow-wrap:anywhere}#crystalDealer{grid-template-columns:minmax(0,1fr);width:100%;max-width:100%}#crystalDealer .carCard{min-width:0;width:100%;box-sizing:border-box}}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -5398,7 +5399,8 @@ function carVisual(m,cls='carImage'){
        'Mercedes-Benz SLS AMG':'images/slsamg.png',
        'McLaren SLR C199':'images/slrc199.png',
        'Mercedes-Benz SL63 AMG R232':'images/sl63.png',
-       'Ferrari SF90XX':'images/sf90xx.png',
+       'Ferrari SF90XX Spider':'images3/sf90xxspider.png',
+  'Ferrari SF90XX':'images/sf90xx.png',
        'Ferrari SF90':'images/sf90.png',
        'Mercedes-Benz S63 Coupe':'images/s63coupe.png',
        'Dodge RAM TRX':'images/ramtrx.png',
@@ -5578,7 +5580,7 @@ function carVisual(m,cls='carImage'){
        'Porsche Taycan':'images3/taycan.png',
        'Lamborghini Urus':'images3/urus.png'
 };
- const image=imageByName[carName]||m.image;
+ const image=imageByName[carName]||m.image||currentCarCatalogEntry(m)?.image;
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
  return `<div class="carIcon">🚘</div>`;
 }
