@@ -4222,7 +4222,12 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 const L='АВЕКМНОРСТУХ',REG=['01','101','02','102','702','03','103','04','05','105','06','07','08','09','10','11','12','13','113','14','15','16','116','716','17','18','19','95','21','121','22','122','222','23','93','123','193','323','24','124','224','25','125','725','26','126','27','28','29','30','130','31','131','32','33','34','134','35','36','136','37','38','138','39','91','40','41','42','142','43','44','45','46','47','147','48','49','50','90','150','190','250','550','750','790','52','152','252','53','54','154','754','55','155','56','156','57','58','158','59','159','60','61','161','761','62','63','163','763','64','164','65','66','96','196','67','68','69','169','70','71','72','172','73','173','74','174','774','75','76','176','77','97','99','177','197','199','277','299','777','797','799','977','997','78','98','178','198','778','79','80','180','81','181','82','83','84','184','85','185','86','186','87','89','92','192','94','188'],COST=3000,REGION_FEE=25000,SPECIAL_REGION_FEE=50000;
 let bal=100000,inv=[],seq=0,rolls=0,spent=0,earned=0,filter='all',cars=[],carSeq=0,storageCap=50,garageCap=1,isRolling=false;
 let playerLevel=0,playerXp=0,diamonds=0,storageUpgradesUsed=0;
-const CRYSTAL_ONLY_CAR={name:'Ferrari SF90XX Spider',price:200000000,rub:200000000,currency:'₽',icon:'🏎️',image:'images3/sf90xxspider.png',dealerHidden:true,crystalOnly:true,crystalPrice:500};
+const CRYSTAL_SHOP_CARS=[
+ {name:'Ferrari SF90XX Spider',price:200000000,rub:200000000,currency:'₽',icon:'🏎️',image:'images3/sf90xxspider.png',dealerHidden:true,upgradeHidden:true,crystalOnly:true,limited:true,crystalPrice:500},
+ {name:'Rolls Royce Cullinan Mansory 2025',price:120000000,rub:120000000,currency:'₽',icon:'🚘',image:'images3/2025rrmansory.png',dealerHidden:true,upgradeHidden:true,crystalOnly:true,limited:true,crystalPrice:300},
+ {name:'Audi RS6 C8 GT',price:60000000,rub:60000000,currency:'₽',icon:'🚘',image:'images3/rs6c8gt.png',dealerHidden:true,upgradeHidden:true,crystalOnly:true,limited:true,crystalPrice:150},
+ {name:'Lamborghini Murciélago Liberty Walk',price:100000000,rub:100000000,currency:'₽',icon:'🏎️',image:'images3/lambolwb.png',dealerHidden:true,upgradeHidden:true,crystalOnly:true,limited:true,crystalPrice:250}
+];
 const CARS=[
 {name:'Alfa Romeo Giulia',price:3000000,currency:'₽',rub:3000000,icon:'🚘'},
 {name:'Aston Martin Valkyrie',price:475000000,currency:'₽',rub:475000000,icon:'🚘'},
@@ -4427,7 +4432,7 @@ const CARS=[
 {name:'ЗАЗ 968',price:60000,currency:'₽',rub:60000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'common'},
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
 ,
-CRYSTAL_ONLY_CAR
+...CRYSTAL_SHOP_CARS
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
 const MYTHIC_CARRERA_GT={name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'carrera_gt'};
@@ -5000,11 +5005,11 @@ function setDealerMode(mode){
  document.getElementById('crystalDealerInfo').style.display=dealerMode==='crystal'?'':'none';
  renderDealer();
 }
-function buyCrystalCar(){
- const m=CRYSTAL_ONLY_CAR;
+function buyCrystalCar(name){
+ const m=CRYSTAL_SHOP_CARS.find(x=>x.name===name);if(!m)return;
  if(cars.length>=garageCap){alert('Гараж заполнен. Увеличь вместимость гаража.');return;}
  if(ownedCount(m.name)>=3){alert('Можно иметь не более 3 одинаковых машин.');return;}
- if(diamonds<m.crystalPrice){alert('Недостаточно кристаллов. Нужно 500 💎.');return;}
+ if(diamonds<m.crystalPrice){alert('Недостаточно кристаллов. Нужно '+m.crystalPrice+' 💎.');return;}
  diamonds-=m.crystalPrice;
  const rp=randomPlateForCar();
  cars.push({id:++carSeq,model:m.name,icon:m.icon,price:m.price,currency:m.currency,rub:m.rub,plate:rp.p,region:rp.r,custom:false});
@@ -5013,9 +5018,8 @@ function buyCrystalCar(){
 function renderCrystalDealer(){
  const box=document.getElementById('crystalDealer');if(!box)return;
  document.getElementById('crystalShopBalance').textContent=diamonds.toLocaleString('ru-RU');
- const m=CRYSTAL_ONLY_CAR;
- box.innerHTML=`<div class="carCard"><div class="carVisual">${carVisual(m)}</div><h3>${m.name}</h3><div class="carMeta">Лимитированная · только за кристаллы · ${ownedCount(m.name)}/3</div><div class="carPrice">💎 500</div><div class="carMeta">Стоимость продажи: ${money(m.rub)}</div><button class="buy" id="buyCrystalCarBtn" ${diamonds<500||ownedCount(m.name)>=3||cars.length>=garageCap?'disabled':''}>${ownedCount(m.name)>=3?'Лимит 3/3':diamonds<500?'Недостаточно кристаллов':'Купить за 500 💎'}</button></div>`;
- document.getElementById('buyCrystalCarBtn').onclick=buyCrystalCar;
+ box.innerHTML=CRYSTAL_SHOP_CARS.map((m,i)=>`<div class="carCard"><div class="carVisual">${carVisual(m)}</div><h3>${m.name}</h3><div class="carMeta">Лимитированная · только за кристаллы · ${ownedCount(m.name)}/3</div><div class="carPrice">💎 ${m.crystalPrice}</div><div class="carMeta">Стоимость продажи: ${money(m.rub)}</div><button class="buy" data-crystal-buy="${i}" ${diamonds<m.crystalPrice||ownedCount(m.name)>=3||cars.length>=garageCap?'disabled':''}>${ownedCount(m.name)>=3?'Лимит 3/3':diamonds<m.crystalPrice?'Недостаточно кристаллов':'Купить за '+m.crystalPrice+' 💎'}</button></div>`).join('');
+ box.querySelectorAll('[data-crystal-buy]').forEach(btn=>btn.addEventListener('click',()=>buyCrystalCar(CRYSTAL_SHOP_CARS[Number(btn.dataset.crystalBuy)].name)));
 }
 function renderDealer(){
  renderCrystalDealer();
@@ -5247,7 +5251,7 @@ function upgradeSources(){
  return owned;
 }
 function upgradeTargets(){
- return [...CARS.filter(x=>x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden&&!x.upgradeHidden&&!x.caseExclusive&&!isLimitedFerrari(x)),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40].sort((a,b)=>carRubValue(a)-carRubValue(b));
+ return [...CARS.filter(x=>!x.crystalOnly&&x.name!=='Lamborghini Murciélago'&&!x.promoOnly&&!x.dealerHidden&&!x.upgradeHidden&&!x.caseExclusive&&!isLimitedFerrari(x)),UPGRADE_COUNTACH,UPGRADE_COUNTACH_800,UPGRADE_F40].sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function upKey(x){return `${x.type}:${x.id}`}
 function selectedUpgradeSource(){
@@ -5400,6 +5404,9 @@ function carVisual(m,cls='carImage'){
        'McLaren SLR C199':'images/slrc199.png',
        'Mercedes-Benz SL63 AMG R232':'images/sl63.png',
        'Ferrari SF90XX Spider':'images3/sf90xxspider.png',
+       'Rolls Royce Cullinan Mansory 2025':'images3/2025rrmansory.png',
+       'Audi RS6 C8 GT':'images3/rs6c8gt.png',
+       'Lamborghini Murciélago Liberty Walk':'images3/lambolwb.png',
   'Ferrari SF90XX':'images/sf90xx.png',
        'Ferrari SF90':'images/sf90.png',
        'Mercedes-Benz S63 Coupe':'images/s63coupe.png',
@@ -5584,7 +5591,7 @@ function carVisual(m,cls='carImage'){
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
  return `<div class="carIcon">🚘</div>`;
 }
-const LIMITED_CAR_NAMES=new Set(['Ferrari SF90XX Spider',
+const LIMITED_CAR_NAMES=new Set(['Ferrari SF90XX Spider','Rolls Royce Cullinan Mansory 2025','Audi RS6 C8 GT','Lamborghini Murciélago Liberty Walk',
  'BMW 3.0 CSL','BMW 850 CSI','BMW M1 E26','BMW Z8',
  'Ferrari 812 Competizione','Ferrari F430','Ferrari SF90XX',
  'Mercedes-Benz 300SL','Mercedes-AMG ONE','Mercedes-Benz CLK GTR','Mercedes-Benz G63 6x6',
@@ -5645,14 +5652,14 @@ function isLimitedBMW(m){
  return n.startsWith('BMW ')&&m.limited===true;
 }
 function brandCasePool(prefix){
- return CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&String(x.name||'').startsWith(prefix))
+ return CARS.filter(x=>!x.crystalOnly&&!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&String(x.name||'').startsWith(prefix))
   .sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function bmwCasePool(){return brandCasePool('BMW ');}
 function ferrariCasePool(){return brandCasePool('Ferrari ');}
 function porscheCasePool(){return brandCasePool('Porsche ');}
 function mercedesCasePool(){
- return CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&(String(x.name||'').startsWith('Mercedes-Benz ')||String(x.name||'').startsWith('Mercedes-AMG ')))
+ return CARS.filter(x=>!x.crystalOnly&&!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&(String(x.name||'').startsWith('Mercedes-Benz ')||String(x.name||'').startsWith('Mercedes-AMG ')))
   .sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function casePool(c){
@@ -5660,7 +5667,7 @@ function casePool(c){
  if(c.id==='bmw')return bmwCasePool();
  if(c.id==='ferrari')return ferrariCasePool();
  if(c.id==='porsche')return porscheCasePool();
- const sorted=CARS.filter(x=>!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!x.caseExclusive&&!isLimitedMercedes(x)&&!isLimitedBMW(x)&&!isLimitedFerrari(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
+ const sorted=CARS.filter(x=>!x.crystalOnly&&!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&!x.caseExclusive&&!isLimitedMercedes(x)&&!isLimitedBMW(x)&&!isLimitedFerrari(x)).sort((a,b)=>carRubValue(a)-carRubValue(b));
  const a=Math.floor(sorted.length*c.from),b=Math.max(a+1,Math.ceil(sorted.length*c.to));
  const pool=sorted.slice(a,b);
  if(c.id==='common')for(const n of ['Daewoo Matiz','Polaris RZR Pro','ЗАЗ 968']){const m=CARS.find(x=>x.name===n);if(m&&!pool.includes(m))pool.push(m)}
