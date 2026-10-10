@@ -3512,6 +3512,7 @@ button,.tab,.plateButton,.filter,.applyPlate,.sell,.profileAction,.profileAvatar
 @media(max-width:520px){.promoRow{flex-direction:column}.promoRow .buy{width:100%}}
 
 body.caseNavLocked .tabs .tab:not([data-page="containersPage"]){opacity:.38;cursor:not-allowed}
+.crystalTabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.crystalTabs button{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.crystalTabs button.active{background:#7657ff;color:#fff;border-color:#7657ff}
 </style>
 
 <div class="profileModal" id="profileModal">
@@ -4079,12 +4080,12 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 <div class="stats" style="margin-top:14px"><div class="stat"><small>ПРОКРУТОВ</small><b id="sRolls">0</b></div><div class="stat"><small>ПОТРАЧЕНО</small><b id="sSpent">0 ₽</b></div><div class="stat"><small>ПРОДАНО НА</small><b id="sEarned">0 ₽</b></div><div class="stat"><small>БАЛАНС</small><b id="sBalance">100 000 ₽</b></div><div class="stat"><small>В ХРАНИЛИЩЕ</small><b id="sStored">0</b></div><div class="stat"><small>СТОИМОСТЬ КОЛЛЕКЦИИ</small><b id="sCollection">0 ₽</b></div></div></section>
 
 <section class="page" id="dealerPage"><div class="storeHead"><div><h2>Автосалон</h2><div class="count">Каталог CCDPlanet · максимум 3 одинаковые машины</div></div></div>
-<div class="tools"><input id="carSearch" placeholder="Поиск машины..." style="width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff"><select id="carSort" style="margin-left:8px">
+<div class="crystalTabs"><button id="rubDealerTab" class="active" onclick="setDealerMode('rub')">Автосалон за ₽</button><button id="crystalDealerTab" onclick="setDealerMode('crystal')">💎 Магазин кристаллов</button></div><div id="crystalDealerInfo" style="display:none;margin:10px 0;color:var(--text)">Баланс: <b id="crystalShopBalance">0</b> 💎 · Кристаллы выдаются за уровни</div><div class="tools" id="rubDealerTools"><input id="carSearch" placeholder="Поиск машины..." style="width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff"><select id="carSort" style="margin-left:8px">
 <option value="default">Сортировка</option>
 <option value="cheap">Сначала дешёвые</option>
 <option value="expensive">Сначала дорогие</option>
 </select></div>
-<div class="dealerGrid" id="dealer"></div></section>
+<div class="dealerGrid" id="dealer"></div><div class="dealerGrid" id="crystalDealer" style="display:none"></div></section>
 <section class="page" id="garagePage"><div class="storeHead"><div><h2>Гараж</h2><div class="count" id="garageCount">0 машин</div></div><div class="garageSortWrap"><label for="garageSort">Сортировка</label><select id="garageSort" onchange="renderGarage()"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="priceDesc">Цена: дорогие → дешёвые</option><option value="priceAsc">Цена: дешёвые → дорогие</option><option value="rarity">По редкости</option><option value="name">По названию</option><option value="serial">По серийному номеру</option></select></div></div>
 <div class="garageSearchBar">
 <input id="garageNameSearch" placeholder="Поиск по названию машины..." oninput="renderGarage()">
@@ -4220,6 +4221,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 const L='АВЕКМНОРСТУХ',REG=['01','101','02','102','702','03','103','04','05','105','06','07','08','09','10','11','12','13','113','14','15','16','116','716','17','18','19','95','21','121','22','122','222','23','93','123','193','323','24','124','224','25','125','725','26','126','27','28','29','30','130','31','131','32','33','34','134','35','36','136','37','38','138','39','91','40','41','42','142','43','44','45','46','47','147','48','49','50','90','150','190','250','550','750','790','52','152','252','53','54','154','754','55','155','56','156','57','58','158','59','159','60','61','161','761','62','63','163','763','64','164','65','66','96','196','67','68','69','169','70','71','72','172','73','173','74','174','774','75','76','176','77','97','99','177','197','199','277','299','777','797','799','977','997','78','98','178','198','778','79','80','180','81','181','82','83','84','184','85','185','86','186','87','89','92','192','94','188'],COST=3000,REGION_FEE=25000,SPECIAL_REGION_FEE=50000;
 let bal=100000,inv=[],seq=0,rolls=0,spent=0,earned=0,filter='all',cars=[],carSeq=0,storageCap=50,garageCap=1,isRolling=false;
 let playerLevel=0,playerXp=0,diamonds=0,storageUpgradesUsed=0;
+const CRYSTAL_ONLY_CAR={name:'Ferrari SF90XX Spider',price:200000000,rub:200000000,currency:'₽',icon:'🏎️',image:'images3/sf90xxspider.png',dealerHidden:true,crystalOnly:true,crystalPrice:500};
 const CARS=[
 {name:'Alfa Romeo Giulia',price:3000000,currency:'₽',rub:3000000,icon:'🚘'},
 {name:'Aston Martin Valkyrie',price:475000000,currency:'₽',rub:475000000,icon:'🚘'},
@@ -4423,6 +4425,8 @@ const CARS=[
 {name:'ГАЗ 24',price:190000,currency:'₽',rub:190000,icon:'🚘'},
 {name:'ЗАЗ 968',price:60000,currency:'₽',rub:60000,icon:'🚘',dealerHidden:true,limited:true,caseExclusive:'common'},
 {name:'КамАЗ 6520',price:1350000,currency:'₽',rub:1350000,icon:'🚘'}
+,
+CRYSTAL_ONLY_CAR
 ];
 const MYTHIC_HAMMER={name:'Mercedes-Benz 300E Hammer AMG',image:'images/124.png',price:3000000000,currency:'₽',rub:3000000000,icon:'🚘',forcedRarity:'mythic',globalLimited:true,globalLimit:54};
 const MYTHIC_CARRERA_GT={name:'Porsche Carrera GT',image:'images/carrera.png',price:800000000,currency:'₽',rub:800000000,icon:'🚘',forcedRarity:'mythic',caseExclusive:'carrera_gt'};
@@ -4984,9 +4988,38 @@ function renderDealerButtons(){
  })
 }
 function carPriceText(m){return m.price.toLocaleString('ru-RU')+' '+m.currency}
+let dealerMode='rub';
+function setDealerMode(mode){
+ dealerMode=mode==='crystal'?'crystal':'rub';
+ document.getElementById('rubDealerTab')?.classList.toggle('active',dealerMode==='rub');
+ document.getElementById('crystalDealerTab')?.classList.toggle('active',dealerMode==='crystal');
+ document.getElementById('rubDealerTools').style.display=dealerMode==='rub'?'':'none';
+ document.getElementById('dealer').style.display=dealerMode==='rub'?'':'none';
+ document.getElementById('crystalDealer').style.display=dealerMode==='crystal'?'':'none';
+ document.getElementById('crystalDealerInfo').style.display=dealerMode==='crystal'?'':'none';
+ renderDealer();
+}
+function buyCrystalCar(){
+ const m=CRYSTAL_ONLY_CAR;
+ if(cars.length>=garageCap){alert('Гараж заполнен. Увеличь вместимость гаража.');return;}
+ if(ownedCount(m.name)>=3){alert('Можно иметь не более 3 одинаковых машин.');return;}
+ if(diamonds<m.crystalPrice){alert('Недостаточно кристаллов. Нужно 500 💎.');return;}
+ diamonds-=m.crystalPrice;
+ const rp=randomPlateForCar();
+ cars.push({id:++carSeq,model:m.name,icon:m.icon,price:m.price,currency:m.currency,rub:m.rub,plate:rp.p,region:rp.r,custom:false});
+ update();renderDealer();renderGarage();renderUpgrader();
+}
+function renderCrystalDealer(){
+ const box=document.getElementById('crystalDealer');if(!box)return;
+ document.getElementById('crystalShopBalance').textContent=diamonds.toLocaleString('ru-RU');
+ const m=CRYSTAL_ONLY_CAR;
+ box.innerHTML=`<div class="carCard"><div class="carVisual">${carVisual(m)}</div><h3>${m.name}</h3><div class="carMeta">Лимитированная · только за кристаллы · ${ownedCount(m.name)}/3</div><div class="carPrice">💎 500</div><div class="carMeta">Стоимость продажи: ${money(m.rub)}</div><button class="buy" id="buyCrystalCarBtn" ${diamonds<500||ownedCount(m.name)>=3||cars.length>=garageCap?'disabled':''}>${ownedCount(m.name)>=3?'Лимит 3/3':diamonds<500?'Недостаточно кристаллов':'Купить за 500 💎'}</button></div>`;
+ document.getElementById('buyCrystalCarBtn').onclick=buyCrystalCar;
+}
 function renderDealer(){
+ renderCrystalDealer();
  let box=$('dealer'),q=($('carSearch')?.value||'').toLowerCase(),sort=$('carSort')?.value||'default';box.innerHTML='';
- let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly&&!x.m.dealerHidden&&x.m.name!=='Lamborghini Murciélago');
+ let list=CARS.map((m,i)=>({m,i})).filter(x=>!x.m.promoOnly&&!x.m.dealerHidden&&x.m.name!=='Lamborghini Murciélago'&&!x.m.crystalOnly);
  if(sort==='cheap')list.sort((a,b)=>carBaseValue(a.m)-carBaseValue(b.m));
  else if(sort==='expensive')list.sort((a,b)=>carBaseValue(b.m)-carBaseValue(a.m));
  list.forEach(({m,i})=>{
@@ -5549,7 +5582,7 @@ function carVisual(m,cls='carImage'){
  if(image)return `<img class="${cls}" src="${image}" alt="${carName||'Автомобиль'}" draggable="false" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="carIcon" style="display:none">🚘</div>`;
  return `<div class="carIcon">🚘</div>`;
 }
-const LIMITED_CAR_NAMES=new Set([
+const LIMITED_CAR_NAMES=new Set(['Ferrari SF90XX Spider',
  'BMW 3.0 CSL','BMW 850 CSI','BMW M1 E26','BMW Z8',
  'Ferrari 812 Competizione','Ferrari F430','Ferrari SF90XX',
  'Mercedes-Benz 300SL','Mercedes-AMG ONE','Mercedes-Benz CLK GTR','Mercedes-Benz G63 6x6',
