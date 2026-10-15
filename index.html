@@ -4063,7 +4063,7 @@ button,.caseOpen,.tab,.buy,.sell{touch-action:manipulation!important}
 }
 </style></head><body><div class="app">
 <div class="head"><div class="brand"><b>Номера РФ</b><span>Собирай. Оценивай. Продавай.</span></div><div class="walletProfile"><button class="profileAvatarBtn" id="profileAvatarBtn" title="Профиль">И</button><div class="wallet"><small>БАЛАНС</small><strong id="balance">100 000 ₽</strong></div></div></div>
-<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Кейсы</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" style="display:none" data-page="chatPage">💬 Чат</button></nav>
+<button class="mobileMenuToggle" id="mobileMenuToggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span>☰</span></button><div class="mobileMenuBackdrop" id="mobileMenuBackdrop"></div><nav class="tabs"><button class="tab on" data-page="rollPage">Прокрут</button><button class="tab" data-page="storePage">Хранилище · <span id="badge">0</span></button><button class="tab" data-page="statsPage">Статистика</button><button class="tab" data-page="dealerPage">Автосалон</button><button class="tab" data-page="garagePage">Гараж · <span id="garageBadge" style="display:none!important">0</span>/<span id="garageTabCap">1</span></button><button class="tab" data-page="auctionPage">🔨 Аукцион</button><button class="tab" data-page="collectionPage">Коллекция</button><button class="tab" data-page="upgraderPage">Апгрейдер</button><button class="tab" data-page="containersPage">Кейсы</button><button class="tab" data-page="lotteryPage">🎟️ Лотерея</button><button class="tab" data-page="upgradesPage">Улучшения</button><button class="tab" data-page="settingsPage">Настройки</button><button class="tab" data-page="chatPage">💬 Чат</button></nav>
 
 <section class="page on" id="rollPage"><div class="roll"><h1>Нажми на номер, чтобы прокрутить</h1><div class="sub">Прокрут: 3 000 ₽ · выбор региона: +50 000 ₽</div>
 <div style="max-width:680px;margin:18px auto -12px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
@@ -5683,7 +5683,7 @@ function brandCasePool(prefix){
   .sort((a,b)=>carRubValue(a)-carRubValue(b));
 }
 function bmwCasePool(){return brandCasePool('BMW ');}
-function ferrariCasePool(){return brandCasePool('Ferrari ');}
+function ferrariCasePool(){return brandCasePool('Ferrari ').filter(x=>x.name!=='Ferrari SF90XX Spider');}
 function porscheCasePool(){return brandCasePool('Porsche ');}
 function mercedesCasePool(){
  return CARS.filter(x=>!x.crystalOnly&&!x.promoOnly&&x.name!=='Lamborghini Murciélago'&&(String(x.name||'').startsWith('Mercedes-Benz ')||String(x.name||'').startsWith('Mercedes-AMG ')))
@@ -6031,7 +6031,7 @@ function casePool(c){
  const all=allCaseCars().sort((a,b)=>carBaseValue(a)-carBaseValue(b));
  if(c.id==='bmw')return all.filter(x=>String(x.name||'').startsWith('BMW '));
  if(c.id==='mercedes')return all.filter(x=>{const n=String(x.name||'');return (n.startsWith('Mercedes-Benz ')||n.startsWith('Mercedes-AMG '))&&n!=='Mercedes-Benz 300E Hammer AMG'&&n!=='Mercedes-Benz Mini-Wagen'});
- if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari ')&&x.name!=='Ferrari F40');
+ if(c.id==='ferrari')return all.filter(x=>String(x.name||'').startsWith('Ferrari ')&&x.name!=='Ferrari F40'&&x.name!=='Ferrari SF90XX Spider');
  if(c.id==='porsche')return all.filter(x=>String(x.name||'').startsWith('Porsche '));
  if(c.id==='bronze')return all.filter(x=>x.name!=='Ferrari F40'&&carBaseValue(x)<5000000);
  if(c.id==='silver'){
